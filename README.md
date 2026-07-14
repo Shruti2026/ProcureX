@@ -144,17 +144,3 @@ ProcureX/
    ```bash
    npm run dev
    ```
-
-## 📚 Documentation
-
-All project documentation is located in the `docs/` directory:
-- 01_Problem_Statement.md
-- 02_System_Requirements.md
-- 03_High_Level_Design.md
-- 04_Technical_System_Architecture.md
-- 05_User_Stories.md
-- 06_API_Documentation.md
-- 07_Test_Cases.md
-- 08_Deployment_Guide.md
-- Project-Folder-Structure.md
-
