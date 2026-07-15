@@ -12,7 +12,7 @@
 
     <artifactId>procurex-vendor-catalog-service</artifactId>
     <packaging>jar</packaging>
-    <name>ProcureX Vendor & Catalog Service</name>
+    <name>ProcureX Vendor &amp; Catalog Service</name>
     <description>Vendor Management and Product Catalog Service for ProcureX</description>
 
     <dependencies>
@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-database-mysql</artifactId>
+            <artifactId>flyway-mysql</artifactId>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
