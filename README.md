@@ -61,32 +61,10 @@ ProcureX/
    - Start your MySQL server
    - Start your RabbitMQ server
 
-#### Option A: Using IntelliJ IDEA (Recommended, One-Click Setup!)
-1. **Import the Project**:
-   - Open IntelliJ IDEA
-   - Go to `File` → `Open`
-   - Select the `ProcureX/backend` directory (the parent Maven project)
-   - IntelliJ will automatically detect all microservices as separate modules!
-
-2. **Create a Compound Run Configuration (Start All Services at Once)**:
-   - Go to `Run` → `Edit Configurations...`
-   - Click the `+` button → Select `Compound`
-   - Name it **"All ProcureX Services"**
-   - Click `Add Run Configuration...` and add each service (add Eureka Server first!):
-     - For each service:
-       - Click `+` → Select `Spring Boot`
-       - Name it like **"Eureka Server"**
-       - Select the corresponding module (e.g., `eureka-server`)
-       - Select the main class (IntelliJ will usually auto-detect it)
-   - Click `OK`
-
-3. **Run Everything with One Click**:
-   - In the top-right corner, select your **"All ProcureX Services"** compound config
-   - Click the ▶️ (green play button)! All services will start in order!
-
-#### Option B: Using Maven CLI (Terminal)
+#### Using Maven CLI (Terminal)
 1. **Use the startup script (optional)**
    - Run `.\start-backend.ps1` in PowerShell to see the list of commands to run in separate terminals
+   - If you are inside **backend** folder, then you can you `.\start-backend.bat`
 
 2. **Start Eureka Server first**
    ```bash
