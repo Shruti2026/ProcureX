@@ -1,0 +1,19 @@
+services:
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    container_name: procurex-eureka-server
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: procurex-api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
