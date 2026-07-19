@@ -4,14 +4,21 @@ server:
 spring:
   application:
     name: procurex-identity-service
+  profiles:
+    active: dev
   datasource:
     url: jdbc:mysql://localhost:3306/procurex_identity?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
     username: root
-    password: root
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -26,7 +33,25 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+jwt:
+  secret: ${JWT_SECRET:404D6351665468576D5A7134743777217A25432A462D4A614E645267556B5870}
+  access-token-expiry: 900000       # 15 minutes in ms
+  refresh-token-expiry: 604800000   # 7 days in ms
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
