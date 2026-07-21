@@ -1,37 +1,39 @@
-import { Navigate } from 'react-router-dom'
-import Spinner from '../components/ui/Spinner'
+import { Navigate } from "react-router-dom";
+import Spinner from "../components/ui/Spinner";
+import { useAuth } from "../context/AuthContext";
 
 /**
- * Wraps a route and enforces authentication + role checks.
- *
- * Props:
- *   user         — current user object from AuthContext (null if not logged in)
- *   loading      — true while silent refresh is in progress on page load
- *   allowedRoles — array of role strings allowed to access this route
- *   children     — the protected page component
- *
- * Note: Until AuthContext is wired in Day 2, pass user/loading as props
- * from App.jsx. After Day 2, this reads directly from useAuth().
+ * Protects routes based on authentication and roles.
  */
-export default function ProtectedRoute({ user, loading, allowedRoles = [], children }) {
-  // Still checking session on first load
+export default function ProtectedRoute({
+  allowedRoles = [],
+  children,
+}) {
+  const { user, loading } = useAuth();
+
+  // Checking session on initial load
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Spinner size="lg" className="text-primary-600" />
       </div>
-    )
+    );
   }
 
-  // Not logged in
+  // User is not logged in
   if (!user) {
-    return <Navigate to="/login" replace />
+    return <Navigate to="/login" replace />;
   }
 
-  // Logged in but wrong role
-  if (allowedRoles.length > 0 && !allowedRoles.some((r) => user.roles?.includes(r))) {
-    return <Navigate to="/unauthorized" replace />
+  // User doesn't have required role
+  const hasAccess =
+    allowedRoles.length === 0 ||
+    allowedRoles.some((role) => user.roles?.includes(role));
+
+  if (!hasAccess) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
-  return children
+  // Allow access
+  return children;
 }

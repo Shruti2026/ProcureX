@@ -1,35 +1,28 @@
-import { Toaster } from 'react-hot-toast'
-import AppRouter from './router/AppRouter'
+import { Toaster } from "react-hot-toast";
 
-/**
- * user and loading are stubbed here until AuthContext is built in Day 2.
- * After Day 2: read from useAuth() inside AppRouter instead.
- */
-const stubUser = null   // set to a mock user object to test the dashboard locally
-const stubLoading = false
+import AppRouter from "./router/AppRouter";
+import { useAuth } from "./context/AuthContext";
 
-function handleLogout() {
-  // Placeholder — real logout wired in Day 2
-  window.location.href = '/login'
-}
+function App() {
+  const { user, loading, logout } = useAuth();
 
-export default function App() {
   return (
     <>
-      <AppRouter
-        user={stubUser}
-        loading={stubLoading}
-        onLogout={handleLogout}
-      />
       <Toaster
         position="top-right"
+        reverseOrder={false}
         toastOptions={{
-          duration: 4000,
-          style: {
-            fontSize: '14px',
-          },
+          duration: 3000,
         }}
       />
+
+      <AppRouter
+        user={user}
+        loading={loading}
+        onLogout={logout}
+      />
     </>
-  )
+  );
 }
+
+export default App;
