@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   login as loginService,
@@ -11,52 +12,63 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-    useEffect(() => {
-      const initializeAuth = async () => {
-        try {
-          const currentUser = await restoreSession();
 
-          if (currentUser) {
-            setUser(currentUser);
-          }
-        } catch (error) {
-          console.error("Failed to restore session:", error);
-        } finally {
-          setLoading(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const currentUser = await restoreSession();
+
+        if (currentUser) {
+          setUser(currentUser);
         }
-      };
-
-      initializeAuth();
-    }, []);
-      const login = async (credentials) => {
-        const data = await loginService(credentials);
-
-        setUser(data.user);
-
-        return data;
-      };
-
-      const logout = async () => {
-        await logoutService();
-
-        setUser(null);
-      };
-    const value = {
-      user,
-      loading,
-      login,
-      logout,
-      setUser,
+      } catch (error) {
+        console.error("Failed to restore session:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    return (
-      <AuthContext.Provider value={value}>
-        {children}
-      </AuthContext.Provider>
-    );
-  }
+    initializeAuth();
+  }, []);
 
-  export function useAuth() {
-    return useContext(AuthContext);
-  }
+  const login = async (credentials) => {
+    const data = await loginService(credentials);
+
+    setUser(data.user);
+
+    navigate("/dashboard");
+
+    return data;
+  };
+
+  const logout = async () => {
+    try {
+      await logoutService();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setUser(null);
+      navigate("/login");
+    }
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    setUser,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
 }
