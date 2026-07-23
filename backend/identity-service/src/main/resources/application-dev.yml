@@ -1,0 +1,3 @@
+procurex:
+  bootstrap:
+    enabled: true
