@@ -1,5 +1,22 @@
 services:
 
+  mysql:
+    image: mysql:8.0
+    container_name: procurex-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: procurex-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   eureka-server:
     build:
       context: ./eureka-server
@@ -17,3 +34,118 @@ services:
       - eureka-server
     environment:
       SPRING_PROFILES_ACTIVE: docker
+
+  identity-service:
+    build:
+      context: ./identity-service
+    container_name: procurex-identity-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_identity?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  vendor-catalog-service:
+    build:
+      context: ./vendor-catalog-service
+    container_name: procurex-vendor-catalog-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_vendor?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  procurement-service:
+    build:
+      context: ./procurement-service
+    container_name: procurex-procurement-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_procurement?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+    container_name: procurex-inventory-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_inventory?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  finance-service:
+    build:
+      context: ./finance-service
+    container_name: procurex-finance-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_finance?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: procurex-notification-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_notification?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+    container_name: procurex-analytics-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - eureka-server
+      - mysql
+      - rabbitmq
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_analytics?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+      SPRING_RABBITMQ_HOST: rabbitmq
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+
+volumes:
+  mysql_data:

@@ -2,7 +2,7 @@
 
 start cmd /k "cd eureka-server && mvn spring-boot:run"
 
-timeout /t 8
+timeout /t 20
 
 start cmd /k "cd api-gateway && mvn spring-boot:run"
 

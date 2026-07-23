@@ -63,8 +63,7 @@ ProcureX/
 
 #### Using Maven CLI (Terminal)
 1. **Use the startup script (optional)**
-   - Run `.\start-backend.ps1` in PowerShell to see the list of commands to run in separate terminals
-   - If you are inside **backend** folder, then you can you `.\start-backend.bat`
+   - Inside **backend** folder, run `.\start-backend.bat` or double click on this file.
 
 2. **Start Eureka Server first**
    ```bash
@@ -122,3 +121,4 @@ ProcureX/
    ```bash
    npm run dev
    ```
+
