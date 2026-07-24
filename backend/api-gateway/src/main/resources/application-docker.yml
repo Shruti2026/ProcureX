@@ -4,6 +4,17 @@ server:
 spring:
   application:
     name: procurex-api-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: identity-service-auth
+              uri: lb://procurex-identity-service
+              predicates:
+                - Path=/api/v1/auth/**
 
 eureka:
   client:

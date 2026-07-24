@@ -2,17 +2,23 @@ package com.procurex.identityservice.service.impl;
 
 import com.procurex.identityservice.config.JwtUtil;
 import com.procurex.identityservice.dto.request.LoginRequest;
+import com.procurex.identityservice.dto.request.UserRegisterRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
+import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
 import com.procurex.identityservice.entity.RefreshToken;
+import com.procurex.identityservice.entity.Role;
+import com.procurex.identityservice.entity.RoleName;
 import com.procurex.identityservice.entity.User;
 import com.procurex.identityservice.exception.AccountInactiveException;
 import com.procurex.identityservice.exception.AccountLockedException;
+import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.exception.InvalidTokenException;
 import com.procurex.identityservice.repository.AuditLogRepository;
 import com.procurex.identityservice.repository.RefreshTokenRepository;
+import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
 import com.procurex.identityservice.service.AuthService;
 import jakarta.servlet.http.Cookie;
@@ -27,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,11 +47,59 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository         userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuditLogRepository     auditLogRepository;
+    private final RoleRepository         roleRepository;
     private final JwtUtil                jwtUtil;
     private final PasswordEncoder        passwordEncoder;
 
     @Value("${jwt.refresh-token-expiry}")
     private long refreshTokenExpiryMs;
+
+    // -------------------------------------------------------------------------
+    // Register
+    // -------------------------------------------------------------------------
+    @Override
+    @Transactional
+    public UserRegisterResponse register(UserRegisterRequest request, String createdByEmail) {
+        if (request.role() == RoleName.ADMIN) {
+            throw new IllegalArgumentException("ADMIN users cannot be created through the registration endpoint");
+        }
+
+        if (userRepository.existsByEmail(request.email())) {
+            throw new ConflictException("A user with this email already exists");
+        }
+
+        Role role = roleRepository.findByRoleName(request.role())
+                .orElseThrow(() -> new IllegalArgumentException("Requested role does not exist"));
+
+        User creator = userRepository.findByEmail(createdByEmail)
+                .orElseThrow(() -> new IllegalStateException("Authenticated creator account was not found"));
+
+        User user = User.builder()
+                .organizationId(request.organizationId())
+                .fullName(request.fullName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .phoneNumber(request.phoneNumber())
+                .role(role)
+                .accountStatus(AccountStatus.INACTIVE)
+                .failedLoginAttempts(0)
+                .createdBy(creator.getUserId())
+                .updatedBy(creator.getUserId())
+                .build();
+
+        User saved = userRepository.save(user);
+
+        writeAuditLog(creator, "CREATE_USER", "users", saved.getUserId().toString(), null);
+
+        return new UserRegisterResponse(
+                saved.getUserId(),
+                saved.getOrganizationId(),
+                saved.getFullName(),
+                saved.getEmail(),
+                saved.getRole().getRoleName().name(),
+                saved.getAccountStatus()
+        );
+    }
 
     // -------------------------------------------------------------------------
     // Login
@@ -197,8 +252,8 @@ public class AuthServiceImpl implements AuthService {
                 .userId(user.getUserId())
                 .action(action)
                 .entityName(entityName)
-                .entityId(java.util.UUID.fromString(entityId))
-                .ipAddress(request.getRemoteAddr())
+                .entityId(UUID.fromString(entityId))
+                .ipAddress(request != null ? request.getRemoteAddr() : null)
                 .build();
         auditLogRepository.save(log);
     }

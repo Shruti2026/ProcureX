@@ -1,9 +1,11 @@
 package com.procurex.identityservice.controller;
 
 import com.procurex.identityservice.dto.request.LoginRequest;
+import com.procurex.identityservice.dto.request.UserRegisterRequest;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.LoginResponse;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
+import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +41,24 @@ public class AuthController {
 
         LoginResponse loginResponse = authService.login(request, httpRequest, httpResponse);
         return ResponseEntity.ok(ApiResponse.success("Authentication successful", loginResponse));
+    }
+
+    @Operation(summary = "Register user", description = "Creates a new user account for an organization")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User created"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid payload or unsupported role"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "Email already exists")
+    })
+    @PostMapping("/register")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<UserRegisterResponse>> register(
+            @Valid @RequestBody UserRegisterRequest request,
+            Authentication authentication) {
+
+        UserRegisterResponse response = authService.register(request, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("User registered successfully", response));
     }
 
     @Operation(summary = "Refresh access token",

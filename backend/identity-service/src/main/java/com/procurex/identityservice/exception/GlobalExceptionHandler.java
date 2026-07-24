@@ -54,6 +54,16 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------------------------
+    // 409 â€“ Conflict
+    // -------------------------------------------------------------------------
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(
+            ConflictException ex, HttpServletRequest request) {
+
+        return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    // -------------------------------------------------------------------------
     // 401 – Bad credentials
     // -------------------------------------------------------------------------
     @ExceptionHandler(BadCredentialsException.class)

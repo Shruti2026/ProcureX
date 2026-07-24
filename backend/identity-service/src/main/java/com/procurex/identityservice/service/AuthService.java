@@ -3,6 +3,8 @@ package com.procurex.identityservice.service;
 import com.procurex.identityservice.dto.request.LoginRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
+import com.procurex.identityservice.dto.request.UserRegisterRequest;
+import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -15,6 +17,11 @@ public interface AuthService {
     LoginResponse login(LoginRequest request,
                         HttpServletRequest httpRequest,
                         HttpServletResponse httpResponse);
+
+    /**
+     * Registers a new user under the authenticated creator account.
+     */
+    UserRegisterResponse register(UserRegisterRequest request, String createdByEmail);
 
     /**
      * Validates the refresh token, rotates it, and returns a new access token.
