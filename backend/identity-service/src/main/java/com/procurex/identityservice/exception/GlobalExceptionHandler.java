@@ -114,6 +114,26 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------------------------
+    // 403 – Account pending approval
+    // -------------------------------------------------------------------------
+    @ExceptionHandler(AccountPendingException.class)
+    public ResponseEntity<ErrorResponse> handlePending(
+            AccountPendingException ex, HttpServletRequest request) {
+
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
+    // -------------------------------------------------------------------------
+    // 403 – Account rejected
+    // -------------------------------------------------------------------------
+    @ExceptionHandler(AccountRejectedException.class)
+    public ResponseEntity<ErrorResponse> handleRejected(
+            AccountRejectedException ex, HttpServletRequest request) {
+
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
+    // -------------------------------------------------------------------------
     // 423 – Account locked
     // -------------------------------------------------------------------------
     @ExceptionHandler(AccountLockedException.class)

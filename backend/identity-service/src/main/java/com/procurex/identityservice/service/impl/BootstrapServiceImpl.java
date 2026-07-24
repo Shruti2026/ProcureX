@@ -52,7 +52,8 @@ public class BootstrapServiceImpl implements BootstrapService {
                 saved.getFullName(),
                 saved.getEmail(),
                 saved.getRole().getRoleName().name(),
-                saved.getAccountStatus()
+                saved.getAccountStatus(),
+                null
         );
     }
 }

@@ -2,10 +2,10 @@ package com.procurex.identityservice.service.impl;
 
 import com.procurex.identityservice.config.JwtUtil;
 import com.procurex.identityservice.dto.request.LoginRequest;
-import com.procurex.identityservice.dto.request.UserRegisterRequest;
+import com.procurex.identityservice.dto.request.VendorRegisterRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
-import com.procurex.identityservice.dto.response.UserRegisterResponse;
+import com.procurex.identityservice.dto.response.VendorRegisterResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
 import com.procurex.identityservice.entity.RefreshToken;
@@ -14,6 +14,8 @@ import com.procurex.identityservice.entity.RoleName;
 import com.procurex.identityservice.entity.User;
 import com.procurex.identityservice.exception.AccountInactiveException;
 import com.procurex.identityservice.exception.AccountLockedException;
+import com.procurex.identityservice.exception.AccountPendingException;
+import com.procurex.identityservice.exception.AccountRejectedException;
 import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.exception.InvalidTokenException;
 import com.procurex.identityservice.repository.AuditLogRepository;
@@ -55,49 +57,46 @@ public class AuthServiceImpl implements AuthService {
     private long refreshTokenExpiryMs;
 
     // -------------------------------------------------------------------------
-    // Register
+    // Vendor Register
     // -------------------------------------------------------------------------
     @Override
     @Transactional
-    public UserRegisterResponse register(UserRegisterRequest request, String createdByEmail) {
-        if (request.role() == RoleName.ADMIN) {
-            throw new IllegalArgumentException("ADMIN users cannot be created through the registration endpoint");
-        }
-
+    public VendorRegisterResponse registerVendor(VendorRegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new ConflictException("A user with this email already exists");
         }
 
-        Role role = roleRepository.findByRoleName(request.role())
-                .orElseThrow(() -> new IllegalArgumentException("Requested role does not exist"));
+        Role vendorRole = roleRepository.findByRoleName(RoleName.VENDOR)
+                .orElseThrow(() -> new IllegalStateException("VENDOR role not found in database"));
 
-        User creator = userRepository.findByEmail(createdByEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated creator account was not found"));
+        // Each vendor gets their own auto-generated organization UUID.
+        UUID vendorOrgId = UUID.randomUUID();
 
         User user = User.builder()
-                .organizationId(request.organizationId())
-                .fullName(request.fullName())
+                .organizationId(vendorOrgId)
+                .fullName(request.contactPerson())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .phoneNumber(request.phoneNumber())
-                .role(role)
-                .accountStatus(AccountStatus.INACTIVE)
+                .phoneNumber(request.phone())
+                .role(vendorRole)
+                .accountStatus(AccountStatus.PENDING)
                 .failedLoginAttempts(0)
-                .createdBy(creator.getUserId())
-                .updatedBy(creator.getUserId())
                 .build();
 
         User saved = userRepository.save(user);
 
-        writeAuditLog(creator, "CREATE_USER", "users", saved.getUserId().toString(), null);
+        // Write audit log — no external creator, so we use the vendor's own userId
+        writeAuditLog(saved, "VENDOR_REGISTER", "users", saved.getUserId().toString(), null);
 
-        return new UserRegisterResponse(
+        log.info("Vendor registered: userId={}, email={}, status=PENDING",
+                saved.getUserId(), saved.getEmail());
+
+        return new VendorRegisterResponse(
                 saved.getUserId(),
-                saved.getOrganizationId(),
-                saved.getFullName(),
                 saved.getEmail(),
-                saved.getRole().getRoleName().name(),
-                saved.getAccountStatus()
+                request.companyName(),
+                saved.getAccountStatus(),
+                "Registration successful. Your account is pending administrator approval."
         );
     }
 
@@ -114,9 +113,15 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
-        // 2. Check account status
+        // 2. Check account status — ordered from most specific to least
         if (user.getAccountStatus() == AccountStatus.LOCKED) {
             throw new AccountLockedException("Account is locked due to too many failed login attempts");
+        }
+        if (user.getAccountStatus() == AccountStatus.PENDING) {
+            throw new AccountPendingException("Account is pending administrator approval");
+        }
+        if (user.getAccountStatus() == AccountStatus.REJECTED) {
+            throw new AccountRejectedException("Account registration has been rejected");
         }
         if (user.getAccountStatus() == AccountStatus.INACTIVE) {
             throw new AccountInactiveException("Account is not yet activated");
