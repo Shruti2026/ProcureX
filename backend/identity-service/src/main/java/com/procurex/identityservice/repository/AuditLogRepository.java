@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
+/**
+ * Repository for managing audit log records.
+ */
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
 }

@@ -3,6 +3,9 @@ package com.procurex.identityservice.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+/**
+ * Request payload for user authentication using email and password.
+ */
 public record LoginRequest(
 
         @NotBlank(message = "Email is required")

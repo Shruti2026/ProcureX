@@ -13,6 +13,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * Utility component for generating, validating, and parsing JWT access tokens
+ * used by the Identity Service.
+ *
+ * Access tokens are signed using the configured HMAC secret and contain
+ * user identity and authorization claims required for authentication.
+ */
 @Component
 public class JwtUtil {
 

@@ -18,6 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST endpoints for authentication and session management,
+ * including login, logout, token refresh, and vendor self-registration.
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -84,7 +88,7 @@ public class AuthController {
             HttpServletResponse httpResponse) {
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            return ResponseEntity.status(401)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Refresh token is missing"));
         }
 

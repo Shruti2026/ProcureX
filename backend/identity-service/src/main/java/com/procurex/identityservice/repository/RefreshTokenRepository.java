@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository for managing persistent refresh tokens.
+ */
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
 

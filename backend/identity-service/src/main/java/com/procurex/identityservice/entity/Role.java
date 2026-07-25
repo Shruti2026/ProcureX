@@ -8,8 +8,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
+/**
+ * Entity representing a system role used for authorization.
+ */
 @Entity
 @Table(name = "roles")
 @Data
@@ -38,12 +42,13 @@ public class Role {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        createdAt = now;
+        updatedAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository for managing application users.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 

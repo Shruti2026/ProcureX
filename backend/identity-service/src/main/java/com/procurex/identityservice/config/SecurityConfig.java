@@ -15,6 +15,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configures Spring Security for the Identity Service.
+ * <p>
+ * Enables stateless JWT-based authentication, exposes selected public
+ * endpoints, and registers the JWT authentication filter for all
+ * protected requests.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity   // enables @PreAuthorize on controllers

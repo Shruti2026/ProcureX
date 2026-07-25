@@ -5,9 +5,13 @@ import com.procurex.identityservice.entity.AccountStatus;
 import java.util.UUID;
 
 /**
- * Response returned after successful vendor self-registration.
- * The account status will always be PENDING at this point —
- * the vendor must be approved by an admin before they can log in.
+ * Response payload returned after a vendor successfully registers.
+ *
+ * @param userId identifier of the newly created vendor account
+ * @param email registered email address
+ * @param companyName registered company name
+ * @param accountStatus current account status (typically PENDING)
+ * @param message additional information for the vendor
  */
 public record VendorRegisterResponse(
         UUID userId,

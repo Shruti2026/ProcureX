@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
@@ -143,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
 
         // 4. Reset failed attempts, update last login
         user.setFailedLoginAttempts(0);
-        user.setLastLogin(LocalDateTime.now());
+        user.setLastLogin(LocalDateTime.now(ZoneOffset.UTC));
         userRepository.save(user);
 
         // 5. Generate tokens
@@ -157,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken tokenEntity = RefreshToken.builder()
                 .user(user)
                 .token(refreshToken)
-                .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpiryMs / 1000))
+                .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000))
                 .revoked(false)
                 .build();
         refreshTokenRepository.save(tokenEntity);
@@ -190,7 +191,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidTokenException("Refresh token has been revoked");
         }
 
-        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
+        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now(ZoneOffset.UTC))) {
             throw new InvalidTokenException("Refresh token has expired");
         }
 
@@ -206,7 +207,7 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken newTokenEntity = RefreshToken.builder()
                 .user(user)
                 .token(newRefreshToken)
-                .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpiryMs / 1000))
+                .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000))
                 .revoked(false)
                 .build();
         refreshTokenRepository.save(newTokenEntity);

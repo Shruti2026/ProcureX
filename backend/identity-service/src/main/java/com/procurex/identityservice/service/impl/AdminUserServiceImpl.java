@@ -20,13 +20,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+/**
+ * Service responsible for administrative user management,
+ * including employee creation and vendor approval workflows.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -42,14 +44,21 @@ public class AdminUserServiceImpl implements AdminUserService {
             RoleName.FINANCE_MANAGER
     );
 
-    private static final String TEMP_PASSWORD_CHARS =
+    private static final String TEMP_PASSWORD_CHARS = // NOSONAR
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
     private static final int TEMP_PASSWORD_LENGTH = 16;
+
+    private static final String ADMIN_NOT_FOUND =
+        "Authenticated admin account was not found";
+
+    private static final String USERS_ENTITY = "users";
 
     private final UserRepository      userRepository;
     private final RoleRepository      roleRepository;
     private final AuditLogRepository  auditLogRepository;
     private final PasswordEncoder     passwordEncoder;
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     // -------------------------------------------------------------------------
     // Create Employee
@@ -71,7 +80,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .orElseThrow(() -> new IllegalArgumentException("Requested role does not exist: " + request.role()));
 
         User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated admin account was not found"));
+                .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
 
         String tempPassword    = generateTemporaryPassword();
         String encodedPassword = passwordEncoder.encode(tempPassword);
@@ -91,7 +100,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         User saved = userRepository.save(employee);
 
-        writeAuditLog(admin, "CREATE_EMPLOYEE", "users", saved.getUserId().toString());
+        writeAuditLog(admin, "CREATE_EMPLOYEE", USERS_ENTITY, saved.getUserId().toString());
         log.info("Employee created: userId={}, role={}, by admin={}",
                 saved.getUserId(), request.role(), adminEmail);
 
@@ -124,7 +133,7 @@ public class AdminUserServiceImpl implements AdminUserService {
                         u.getAccountStatus(),
                         null  // no temporary password for vendors
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // -------------------------------------------------------------------------
@@ -136,13 +145,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         User vendor = findPendingVendor(vendorUserId);
 
         User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated admin account was not found"));
+                .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
 
         vendor.setAccountStatus(AccountStatus.ACTIVE);
         vendor.setUpdatedBy(admin.getUserId());
         User saved = userRepository.save(vendor);
 
-        writeAuditLog(admin, "APPROVE_VENDOR", "users", vendorUserId.toString());
+        writeAuditLog(admin, "APPROVE_VENDOR", USERS_ENTITY, vendorUserId.toString());
         log.info("Vendor approved: userId={}, by admin={}", vendorUserId, adminEmail);
 
         return toResponse(saved);
@@ -157,13 +166,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         User vendor = findPendingVendor(vendorUserId);
 
         User admin = userRepository.findByEmail(adminEmail)
-                .orElseThrow(() -> new IllegalStateException("Authenticated admin account was not found"));
+                .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
 
         vendor.setAccountStatus(AccountStatus.REJECTED);
         vendor.setUpdatedBy(admin.getUserId());
         User saved = userRepository.save(vendor);
 
-        writeAuditLog(admin, "REJECT_VENDOR", "users", vendorUserId.toString());
+        writeAuditLog(admin, "REJECT_VENDOR", USERS_ENTITY, vendorUserId.toString());
         log.info("Vendor rejected: userId={}, by admin={}", vendorUserId, adminEmail);
 
         return toResponse(saved);
@@ -201,11 +210,12 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     private String generateTemporaryPassword() {
-        SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder(TEMP_PASSWORD_LENGTH);
+
         for (int i = 0; i < TEMP_PASSWORD_LENGTH; i++) {
-            sb.append(TEMP_PASSWORD_CHARS.charAt(random.nextInt(TEMP_PASSWORD_CHARS.length())));
+            sb.append(TEMP_PASSWORD_CHARS.charAt(SECURE_RANDOM.nextInt(TEMP_PASSWORD_CHARS.length())));
         }
+
         return sb.toString();
     }
 
