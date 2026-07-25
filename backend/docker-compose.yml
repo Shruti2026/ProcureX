@@ -9,6 +9,12 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -16,6 +22,12 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
 
   eureka-server:
     build:
@@ -23,17 +35,18 @@ services:
     container_name: procurex-eureka-server
     ports:
       - "8761:8761"
-
-  api-gateway:
-    build:
-      context: ./api-gateway
-    container_name: procurex-api-gateway
-    ports:
-      - "8080:8080"
     depends_on:
-      - eureka-server
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    restart: unless-stopped
 
   identity-service:
     build:
@@ -42,14 +55,20 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_identity?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   vendor-catalog-service:
     build:
@@ -58,14 +77,20 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_vendor?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   procurement-service:
     build:
@@ -74,14 +99,20 @@ services:
     ports:
       - "8083:8083"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_procurement?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   inventory-service:
     build:
@@ -90,14 +121,20 @@ services:
     ports:
       - "8084:8084"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_inventory?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   finance-service:
     build:
@@ -106,14 +143,20 @@ services:
     ports:
       - "8085:8085"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_finance?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8085/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   notification-service:
     build:
@@ -122,14 +165,20 @@ services:
     ports:
       - "8086:8086"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_notification?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8086/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
   analytics-service:
     build:
@@ -138,14 +187,51 @@ services:
     ports:
       - "8087:8087"
     depends_on:
-      - eureka-server
-      - mysql
-      - rabbitmq
+      eureka-server:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/procurex_analytics?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_RABBITMQ_HOST: rabbitmq
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8087/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: procurex-api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      vendor-catalog-service:
+        condition: service_healthy
+      procurement-service:
+        condition: service_healthy
+      inventory-service:
+        condition: service_healthy
+      finance-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+      analytics-service:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    restart: unless-stopped
 
 volumes:
   mysql_data:
