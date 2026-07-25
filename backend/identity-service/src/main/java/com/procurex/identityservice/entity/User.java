@@ -8,8 +8,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
+/**
+ * Entity representing an authenticated system user.
+ */
 @Entity
 @Table(name = "users")
 @Data
@@ -67,8 +71,9 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        createdAt = now;
+        updatedAt = now;
         if (accountStatus == null) {
             accountStatus = AccountStatus.INACTIVE;
         }
@@ -76,6 +81,6 @@ public class User {
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

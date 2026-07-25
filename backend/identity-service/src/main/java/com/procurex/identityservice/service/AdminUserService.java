@@ -19,6 +19,7 @@ public interface AdminUserService {
      *
      * @param request       Employee creation details
      * @param adminEmail    Email of the authenticated admin performing the action
+     * @return UserRegisterResponse containing the new employee's details and temporary password
      */
     UserRegisterResponse createEmployee(CreateEmployeeRequest request, String adminEmail);
 
@@ -32,6 +33,7 @@ public interface AdminUserService {
      *
      * @param vendorUserId  UUID of the vendor's user account
      * @param adminEmail    Email of the authenticated admin performing the action
+     * @return UserRegisterResponse containing the vendor's details
      */
     UserRegisterResponse approveVendor(UUID vendorUserId, String adminEmail);
 
@@ -40,6 +42,7 @@ public interface AdminUserService {
      *
      * @param vendorUserId  UUID of the vendor's user account
      * @param adminEmail    Email of the authenticated admin performing the action
+     * @return UserRegisterResponse containing the vendor's details
      */
     UserRegisterResponse rejectVendor(UUID vendorUserId, String adminEmail);
 }

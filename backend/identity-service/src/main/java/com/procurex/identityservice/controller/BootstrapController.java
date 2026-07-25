@@ -13,6 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Bootstrap endpoints for one-time system initialization.
+ *
+ * <p>These endpoints are only available when
+ * {@code procurex.bootstrap.enabled=true} and are intended
+ * for creating the initial administrator account during
+ * first-time deployment.</p>
+ */
 @RestController
 @RequestMapping("/api/v1/bootstrap")
 @RequiredArgsConstructor

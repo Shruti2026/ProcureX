@@ -8,8 +8,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
+/**
+ * Entity representing an audit log entry for security-sensitive
+ * and business-critical operations performed within the system.
+ */
 @Entity
 @Table(name = "audit_logs")
 @Data
@@ -52,6 +57,6 @@ public class AuditLog {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        createdAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 }

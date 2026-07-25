@@ -10,6 +10,10 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entity representing a persistent refresh token issued to a user.
+ * Each user may have at most one active refresh token.
+ */
 @Entity
 @Table(name = "refresh_tokens")
 @Data

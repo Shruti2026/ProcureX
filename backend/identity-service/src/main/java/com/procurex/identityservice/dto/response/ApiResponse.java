@@ -2,6 +2,13 @@ package com.procurex.identityservice.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+/**
+ * Generic wrapper for all REST API responses.
+ *
+ * @param success indicates whether the request completed successfully
+ * @param message human-readable response message
+ * @param data response payload, if applicable
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ApiResponse<T>(
         boolean success,

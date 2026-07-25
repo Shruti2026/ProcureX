@@ -7,6 +7,10 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/**
+ * Request payload for creating the initial administrator account
+ * during system bootstrap.
+ */
 public record BootstrapAdminRequest(
 
         @NotBlank(message = "Full name is required")

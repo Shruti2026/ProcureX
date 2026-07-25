@@ -1,5 +1,8 @@
 package com.procurex.identityservice.entity;
 
+/**
+ * System roles used for authentication and authorization.
+ */
 public enum RoleName {
     ADMIN,
     PROCUREMENT_MANAGER,

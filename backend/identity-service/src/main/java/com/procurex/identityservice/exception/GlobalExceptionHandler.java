@@ -13,9 +13,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Global exception handler that converts application exceptions
+ * into standardized REST error responses.
+ */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -27,7 +31,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
 
-        Map<String, String> validationErrors = new HashMap<>();
+        Map<String, String> validationErrors = new LinkedHashMap<>();
         for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
             validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
         }
@@ -54,7 +58,7 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------------------------
-    // 409 â€“ Conflict
+    // 409 - Conflict
     // -------------------------------------------------------------------------
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(
@@ -110,7 +114,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInactive(
             AccountInactiveException ex, HttpServletRequest request) {
 
-        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request);
+        return buildResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), request);
     }
 
     // -------------------------------------------------------------------------

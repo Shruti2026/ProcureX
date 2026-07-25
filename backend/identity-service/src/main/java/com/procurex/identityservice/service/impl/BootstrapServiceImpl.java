@@ -11,10 +11,17 @@ import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
 import com.procurex.identityservice.service.BootstrapService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service responsible for creating the initial administrator account
+ * during system bootstrap.
+ */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BootstrapServiceImpl implements BootstrapService {
@@ -45,6 +52,10 @@ public class BootstrapServiceImpl implements BootstrapService {
                 .build();
 
         User saved = userRepository.save(user);
+
+        log.info("Initial administrator created: userId={}, email={}",
+            saved.getUserId(),
+            saved.getEmail());
 
         return new UserRegisterResponse(
                 saved.getUserId(),

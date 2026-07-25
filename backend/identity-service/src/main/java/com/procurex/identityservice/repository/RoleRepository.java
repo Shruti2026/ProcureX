@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository for managing system roles.
+ */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {
 
