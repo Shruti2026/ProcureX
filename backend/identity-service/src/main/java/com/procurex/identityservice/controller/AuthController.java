@@ -1,9 +1,11 @@
 package com.procurex.identityservice.controller;
 
+import com.procurex.identityservice.dto.request.ChangePasswordRequest;
 import com.procurex.identityservice.dto.request.LoginRequest;
 import com.procurex.identityservice.dto.request.VendorRegisterRequest;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.LoginResponse;
+import org.springframework.security.core.Authentication;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
 import com.procurex.identityservice.dto.response.VendorRegisterResponse;
 import com.procurex.identityservice.service.AuthService;
@@ -112,5 +114,23 @@ public class AuthController {
         authService.logout(refreshToken, httpResponse);
 
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Change Password (Authenticated)
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Change password", description = "Allows an authenticated user to change their password")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Password changed successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid payload or identical password"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated / Incorrect current password")
+    })
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request,
+            Authentication authentication) {
+
+        authService.changePassword(authentication.getName(), request);
+        return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
     }
 }

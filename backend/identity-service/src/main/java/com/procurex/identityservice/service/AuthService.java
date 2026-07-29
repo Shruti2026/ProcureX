@@ -1,5 +1,6 @@
 package com.procurex.identityservice.service;
 
+import com.procurex.identityservice.dto.request.ChangePasswordRequest;
 import com.procurex.identityservice.dto.request.LoginRequest;
 import com.procurex.identityservice.dto.request.VendorRegisterRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
@@ -54,5 +55,13 @@ public interface AuthService {
      * @param httpResponse HTTP response used to clear the refresh cookie
      */
     void logout(String refreshToken, HttpServletResponse httpResponse);
+
+    /**
+     * Changes user password.
+     * 
+     * @param email current logged-in user email
+     * @param request change password details
+     */
+    void changePassword(String email, ChangePasswordRequest request);
 }
 

@@ -1,1 +1,4 @@
-- [ ] Check if `backend\identity-service\src\main\java\com\procurex\identityservice\dto\request\UserRegisterRequest.java` and `backend\identity-service\src\main\java\com\procurex\identityservice\dto\response\UserRegisterResponse.java` are still required.
+# ProcureX TODO
+
+- [x] **Check if `UserRegisterRequest.java` and `UserRegisterResponse.java` are still required.**
+  

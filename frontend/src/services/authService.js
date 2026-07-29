@@ -65,6 +65,14 @@ export async function logout() {
 }
 
 /**
+ * Change user password
+ */
+export async function changePassword(passwordData) {
+  const { data } = await api.post("/api/v1/auth/change-password", passwordData);
+  return data;
+}
+
+/**
  * Get currently logged-in user
  */
 export async function getCurrentUser() {

@@ -1,6 +1,7 @@
 package com.procurex.identityservice.service.impl;
 
 import com.procurex.identityservice.config.JwtUtil;
+import com.procurex.identityservice.dto.request.ChangePasswordRequest;
 import com.procurex.identityservice.dto.request.LoginRequest;
 import com.procurex.identityservice.dto.request.VendorRegisterRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
@@ -235,6 +236,27 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(token);
 
         clearRefreshCookie(httpResponse);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Current password is incorrect");
+        }
+
+        if (passwordEncoder.matches(request.newPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        writeAuditLog(user, "CHANGE_PASSWORD", "users", user.getUserId().toString(), null);
+        log.info("Password successfully changed for user: {}", email);
     }
 
     // -------------------------------------------------------------------------
