@@ -36,9 +36,13 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const data = await loginService(credentials);
 
-    setUser(data.user);
+    const userObject = {
+      id: data.userId,
+      role: data.role,
+      organizationId: data.organizationId,
+    };
 
-    navigate("/dashboard");
+    setUser(userObject);
 
     return data;
   };

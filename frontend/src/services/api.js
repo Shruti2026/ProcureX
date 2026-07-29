@@ -31,6 +31,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config
+    // Avoid intercepting login/refresh requests to prevent infinite loops
+    if (original?.url && (original.url.includes('/api/v1/auth/refresh') || original.url.includes('/api/v1/auth/login'))) {
+      return Promise.reject(error)
+    }
+
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true
       try {
@@ -42,9 +47,12 @@ api.interceptors.response.use(
         setAccessToken(data.data.accessToken)
         original.headers['Authorization'] = `Bearer ${data.data.accessToken}`
         return api(original)
-      } catch {
+      } catch (err) {
         clearAccessToken()
-        window.location.href = '/login'
+        // Only redirect if we are not already on the login page to avoid reloading
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login'
+        }
       }
     }
     return Promise.reject(error)

@@ -34,5 +34,8 @@ out/
 .env
 .env.local
 
-# Archive
+# Archive & Others
 archive/
+.agents
+AGENTS.md
+MEMORY.md

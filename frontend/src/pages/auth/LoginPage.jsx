@@ -23,7 +23,7 @@ const schema = yup.object({
 
   password: yup
     .string()
-    .min(6, 'Password must contain at least 6 characters')
+    .min(8, 'Password must contain at least 8 characters')
     .required('Password is required'),
 })
 
@@ -49,12 +49,12 @@ export default function LoginPage() {
   /* ---------------- Role Redirect ---------------- */
 
   const redirectUser = (user) => {
-    if (!user?.roles?.length) {
+    if (!user?.role) {
       navigate('/login')
       return
     }
 
-    const role = user.roles[0]
+    const role = user.role
 
     switch (role) {
       case ROLES.ADMIN:
@@ -93,15 +93,23 @@ export default function LoginPage() {
        *
        * {
        *   accessToken,
-       *   user
+       *   expiresIn,
+       *   userId,
+       *   role,
+       *   organizationId
        * }
        */
+      const user = {
+        id: data.userId,
+        role: data.role,
+        organizationId: data.organizationId
+      }
 
-      setUser(data.user)
+      setUser(user)
 
       toast.success('Login successful')
 
-      redirectUser(data.user)
+      redirectUser(user)
     },
 
     onError: (error) => {

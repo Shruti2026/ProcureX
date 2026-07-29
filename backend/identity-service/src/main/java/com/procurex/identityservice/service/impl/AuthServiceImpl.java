@@ -142,6 +142,13 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid email or password");
         }
 
+        // Check if user is already logged in
+        refreshTokenRepository.findByUser(user).ifPresent(token -> {
+            if (!token.isRevoked() && token.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC))) {
+                throw new ConflictException("You are already logged in");
+            }
+        });
+
         // 4. Reset failed attempts, update last login
         user.setFailedLoginAttempts(0);
         user.setLastLogin(LocalDateTime.now(ZoneOffset.UTC));
@@ -197,20 +204,14 @@ public class AuthServiceImpl implements AuthService {
 
         User user = tokenEntity.getUser();
 
-        // Rotate: revoke old, issue new
-        tokenEntity.setRevoked(true);
-        refreshTokenRepository.save(tokenEntity);
-
         String newRefreshToken = jwtUtil.generateRefreshToken();
         String newAccessToken  = jwtUtil.generateAccessToken(user);
 
-        RefreshToken newTokenEntity = RefreshToken.builder()
-                .user(user)
-                .token(newRefreshToken)
-                .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000))
-                .revoked(false)
-                .build();
-        refreshTokenRepository.save(newTokenEntity);
+        // Update existing token entity to rotate the token and reset state
+        tokenEntity.setToken(newRefreshToken);
+        tokenEntity.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000));
+        tokenEntity.setRevoked(false);
+        refreshTokenRepository.save(tokenEntity);
 
         addRefreshCookie(httpResponse, newRefreshToken);
 
@@ -223,10 +224,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(String refreshToken, HttpServletResponse httpResponse) {
-        refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
-            token.setRevoked(true);
-            refreshTokenRepository.save(token);
-        });
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new ConflictException("You are already logged out"));
+
+        if (token.isRevoked()) {
+            throw new ConflictException("You are already logged out");
+        }
+
+        token.setRevoked(true);
+        refreshTokenRepository.save(token);
 
         clearRefreshCookie(httpResponse);
     }

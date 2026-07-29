@@ -12,6 +12,8 @@ import {
   Eye,
   EyeOff,
   UserPlus,
+  Building,
+  Phone,
 } from "lucide-react";
 
 import Input from "../../components/ui/Input";
@@ -21,20 +23,30 @@ import { register as registerUser } from "../../services/authService";
 /* ---------------- Validation ---------------- */
 
 const schema = yup.object({
-  fullName: yup
+  companyName: yup
     .string()
-    .required("Full name is required")
-    .min(3, "Name should contain at least 3 characters"),
+    .required("Company name is required")
+    .min(3, "Company name should contain at least 3 characters"),
+
+  contactPerson: yup
+    .string()
+    .required("Contact person is required")
+    .min(3, "Contact person should contain at least 3 characters"),
 
   email: yup
     .string()
     .email("Enter a valid email")
     .required("Email is required"),
 
+  phone: yup
+    .string()
+    .required("Phone number is required")
+    .matches(/^[+]?[0-9]{8,15}$/, "Enter a valid phone number"),
+
   password: yup
     .string()
     .required("Password is required")
-    .min(6, "Password should be at least 6 characters"),
+    .min(8, "Password should be at least 8 characters"),
 
   confirmPassword: yup
     .string()
@@ -48,6 +60,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const {
     register,
@@ -63,9 +76,8 @@ export default function RegisterPage() {
     mutationFn: registerUser,
 
     onSuccess: () => {
-      toast.success("Registration successful");
-
-      navigate("/login");
+      setIsRegistered(true);
+      toast.success("Registration submitted successfully");
     },
 
     onError: (error) => {
@@ -79,10 +91,44 @@ export default function RegisterPage() {
   /* ---------------- Submit ---------------- */
 
   const onSubmit = (data) => {
-    registerMutation.mutate(data);
+    // Exclude confirmPassword from request DTO
+    const { confirmPassword, ...registerPayload } = data;
+    registerMutation.mutate(registerPayload);
   };
+
+  if (isRegistered) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+            <UserPlus className="h-8 w-8 text-green-600" />
+          </div>
+
+          <h1 className="text-3xl font-bold text-gray-900">
+            Registration Successful
+          </h1>
+
+          <p className="mt-4 text-sm text-gray-600">
+            Your account is pending administrator approval.
+          </p>
+
+          <p className="mt-2 text-sm text-gray-600">
+            You will receive an email once your account has been approved.
+          </p>
+
+          <Button
+            onClick={() => navigate("/login")}
+            className="mt-6 w-full"
+          >
+            Back to Login
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8">
 
         {/* Header */}
@@ -92,7 +138,7 @@ export default function RegisterPage() {
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">
-            Create Account
+            Vendor Registration
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
@@ -104,14 +150,29 @@ export default function RegisterPage() {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-5"
         >
-          {/* Full Name */}
+          {/* Company Name */}
           <div className="relative">
             <Input
-              label="Full Name"
-              placeholder="Enter your full name"
-              error={errors.fullName?.message}
+              label="Company Name"
+              placeholder="Enter company name"
+              error={errors.companyName?.message}
               className="pl-10"
-              {...register("fullName")}
+              {...register("companyName")}
+            />
+            <Building
+              size={18}
+              className="absolute left-3 top-[39px] text-gray-400"
+            />
+          </div>
+
+          {/* Contact Person */}
+          <div className="relative">
+            <Input
+              label="Contact Person"
+              placeholder="Enter contact person's name"
+              error={errors.contactPerson?.message}
+              className="pl-10"
+              {...register("contactPerson")}
             />
             <User
               size={18}
@@ -124,12 +185,27 @@ export default function RegisterPage() {
             <Input
               label="Email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter email address"
               error={errors.email?.message}
               className="pl-10"
               {...register("email")}
             />
             <Mail
+              size={18}
+              className="absolute left-3 top-[39px] text-gray-400"
+            />
+          </div>
+
+          {/* Phone Number */}
+          <div className="relative">
+            <Input
+              label="Phone Number"
+              placeholder="Enter phone number"
+              error={errors.phone?.message}
+              className="pl-10"
+              {...register("phone")}
+            />
+            <Phone
               size={18}
               className="absolute left-3 top-[39px] text-gray-400"
             />
@@ -201,7 +277,7 @@ export default function RegisterPage() {
             loading={registerMutation.isPending}
             className="w-full"
           >
-            Create Account
+            Register
           </Button>
         </form>
 
@@ -222,4 +298,4 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-}
+}

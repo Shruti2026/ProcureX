@@ -28,7 +28,7 @@ export default function ProtectedRoute({
   // User doesn't have required role
   const hasAccess =
     allowedRoles.length === 0 ||
-    allowedRoles.some((role) => user.roles?.includes(role));
+    allowedRoles.includes(user.role);
 
   if (!hasAccess) {
     return <Navigate to="/unauthorized" replace />;
