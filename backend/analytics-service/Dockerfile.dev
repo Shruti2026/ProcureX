@@ -1,0 +1,19 @@
+FROM maven:3.9-eclipse-temurin-21
+
+# Copy root parent POM
+WORKDIR /app
+COPY pom.xml .
+
+# Copy the module's pom.xml
+COPY analytics-service/pom.xml ./analytics-service/
+
+# Download dependencies (cached layer)
+RUN mvn dependency:go-offline -B -pl analytics-service -am
+
+# Copy source code
+COPY analytics-service/src ./analytics-service/src
+
+EXPOSE 8087
+
+# Run with spring-boot:run for dev mode with devtools auto-restart
+ENTRYPOINT ["mvn", "spring-boot:run", "-pl", "analytics-service", "-am", "-Dspring-boot.run.profiles=docker"]

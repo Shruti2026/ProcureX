@@ -1,0 +1,82 @@
+# Development docker-compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+# This enables hot-reload via Spring Boot DevTools when source code changes.
+# After making code changes, run: docker-compose exec <service> mvn compile -pl <service> -am
+# Or simply restart the container: docker-compose restart <service>
+
+services:
+
+  eureka-server:
+    build:
+      context: .
+      dockerfile: ./eureka-server/Dockerfile.dev
+    volumes:
+      - ./eureka-server/src:/app/eureka-server/src
+      - maven_repo:/root/.m2
+
+  identity-service:
+    build:
+      context: .
+      dockerfile: ./identity-service/Dockerfile.dev
+    volumes:
+      - ./identity-service/src:/app/identity-service/src
+      - maven_repo:/root/.m2
+
+  vendor-catalog-service:
+    build:
+      context: .
+      dockerfile: ./vendor-catalog-service/Dockerfile.dev
+    volumes:
+      - ./vendor-catalog-service/src:/app/vendor-catalog-service/src
+      - maven_repo:/root/.m2
+
+  procurement-service:
+    build:
+      context: .
+      dockerfile: ./procurement-service/Dockerfile.dev
+    volumes:
+      - ./procurement-service/src:/app/procurement-service/src
+      - maven_repo:/root/.m2
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: ./inventory-service/Dockerfile.dev
+    volumes:
+      - ./inventory-service/src:/app/inventory-service/src
+      - maven_repo:/root/.m2
+
+  finance-service:
+    build:
+      context: .
+      dockerfile: ./finance-service/Dockerfile.dev
+    volumes:
+      - ./finance-service/src:/app/finance-service/src
+      - maven_repo:/root/.m2
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile.dev
+    volumes:
+      - ./notification-service/src:/app/notification-service/src
+      - maven_repo:/root/.m2
+
+  analytics-service:
+    build:
+      context: .
+      dockerfile: ./analytics-service/Dockerfile.dev
+    volumes:
+      - ./analytics-service/src:/app/analytics-service/src
+      - maven_repo:/root/.m2
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile.dev
+    volumes:
+      - ./api-gateway/src:/app/api-gateway/src
+      - maven_repo:/root/.m2
+
+volumes:
+  maven_repo:
