@@ -1,0 +1,1377 @@
+{
+  "info": {
+    "_postman_id": "600152de-17a2-49fc-adad-ad1be77f6646",
+    "name": "ProcureX",
+    "description": "# API Collection Documentation\n\n## Overview\n\nThis Postman collection contains the REST APIs developed for the **ProcureX** procurement management platform. It serves as a centralized workspace for testing, validating, and documenting backend services during development.\n\nThe collection is organized into logical modules based on business functionality, enabling developers and testers to efficiently interact with different microservices through a unified interface. Each request includes the necessary HTTP methods, headers, request bodies, authentication requirements, and expected responses wherever applicable.\n\n## Purpose\n\nThe primary objectives of this Postman collection are to:\n\n- Simplify API development and testing.\n    \n- Validate request and response workflows.\n    \n- Verify authentication and authorization mechanisms.\n    \n- Test business logic and data validation.\n    \n- Support integration between frontend and backend services.\n    \n- Provide reusable examples for developers and QA teams.\n    \n\n## Usage\n\n1. Import the Postman collection into Postman.\n    \n2. Configure the required environment variables.\n    \n3. Start the necessary backend services.\n    \n4. Authenticate before accessing protected resources.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56854052",
+    "_collection_link": "https://go.postman.co/collection/56854052-600152de-17a2-49fc-adad-ad1be77f6646?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "1_Admin_Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"fullName\": \"Shruti Gupta\",\r\n  \"email\": \"admin@procurex.com\",\r\n  \"password\": \"SecureP@ssw0rd!\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"9876543210\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/bootstrap/admin",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "bootstrap",
+                "admin"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2_Admin_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"ADMIN_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"admin@procurex.com\",\r\n  \"password\": \"SecureP@ssw0rd!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8081/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3_Create_Procurement_Manager",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"fullName\": \"Sarah Connor\",\r\n  \"email\": \"sarah.procurement@procurex.com\",\r\n  \"role\": \"PROCUREMENT_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567890\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "3_Create_Procurement_Manager",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"fullName\": \"Sarah Connor\",\r\n  \"email\": \"sarah.procurement@procurex.com\",\r\n  \"role\": \"PROCUREMENT_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567890\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/admin/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Method"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Headers"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 03 Aug 2026 14:01:05 GMT"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"5c9a77c7-e14c-47d9-a64f-681db55690c2\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"U6Zq3xRDcAd7tpyi\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "4_Create_Inventory_Manager",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"email\": \"john.inventory@procurex.com\",\r\n  \"role\": \"INVENTORY_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567891\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "4_Create_Inventory_Manager",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"email\": \"john.inventory@procurex.com\",\r\n  \"role\": \"INVENTORY_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567891\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/admin/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Method"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Headers"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 03 Aug 2026 14:01:27 GMT"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"fec6b2ba-0bbb-464c-adde-11f819fa8ff6\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"D4CShXj9JGV9e@HH\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "5_Create_Finance_Manager",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"fullName\": \"Bruce Wayne\",\r\n  \"email\": \"bruce.finance@procurex.com\",\r\n  \"role\": \"FINANCE_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567892\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "5_Create_Finance_Manager",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"fullName\": \"Bruce Wayne\",\r\n  \"email\": \"bruce.finance@procurex.com\",\r\n  \"role\": \"FINANCE_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567892\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8080/api/v1/admin/users",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "v1",
+                    "admin",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "transfer-encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Method"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Headers"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 03 Aug 2026 14:01:39 GMT"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"7365a520-02a7-4afd-94e1-439215c04146\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"3ly0iJ!gI5azhppm\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "6_List_Internal_Employees",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users/employees",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "employees"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "7_List_Pending_Vendors",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/vendors/pending",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "vendors",
+                "pending"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "8_List_All_Vendors",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/vendors",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "vendors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "9_Approve_Pending_Vendors",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/approve",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "vendors",
+                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+                "approve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "10_Reject_Pending_Vendors",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/reject",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "vendors",
+                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+                "reject"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "11_Update_User_Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\": \"SUSPENDED\" // Allowed values: ACTIVE, INACTIVE, PENDING, REJECTED, SUSPENDED, LOCKED\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users/bef8a5d3-033c-47aa-a7f1-c9d88b496070/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12_Delete_Employees_or_Vendors",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/admin/users/bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "users",
+                "bef8a5d3-033c-47aa-a7f1-c9d88b496070"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13_Change_Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/change-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"ADMIN_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15_Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "## Admin\n\nThis folder contains all API endpoints related to **Admin-level operations** in the ProcureX procurement management platform. It covers the full lifecycle of admin activity — from initial setup and authentication to user management, vendor oversight, and session control.\n\n### What's included\n\n- **Bootstrap & Authentication** — Admin registration, login, logout, password change, and token refresh.\n- **User Management** — Create and manage internal roles such as Procurement Manager, Finance Manager, and HR Manager. List internal employees and update user account statuses.\n- **Vendor Management** — List all vendors, view pending vendor registrations, and approve or reject vendor applications.\n\n### Usage\n\nAll requests in this folder are intended to be executed with admin-level credentials. Begin with the login request to obtain a valid access token, then use it in subsequent requests via the collection's authorization configuration."
+    },
+    {
+      "name": "Vendors",
+      "item": [
+        {
+          "name": "1_Self_Registration",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"companyName\": \"Acme Supplier Inc\",\r\n  \"contactPerson\": \"Jane Smith\",\r\n  \"email\": \"sales@acmesupplier.com\",\r\n  \"password\": \"vendorPassword999\",\r\n  \"phone\": \"9876543210\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/vendor/register",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "vendor",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2_Vendor_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"VENDOR_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"sales@acmesupplier.com\",\r\n    \"password\": \"vendorPassword999\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"VENDOR_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4_Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VENDOR_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "## Vendors\n\nThis folder contains the API endpoints that support the **Vendor self-onboarding and session management** flow in the ProcureX platform. It is designed for use by external vendors who register independently and interact with the system using their own credentials.\n\n### What's included\n\n- **Self Registration** — Allows a new vendor to register themselves on the platform via `POST /api/v1/auth/vendor/register`. Vendor accounts are subject to admin approval before gaining full access.\n- **Vendor Login** — Authenticates a registered vendor and returns an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token without requiring re-login via `POST /api/v1/auth/refresh`.\n- **Logout** — Invalidates the current session and access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nStart with the **Self Registration** request to create a vendor account, then await admin approval. Once approved, use **Vendor Login** to authenticate and obtain a token for subsequent API interactions."
+    },
+    {
+      "name": "Procurement Manager",
+      "item": [
+        {
+          "name": "1_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"Admin token updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3_Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "## Procurement Manager\n\nThis folder contains the API endpoints used by the **Procurement Manager** role in the ProcureX platform. It covers the authentication and session management flow specific to this internal user role, which is responsible for managing procurement activities such as purchase orders and vendor interactions.\n\n### What's included\n\n- **Login** — Authenticates the Procurement Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nProcurement Manager accounts are created by the Admin. Use the **Login** request with the credentials provisioned by the admin to authenticate. The returned token should be used to authorize all procurement-related API operations across the platform."
+    },
+    {
+      "name": "Inventory Manager",
+      "item": [
+        {
+          "name": "1_Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2_Refresh_Token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3_Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "## Inventory Manager\n\nThis folder contains the API endpoints used by the **Inventory Manager** role in the ProcureX platform. It covers the authentication and session management flow for this internal user role, which is responsible for overseeing stock levels, inventory tracking, and supply chain coordination within the procurement system.\n\n### What's included\n\n- **Login** — Authenticates the Inventory Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nInventory Manager accounts are provisioned by the Admin. Use the **Login** request with the credentials provided by the admin to authenticate. The returned token should be used to authorize all inventory-related API operations across the platform."
+    },
+    {
+      "name": "Finance Manager",
+      "item": [
+        {
+          "name": "1_Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "2_Refresh_Token",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "3_Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{FINANCE_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/auth/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "## Finance Manager\n\nThis folder contains the API endpoints used by the **Finance Manager** role in the ProcureX platform. It covers the authentication and session management flow for this internal user role, which is responsible for overseeing financial operations such as invoice processing, payment approvals, and budget management within the procurement system.\n\n### What's included\n\n- **Login** — Authenticates the Finance Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nFinance Manager accounts are provisioned by the Admin. Use the **Login** request with the credentials provided by the admin to authenticate. The returned token should be used to authorize all finance-related API operations across the platform."
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "ADMIN_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "VENDOR_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "PROCUREMENT_MANAGER_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "INVENTORY_MANAGER_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "FINANCE_MANAGER_TOKEN",
+      "value": ""
+    },
+    {
+      "key": "BASE_URL",
+      "value": ""
+    }
+  ]
+}

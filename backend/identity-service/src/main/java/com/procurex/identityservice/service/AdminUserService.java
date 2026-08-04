@@ -45,4 +45,36 @@ public interface AdminUserService {
      * @return UserRegisterResponse containing the vendor's details
      */
     UserRegisterResponse rejectVendor(UUID vendorUserId, String adminEmail);
+
+    /**
+     * Updates a user's account status (e.g. deactivate, suspend, lock, unlock).
+     *
+     * @param userId      UUID of the user account
+     * @param status      The target AccountStatus
+     * @param adminEmail  Email of the authenticated admin performing the action
+     * @return UserRegisterResponse containing the updated user's details
+     */
+    UserRegisterResponse updateUserStatus(UUID userId, com.procurex.identityservice.entity.AccountStatus status, String adminEmail);
+
+    /**
+     * Retrieves all internal employees (managers).
+     *
+     * @return List of UserRegisterResponse records representing internal employees
+     */
+    List<UserRegisterResponse> getAllEmployees();
+
+    /**
+     * Retrieves all vendor accounts regardless of their status.
+     *
+     * @return List of UserRegisterResponse records representing all vendors
+     */
+    List<UserRegisterResponse> getAllVendors();
+
+    /**
+     * Deletes a user (manager or vendor) and removes associated refresh tokens.
+     *
+     * @param userId      UUID of the user to delete
+     * @param adminEmail  Email of the authenticated admin performing the action
+     */
+    void deleteUser(UUID userId, String adminEmail);
 }

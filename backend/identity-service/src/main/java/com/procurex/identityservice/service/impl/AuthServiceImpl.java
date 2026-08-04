@@ -17,6 +17,7 @@ import com.procurex.identityservice.exception.AccountInactiveException;
 import com.procurex.identityservice.exception.AccountLockedException;
 import com.procurex.identityservice.exception.AccountPendingException;
 import com.procurex.identityservice.exception.AccountRejectedException;
+import com.procurex.identityservice.exception.AccountSuspendedException;
 import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.exception.InvalidTokenException;
 import com.procurex.identityservice.repository.AuditLogRepository;
@@ -127,6 +128,9 @@ public class AuthServiceImpl implements AuthService {
         }
         if (user.getAccountStatus() == AccountStatus.INACTIVE) {
             throw new AccountInactiveException("Account is not yet activated");
+        }
+        if (user.getAccountStatus() == AccountStatus.SUSPENDED) {
+            throw new AccountSuspendedException("Account has been suspended by an administrator");
         }
 
         // 3. Verify password

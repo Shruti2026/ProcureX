@@ -9,6 +9,7 @@ import com.procurex.identityservice.entity.RoleName;
 import com.procurex.identityservice.entity.User;
 import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.repository.AuditLogRepository;
+import com.procurex.identityservice.repository.RefreshTokenRepository;
 import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
 import com.procurex.identityservice.service.AdminUserService;
@@ -57,6 +58,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final RoleRepository      roleRepository;
     private final AuditLogRepository  auditLogRepository;
     private final PasswordEncoder     passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -230,4 +232,88 @@ public class AdminUserServiceImpl implements AdminUserService {
                 .build();
         auditLogRepository.save(log);
     }
+
+    // -------------------------------------------------------------------------
+    // Update User Status
+    // -------------------------------------------------------------------------
+    @Override
+    @Transactional
+    public UserRegisterResponse updateUserStatus(UUID userId, AccountStatus status, String adminEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        User admin = userRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
+
+        if (admin.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Admin cannot change their own status");
+        }
+
+        user.setAccountStatus(status);
+        if (status == AccountStatus.ACTIVE) {
+            user.setFailedLoginAttempts(0);
+        }
+        user.setUpdatedBy(admin.getUserId());
+        User saved = userRepository.save(user);
+
+        writeAuditLog(admin, "UPDATE_USER_STATUS", USERS_ENTITY, userId.toString());
+        log.info("User status updated: userId={}, status={}, by admin={}", userId, status, adminEmail);
+
+        return toResponse(saved);
+    }
+
+    // -------------------------------------------------------------------------
+    // Get All Employees
+    // -------------------------------------------------------------------------
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserRegisterResponse> getAllEmployees() {
+        List<RoleName> employeeRoles = List.of(
+                RoleName.PROCUREMENT_MANAGER,
+                RoleName.INVENTORY_MANAGER,
+                RoleName.FINANCE_MANAGER
+        );
+        return userRepository.findByRoleRoleNameIn(employeeRoles).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    // -------------------------------------------------------------------------
+    // Get All Vendors
+    // -------------------------------------------------------------------------
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserRegisterResponse> getAllVendors() {
+        return userRepository.findByRoleRoleNameIn(List.of(RoleName.VENDOR)).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    // -------------------------------------------------------------------------
+    // Delete User
+    // -------------------------------------------------------------------------
+    @Override
+    @Transactional
+    public void deleteUser(UUID userId, String adminEmail) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        User admin = userRepository.findByEmail(adminEmail)
+                .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
+
+        if (admin.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("Admin cannot delete their own account");
+        }
+
+        // Soft delete: mark account as INACTIVE instead of removing the row
+        user.setAccountStatus(AccountStatus.INACTIVE);
+        userRepository.save(user);
+
+        // Revoke all active refresh tokens so the user is immediately logged out
+        refreshTokenRepository.revokeAllActiveByUser(user);
+
+        writeAuditLog(admin, "SOFT_DELETE_USER", USERS_ENTITY, userId.toString());
+        log.info("User soft-deleted (set INACTIVE): userId={}, by admin={}", userId, adminEmail);
+    }
 }
+

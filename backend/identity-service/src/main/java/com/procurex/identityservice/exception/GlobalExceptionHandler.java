@@ -148,6 +148,16 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------------------------
+    // 403 – Account suspended
+    // -------------------------------------------------------------------------
+    @ExceptionHandler(AccountSuspendedException.class)
+    public ResponseEntity<ErrorResponse> handleSuspended(
+            AccountSuspendedException ex, HttpServletRequest request) {
+
+        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request);
+    }
+
+    // -------------------------------------------------------------------------
     // 500 – Catch-all
     // -------------------------------------------------------------------------
     @ExceptionHandler(Exception.class)

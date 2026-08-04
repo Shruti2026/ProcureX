@@ -1,6 +1,7 @@
 package com.procurex.identityservice.controller;
 
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
+import com.procurex.identityservice.dto.request.UpdateStatusRequest;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.service.AdminUserService;
@@ -73,6 +74,21 @@ public class AdminController {
     }
 
     // -------------------------------------------------------------------------
+    // List All Vendors
+    // -------------------------------------------------------------------------
+    @Operation(summary = "List all vendors", description = "Retrieves all vendor accounts regardless of status")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Success"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/vendors")
+    public ResponseEntity<ApiResponse<List<UserRegisterResponse>>> getAllVendors() {
+        List<UserRegisterResponse> response = adminUserService.getAllVendors();
+        return ResponseEntity.ok(ApiResponse.success("All vendors retrieved successfully", response));
+    }
+
+    // -------------------------------------------------------------------------
     // Approve Vendor
     // -------------------------------------------------------------------------
     @Operation(summary = "Approve vendor", description = "Approves a pending vendor account, changing status to ACTIVE")
@@ -110,5 +126,61 @@ public class AdminController {
 
         UserRegisterResponse response = adminUserService.rejectVendor(vendorUserId, authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("Vendor rejected successfully", response));
+    }
+
+    // -------------------------------------------------------------------------
+    // Update User Status
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Update user status", description = "Updates status for any user (active, inactive, locked, suspended, pending, rejected)")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User status updated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cannot change own status or invalid status"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @PutMapping("/users/{id}/status")
+    public ResponseEntity<ApiResponse<UserRegisterResponse>> updateUserStatus(
+            @PathVariable("id") UUID userId,
+            @Valid @RequestBody UpdateStatusRequest request,
+            Authentication authentication) {
+
+        UserRegisterResponse response = adminUserService.updateUserStatus(userId, request.status(), authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("User status updated successfully", response));
+    }
+
+    // -------------------------------------------------------------------------
+    // List All Employees
+    // -------------------------------------------------------------------------
+    @Operation(summary = "List all internal employees", description = "Retrieves all employees with manager roles (procurement, inventory, finance)")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Success"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/users/employees")
+    public ResponseEntity<ApiResponse<List<UserRegisterResponse>>> getAllEmployees() {
+        List<UserRegisterResponse> response = adminUserService.getAllEmployees();
+        return ResponseEntity.ok(ApiResponse.success("Internal employees retrieved successfully", response));
+    }
+
+    // -------------------------------------------------------------------------
+    // Delete User
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Delete user account", description = "Deletes a manager or vendor account and cascades refresh token removal")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Cannot delete own account"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @PathVariable("id") UUID userId,
+            Authentication authentication) {
+
+        adminUserService.deleteUser(userId, authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
     }
 }
