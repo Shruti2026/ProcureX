@@ -119,12 +119,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -149,12 +147,10 @@
                   }
                 },
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/admin/users",
-                  "protocol": "http",
+                  "raw": "{{BASE_URL}}/api/v1/admin/users",
                   "host": [
-                    "localhost"
+                    "{{BASE_URL}}"
                   ],
-                  "port": "8080",
                   "path": [
                     "api",
                     "v1",
@@ -213,11 +209,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Mon, 03 Aug 2026 14:01:05 GMT"
+                  "value": "Wed, 05 Aug 2026 11:43:53 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"5c9a77c7-e14c-47d9-a64f-681db55690c2\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"U6Zq3xRDcAd7tpyi\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"da63ac65-6454-4003-921d-a0a40826192d\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"kUlcrpw4vsT@Wcqj\"\n    }\n}"
             }
           ]
         },
@@ -246,12 +242,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -276,12 +270,10 @@
                   }
                 },
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/admin/users",
-                  "protocol": "http",
+                  "raw": "{{BASE_URL}}/api/v1/admin/users",
                   "host": [
-                    "localhost"
+                    "{{BASE_URL}}"
                   ],
-                  "port": "8080",
                   "path": [
                     "api",
                     "v1",
@@ -340,11 +332,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Mon, 03 Aug 2026 14:01:27 GMT"
+                  "value": "Wed, 05 Aug 2026 11:44:09 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"fec6b2ba-0bbb-464c-adde-11f819fa8ff6\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"D4CShXj9JGV9e@HH\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"2135aa2d-ef9d-49bb-92ee-5ad7a723fdba\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"l58mJixmsSkXzUPn\"\n    }\n}"
             }
           ]
         },
@@ -373,12 +365,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -403,12 +393,10 @@
                   }
                 },
                 "url": {
-                  "raw": "http://localhost:8080/api/v1/admin/users",
-                  "protocol": "http",
+                  "raw": "{{BASE_URL}}/api/v1/admin/users",
                   "host": [
-                    "localhost"
+                    "{{BASE_URL}}"
                   ],
-                  "port": "8080",
                   "path": [
                     "api",
                     "v1",
@@ -467,11 +455,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Mon, 03 Aug 2026 14:01:39 GMT"
+                  "value": "Wed, 05 Aug 2026 11:44:26 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"7365a520-02a7-4afd-94e1-439215c04146\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"3ly0iJ!gI5azhppm\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"c365c7ec-b609-4e05-a0dd-c951457ef3e6\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"fA3Y8!QBGlvgDyo3\"\n    }\n}"
             }
           ]
         },
@@ -491,12 +479,10 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users/employees",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users/employees",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -524,12 +510,10 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/vendors/pending",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/vendors/pending",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -557,12 +541,10 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/vendors",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/vendors",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -589,18 +571,16 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/approve",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/vendors/b6bfb8b4-7572-4a12-b8d2-cf91acaf0d2d/approve",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
                 "admin",
                 "vendors",
-                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+                "b6bfb8b4-7572-4a12-b8d2-cf91acaf0d2d",
                 "approve"
               ]
             }
@@ -623,12 +603,10 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/reject",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/reject",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -658,7 +636,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"status\": \"SUSPENDED\" // Allowed values: ACTIVE, INACTIVE, PENDING, REJECTED, SUSPENDED, LOCKED\r\n}",
+              "raw": "{\r\n    \"status\": \"ACTIVE\" // Allowed values: ACTIVE, INACTIVE, PENDING, REJECTED, SUSPENDED, LOCKED\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -666,18 +644,16 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users/bef8a5d3-033c-47aa-a7f1-c9d88b496070/status",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users/c365c7ec-b609-4e05-a0dd-c951457ef3e6/status",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
                 "admin",
                 "users",
-                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
+                "c365c7ec-b609-4e05-a0dd-c951457ef3e6",
                 "status"
               ]
             }
@@ -697,21 +673,19 @@
                 }
               ]
             },
-            "method": "POST",
+            "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/admin/users/bef8a5d3-033c-47aa-a7f1-c9d88b496070",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/admin/users/c365c7ec-b609-4e05-a0dd-c951457ef3e6",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
                 "admin",
                 "users",
-                "bef8a5d3-033c-47aa-a7f1-c9d88b496070"
+                "c365c7ec-b609-4e05-a0dd-c951457ef3e6"
               ]
             }
           },
@@ -734,7 +708,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "",
+              "raw": "{\r\n    \"currentPassword\": \"SecureP@ssw0rd!\",\r\n    \"newPassword\": \"SecureP@ssw0rd!1\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -742,12 +716,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/change-password",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/change-password",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -759,7 +731,37 @@
           "response": []
         },
         {
-          "name": "14_Refresh_Token",
+          "name": "14_Get_Self_Profile_Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15_Refresh_Token",
           "event": [
             {
               "listen": "test",
@@ -788,12 +790,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/refresh",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -805,7 +805,7 @@
           "response": []
         },
         {
-          "name": "15_Logout",
+          "name": "16_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -820,12 +820,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/logout",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -837,7 +835,7 @@
           "response": []
         }
       ],
-      "description": "## Admin\n\nThis folder contains all API endpoints related to **Admin-level operations** in the ProcureX procurement management platform. It covers the full lifecycle of admin activity — from initial setup and authentication to user management, vendor oversight, and session control.\n\n### What's included\n\n- **Bootstrap & Authentication** — Admin registration, login, logout, password change, and token refresh.\n- **User Management** — Create and manage internal roles such as Procurement Manager, Finance Manager, and HR Manager. List internal employees and update user account statuses.\n- **Vendor Management** — List all vendors, view pending vendor registrations, and approve or reject vendor applications.\n\n### Usage\n\nAll requests in this folder are intended to be executed with admin-level credentials. Begin with the login request to obtain a valid access token, then use it in subsequent requests via the collection's authorization configuration."
+      "description": "## Admin\n\nThis folder contains all API endpoints related to **Admin-level operations** in the ProcureX procurement management platform. It covers the full lifecycle of admin activity — from initial setup and authentication to user management, vendor oversight, and session control.\n\n### What's included\n\n- **Bootstrap & Authentication** — Admin registration, login, logout, password change, and token refresh.\n    \n- **User Management** — Create and manage internal roles such as Procurement Manager, Finance Manager, and HR Manager. List internal employees and update user account statuses.\n    \n- **Vendor Management** — List all vendors, view pending vendor registrations, and approve or reject vendor applications.\n    \n\n### Usage\n\nAll requests in this folder are intended to be executed with admin-level credentials. Begin with the login request to obtain a valid access token, then use it in subsequent requests via the collection's authorization configuration."
     },
     {
       "name": "Vendors",
@@ -886,7 +884,7 @@
                   "        \"VENDOR_TOKEN\",\r",
                   "        response.data.accessToken\r",
                   "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
+                  "    console.log(\"Vendor token updated!\");\r",
                   "}"
                 ],
                 "type": "text/javascript",
@@ -936,7 +934,7 @@
                   "        \"VENDOR_TOKEN\",\r",
                   "        response.data.accessToken\r",
                   "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
+                  "    console.log(\"Vendor token updated!\");\r",
                   "}"
                 ],
                 "type": "text/javascript",
@@ -967,7 +965,76 @@
           "response": []
         },
         {
-          "name": "4_Logout",
+          "name": "4_Get_Self_Profile_Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VENDOR_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5_Change_Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VENDOR_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "6_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -995,9 +1062,52 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "7_Vendor_Self_Delete",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VENDOR_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
         }
       ],
-      "description": "## Vendors\n\nThis folder contains the API endpoints that support the **Vendor self-onboarding and session management** flow in the ProcureX platform. It is designed for use by external vendors who register independently and interact with the system using their own credentials.\n\n### What's included\n\n- **Self Registration** — Allows a new vendor to register themselves on the platform via `POST /api/v1/auth/vendor/register`. Vendor accounts are subject to admin approval before gaining full access.\n- **Vendor Login** — Authenticates a registered vendor and returns an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token without requiring re-login via `POST /api/v1/auth/refresh`.\n- **Logout** — Invalidates the current session and access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nStart with the **Self Registration** request to create a vendor account, then await admin approval. Once approved, use **Vendor Login** to authenticate and obtain a token for subsequent API interactions."
+      "description": "## Vendors\n\nThis folder contains all API endpoints related to **Vendor operations** in the ProcureX procurement management platform. It covers the full lifecycle of a vendor's interaction with the platform — from self-registration and authentication to profile management and account deletion.\n\n### What's included\n\n- **Registration & Authentication** — Vendor self-registration, login, logout, and token refresh.\n- **Profile Management** — View and manage the vendor's own profile details and change password.\n- **Account Management** — Vendor self-deletion to remove their own account from the platform.\n\n### Usage\n\nVendors interact with the platform independently. Start with the self-registration request to create a vendor account, then log in to obtain an access token. Use the token for all subsequent authenticated requests."
     },
     {
       "name": "Procurement Manager",
@@ -1016,7 +1126,7 @@
                   "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
                   "        response.data.accessToken\r",
                   "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
+                  "    console.log(\"PROCUREMENT MANAGER token updated!\");\r",
                   "}"
                 ],
                 "type": "text/javascript",
@@ -1038,12 +1148,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/login",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1068,7 +1176,7 @@
                   "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
                   "        response.data.accessToken\r",
                   "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
+                  "    console.log(\"PROCUREMENT MANAGER token updated!\");\r",
                   "}"
                 ],
                 "type": "text/javascript",
@@ -1084,12 +1192,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/refresh",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1101,7 +1207,76 @@
           "response": []
         },
         {
-          "name": "3_Logout",
+          "name": "3_Get_Self_Profile_Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4_Change_Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1116,12 +1291,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/logout",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1133,13 +1306,34 @@
           "response": []
         }
       ],
-      "description": "## Procurement Manager\n\nThis folder contains the API endpoints used by the **Procurement Manager** role in the ProcureX platform. It covers the authentication and session management flow specific to this internal user role, which is responsible for managing procurement activities such as purchase orders and vendor interactions.\n\n### What's included\n\n- **Login** — Authenticates the Procurement Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nProcurement Manager accounts are created by the Admin. Use the **Login** request with the credentials provisioned by the admin to authenticate. The returned token should be used to authorize all procurement-related API operations across the platform."
+      "description": "## Procurement Manager\n\nThis folder contains all API endpoints available to the **Procurement Manager** role in the ProcureX procurement management platform. It covers authentication and core session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the procurement manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n\n### Usage\n\nUse the login request to authenticate as a Procurement Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating."
     },
     {
       "name": "Inventory Manager",
       "item": [
         {
           "name": "1_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"INVENTORY_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -1153,12 +1347,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/login",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1171,6 +1363,27 @@
         },
         {
           "name": "2_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"INVENTORY_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -1178,12 +1391,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/refresh",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1195,7 +1406,76 @@
           "response": []
         },
         {
-          "name": "3_Logout",
+          "name": "3_Get_Self_Profile_Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4_Change_Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1210,12 +1490,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/logout",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1227,13 +1505,34 @@
           "response": []
         }
       ],
-      "description": "## Inventory Manager\n\nThis folder contains the API endpoints used by the **Inventory Manager** role in the ProcureX platform. It covers the authentication and session management flow for this internal user role, which is responsible for overseeing stock levels, inventory tracking, and supply chain coordination within the procurement system.\n\n### What's included\n\n- **Login** — Authenticates the Inventory Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nInventory Manager accounts are provisioned by the Admin. Use the **Login** request with the credentials provided by the admin to authenticate. The returned token should be used to authorize all inventory-related API operations across the platform."
+      "description": "## Inventory Manager\n\nThis folder contains all API endpoints available to the **Inventory Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the inventory manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n\n### Usage\n\nUse the login request to authenticate as an Inventory Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating."
     },
     {
       "name": "Finance Manager",
       "item": [
         {
           "name": "1_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"FINANCE_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"FINANCE MANAGER TOKEN updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [],
@@ -1247,12 +1546,10 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/login",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1265,6 +1562,27 @@
         },
         {
           "name": "2_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "if (response.success) {\r",
+                  "    pm.collectionVariables.set(\r",
+                  "        \"FINANCE_MANAGER_TOKEN\",\r",
+                  "        response.data.accessToken\r",
+                  "    );\r",
+                  "    console.log(\"FINANCE MANAGER TOKEN updated!\");\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
           "request": {
             "auth": {
               "type": "noauth"
@@ -1272,12 +1590,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/refresh",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1289,7 +1605,76 @@
           "response": []
         },
         {
-          "name": "3_Logout",
+          "name": "3_Get_Self_Profile_Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{FINANCE_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "4_Change_Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{FINANCE_MANAGER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/change-password",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "5_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1304,12 +1689,10 @@
             "method": "POST",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/api/v1/auth/logout",
-              "protocol": "http",
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
               "host": [
-                "localhost"
+                "{{BASE_URL}}"
               ],
-              "port": "8080",
               "path": [
                 "api",
                 "v1",
@@ -1321,7 +1704,7 @@
           "response": []
         }
       ],
-      "description": "## Finance Manager\n\nThis folder contains the API endpoints used by the **Finance Manager** role in the ProcureX platform. It covers the authentication and session management flow for this internal user role, which is responsible for overseeing financial operations such as invoice processing, payment approvals, and budget management within the procurement system.\n\n### What's included\n\n- **Login** — Authenticates the Finance Manager and issues an access token via `POST /api/v1/auth/login`.\n- **Refresh Token** — Renews an expired access token to maintain an active session via `POST /api/v1/auth/refresh`.\n- **Logout** — Terminates the current session and invalidates the access token via `POST /api/v1/auth/logout`.\n\n### Usage\n\nFinance Manager accounts are provisioned by the Admin. Use the **Login** request with the credentials provided by the admin to authenticate. The returned token should be used to authorize all finance-related API operations across the platform."
+      "description": "## Finance Manager\n\nThis folder contains all API endpoints available to the **Finance Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the finance manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n\n### Usage\n\nUse the login request to authenticate as a Finance Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating."
     }
   ],
   "event": [
