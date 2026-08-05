@@ -7,6 +7,7 @@ import com.procurex.identityservice.dto.request.VendorRegisterRequest;
 import com.procurex.identityservice.dto.response.LoginResponse;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
 import com.procurex.identityservice.dto.response.VendorRegisterResponse;
+import com.procurex.identityservice.dto.response.UserProfileResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
 import com.procurex.identityservice.entity.RefreshToken;
@@ -25,6 +26,7 @@ import com.procurex.identityservice.repository.RefreshTokenRepository;
 import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
 import com.procurex.identityservice.service.AuthService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -147,7 +149,9 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid email or password");
         }
 
-        // Check if user is already logged in
+        // Check if user is already logged in (active session exists)
+        // TODO [Redis]: Replace this DB check with a Redis-backed session lookup
+        //   to support per-device sessions and instant invalidation.
         refreshTokenRepository.findByUser(user).ifPresent(token -> {
             if (!token.isRevoked() && token.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC))) {
                 throw new ConflictException("You are already logged in");
@@ -294,5 +298,52 @@ public class AuthServiceImpl implements AuthService {
                 .ipAddress(request != null ? request.getRemoteAddr() : null)
                 .build();
         auditLogRepository.save(log);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponse getSelfProfile(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        return new UserProfileResponse(
+                user.getUserId(),
+                user.getOrganizationId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getRole().getRoleName().name(),
+                user.getAccountStatus(),
+                user.getLastLogin(),
+                user.getCreatedAt()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void selfDeleteVendor(String email, HttpServletResponse response) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        if (user.getRole().getRoleName() != RoleName.VENDOR) {
+            throw new IllegalArgumentException("Only vendors can deactivate their own account");
+        }
+
+        // Soft delete: set status to INACTIVE
+        user.setAccountStatus(AccountStatus.INACTIVE);
+        userRepository.save(user);
+
+        // Revoke active refresh token in DB
+        refreshTokenRepository.findByUser(user).ifPresent(token -> {
+            token.setRevoked(true);
+            refreshTokenRepository.save(token);
+        });
+
+        // Clear refresh cookie
+        clearRefreshCookie(response);
+
+        // Audit log
+        writeAuditLog(user, "VENDOR_SELF_DELETE", "users", user.getUserId().toString(), null);
+        log.info("Vendor self-deleted (set INACTIVE) and logged out: userId={}", user.getUserId());
     }
 }

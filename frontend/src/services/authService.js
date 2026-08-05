@@ -100,4 +100,24 @@ export async function restoreSession() {
     clearAccessToken();
     return null;
   }
+}
+
+/**
+ * Get currently authenticated user's complete profile
+ */
+export async function getSelfProfile() {
+  const { data } = await api.get("/api/v1/auth/me");
+  return data.data;
+}
+
+/**
+ * Deactivate vendor account and log out
+ */
+export async function deactivateVendor() {
+  try {
+    const { data } = await api.delete("/api/v1/auth/me");
+    return data;
+  } finally {
+    clearAccessToken();
+  }
 }

@@ -8,6 +8,8 @@ import com.procurex.identityservice.dto.response.LoginResponse;
 import org.springframework.security.core.Authentication;
 import com.procurex.identityservice.dto.response.TokenRefreshResponse;
 import com.procurex.identityservice.dto.response.VendorRegisterResponse;
+import com.procurex.identityservice.dto.response.UserProfileResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.procurex.identityservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -132,5 +134,38 @@ public class AuthController {
 
         authService.changePassword(authentication.getName(), request);
         return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
+    }
+
+    // -------------------------------------------------------------------------
+    // Get Self Profile (Authenticated)
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Get user profile", description = "Retrieves the complete profile details of the authenticated user")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Profile retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated")
+    })
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> getSelfProfile(Authentication authentication) {
+        UserProfileResponse response = authService.getSelfProfile(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.success("Profile retrieved successfully", response));
+    }
+
+    // -------------------------------------------------------------------------
+    // Vendor Self-Deactivation (Authenticated Vendor Only)
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Vendor self-deactivation", description = "Allows an authenticated vendor to soft-delete/deactivate their own account and logs them out")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Account deactivated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Vendor role required")
+    })
+    @DeleteMapping("/me")
+    @PreAuthorize("hasRole('VENDOR')")
+    public ResponseEntity<ApiResponse<Void>> selfDeleteVendor(
+            Authentication authentication,
+            HttpServletResponse response) {
+
+        authService.selfDeleteVendor(authentication.getName(), response);
+        return ResponseEntity.ok(ApiResponse.success("Account deactivated and logged out successfully"));
     }
 }

@@ -9,6 +9,8 @@ import com.procurex.identityservice.dto.response.VendorRegisterResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import com.procurex.identityservice.dto.response.UserProfileResponse;
+
 /**
  * Service responsible for user authentication, vendor self-registration,
  * JWT refresh token management, and logout operations.
@@ -63,5 +65,22 @@ public interface AuthService {
      * @param request change password details
      */
     void changePassword(String email, ChangePasswordRequest request);
+
+    /**
+     * Retrieves the profile details of the authenticated user.
+     *
+     * @param email current logged-in user email
+     * @return UserProfileResponse containing profile details
+     */
+    UserProfileResponse getSelfProfile(String email);
+
+    /**
+     * Allows a vendor to soft-delete/deactivate their own account.
+     * This marks the account status as INACTIVE and invalidates their refresh token.
+     *
+     * @param email current logged-in user email
+     * @param response HttpServletResponse to clear session cookies
+     */
+    void selfDeleteVendor(String email, HttpServletResponse response);
 }
 
