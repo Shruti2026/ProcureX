@@ -9,7 +9,7 @@ import { Eye, EyeOff, LogIn } from 'lucide-react'
 
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
-import { login } from '../../services/authService'
+import { login, restoreSession } from '../../services/authService'
 import { ROLES } from '../../constants/roles'
 import { useAuth } from '../../context/AuthContext'
 
@@ -112,7 +112,23 @@ export default function LoginPage() {
       redirectUser(user)
     },
 
-    onError: (error) => {
+    onError: async (error) => {
+      // 409 means the backend sees a valid session for this user.
+      // The refresh cookie is still alive, so restore the session from it
+      // instead of showing an error.
+      if (error?.response?.status === 409) {
+        try {
+          const currentUser = await restoreSession()
+          if (currentUser) {
+            setUser(currentUser)
+            redirectUser(currentUser)
+            return
+          }
+        } catch {
+          // restoreSession failed — fall through to the generic error toast
+        }
+      }
+
       toast.error(
         error?.response?.data?.message ||
           'Invalid email or password'
