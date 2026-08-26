@@ -84,6 +84,13 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "${{ secrets.VM_HOST }}" >> ~/.ssh/known_hosts
 
+      - name: Ensure deploy directory exists on VM
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
+            "sudo mkdir -p ${{ env.DEPLOY_PATH }} && sudo chown ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} ${{ env.DEPLOY_PATH }}"
+
       - name: Copy project files to VM
         # rsync the full repo (including pre-built JARs) to the VM.
         # --delete removes files on the VM that were deleted in the repo.
