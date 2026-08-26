@@ -1,0 +1,85 @@
+# =============================================================================
+# ProcureX — CI: Build, Test & Validate
+# =============================================================================
+# Runs on every push and pull request to the azure branch.
+# Ensures the backend compiles and all tests pass, and that the frontend
+# builds cleanly before any deployment is attempted.
+#
+# Jobs:
+#   backend-ci  — compile all modules and run the full test suite
+#   frontend-ci — install dependencies and run a production Vite build
+# =============================================================================
+
+name: CI
+
+on:
+  push:
+    branches:
+      - azure
+  pull_request:
+    branches:
+      - azure
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Backend — compile + test
+  # ---------------------------------------------------------------------------
+  backend-ci:
+    name: Backend — Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Compile and run tests
+        run: mvn clean verify --no-transfer-progress
+        working-directory: backend
+
+      - name: Upload built JARs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jars
+          path: |
+            backend/*/target/*.jar
+            !backend/*/target/*-sources.jar
+            !backend/*/target/original-*.jar
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Frontend — install + production build
+  # ---------------------------------------------------------------------------
+  frontend-ci:
+    name: Frontend — Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Vite production build
+        # Use a placeholder origin — no /api suffix.
+        # authService paths already include /api/v1/... so the base URL
+        # must be the bare origin only.
+        run: npm run build
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: http://placeholder-ci-build

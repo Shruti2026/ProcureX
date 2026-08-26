@@ -1,80 +1,56 @@
 # =============================================================================
-# ProcureX — CI/CD: Build & Deploy to Azure VM
+# ProcureX — CD: Deploy to Azure VM
 # =============================================================================
-# Triggers on every push to main.
+# Runs only after the CI workflow completes successfully on the azure branch.
+# Never triggers on pull requests — only merged, passing code gets deployed.
 #
 # Required GitHub Secrets (Settings → Secrets and variables → Actions):
-#   VM_HOST        — VM public IP or DNS (e.g. procurex.eastus.cloudapp.azure.com)
+#   VM_HOST        — VM public IP or DNS (e.g. 20.40.50.207)
 #   VM_USER        — SSH username (e.g. azureuser)
-#   VM_SSH_KEY     — Private SSH key contents (the full text of ~/.ssh/id_rsa)
+#   VM_SSH_KEY     — Full contents of the private SSH key (~/.ssh/id_rsa)
 #
 # The .env.production file lives only on the VM and is never touched by this
 # pipeline — secrets never pass through GitHub.
+#
+# VITE_API_BASE_URL in .env.production must be the bare VM origin with NO
+# /api suffix (e.g. http://20.40.50.207). The service files already prefix
+# every request path with /api/v1/... so adding /api here causes doubled
+# paths like /api/api/v1/... and 404 errors.
 # =============================================================================
 
-name: Deploy to Azure VM
+name: CD
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - CI
     branches:
       - azure
-  # Allow manual trigger from the Actions tab
-  workflow_dispatch:
+    types:
+      - completed
 
 env:
   DEPLOY_PATH: /opt/procurex
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Job 1: Build — compile all JARs and cache them as artifacts
-  # ---------------------------------------------------------------------------
-  build:
-    name: Build Backend JARs
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Java 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: "maven"
-
-      - name: Build all backend JARs (skip tests)
-        run: mvn clean package -DskipTests --no-transfer-progress
-        working-directory: backend
-
-      - name: Upload built JARs as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-jars
-          # Upload each service's target/ directory so the VM can use them
-          path: |
-            backend/*/target/*.jar
-            !backend/*/target/*-sources.jar
-            !backend/*/target/original-*.jar
-          retention-days: 1
-
-  # ---------------------------------------------------------------------------
-  # Job 2: Deploy — SSH into VM, pull code, copy JARs, rebuild & restart
-  # ---------------------------------------------------------------------------
   deploy:
     name: Deploy to Azure VM
     runs-on: ubuntu-latest
-    needs: build
+    # Only deploy when CI actually passed — not on failure or cancellation
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
-      - name: Download built JARs
+      - name: Download built JARs from CI
         uses: actions/download-artifact@v4
         with:
           name: backend-jars
-          # Restores to the same relative paths: backend/*/target/*.jar
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path: backend
 
       - name: Set up SSH key
@@ -92,7 +68,6 @@ jobs:
             "sudo mkdir -p ${{ env.DEPLOY_PATH }} && sudo chown ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} ${{ env.DEPLOY_PATH }}"
 
       - name: Copy project files to VM
-        # rsync the full repo (including pre-built JARs) to the VM.
         # --delete removes files on the VM that were deleted in the repo.
         # Exclusions keep node_modules, .git, and secrets untouched on the VM.
         run: |
@@ -105,8 +80,6 @@ jobs:
             ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ env.DEPLOY_PATH }}/
 
       - name: Build images & restart containers on VM
-        # Pipe a script over SSH instead of passing inline commands.
-        # This avoids quoting/escaping issues and runs in a proper login shell.
         run: |
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
@@ -134,14 +107,22 @@ jobs:
             up -d --build --remove-orphans
 
           echo ">>> Waiting for gateway health check (up to 5 min)..."
+          HEALTHY=false
           for i in $(seq 1 30); do
             if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
               echo "API Gateway is healthy."
+              HEALTHY=true
               break
             fi
             echo "Attempt $i/30 — waiting 10s..."
             sleep 10
           done
+
+          if [ "$HEALTHY" = false ]; then
+            echo "ERROR: API Gateway did not become healthy within 5 minutes."
+            "$DOCKER_BIN" compose -f docker-compose.prod.yml logs --tail=50 api-gateway
+            exit 1
+          fi
 
           echo ">>> Cleaning up unused images..."
           "$DOCKER_BIN" image prune -f
