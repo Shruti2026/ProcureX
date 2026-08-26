@@ -106,39 +106,43 @@ jobs:
 
       - name: Build images & restart containers on VM
         # Runs entirely on the VM — the .env.production file stays there.
-        # Uses --no-deps so each service is rebuilt independently and
-        # other already-healthy containers are not bounced unnecessarily.
+        # Non-interactive SSH sessions don't load the user's PATH, so docker
+        # may not be found. We source /etc/profile to pick it up, then fall
+        # back to common install locations.
         run: |
           ssh -i ~/.ssh/deploy_key \
             -o StrictHostKeyChecking=no \
-            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
-            "
+            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} bash -lc '
               set -e
+
+              # Ensure docker is on PATH regardless of shell login type
+              export PATH=$PATH:/usr/bin:/usr/local/bin
+
               cd ${{ env.DEPLOY_PATH }}
 
-              echo '>>> Pulling latest base images...'
+              echo ">>> Pulling latest base images..."
               docker compose -f docker-compose.prod.yml --env-file .env.production pull mysql rabbitmq
 
-              echo '>>> Rebuilding and restarting all services...'
+              echo ">>> Rebuilding and restarting all services..."
               docker compose -f docker-compose.prod.yml --env-file .env.production \
                 up -d --build --remove-orphans
 
-              echo '>>> Waiting for gateway health check...'
-              for i in \$(seq 1 30); do
+              echo ">>> Waiting for gateway health check..."
+              for i in $(seq 1 30); do
                 if curl -sf http://localhost:8080/actuator/health > /dev/null; then
-                  echo 'API Gateway is healthy.'
+                  echo "API Gateway is healthy."
                   break
                 fi
-                echo \"Attempt \$i/30 — waiting 10s...\"
+                echo "Attempt $i/30 — waiting 10s..."
                 sleep 10
               done
 
-              echo '>>> Cleaning up unused images...'
+              echo ">>> Cleaning up unused images..."
               docker image prune -f
 
-              echo '>>> Deployment complete.'
+              echo ">>> Deployment complete."
               docker compose -f docker-compose.prod.yml ps
-            "
+            '
 
       - name: Clean up SSH key
         if: always()
