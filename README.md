@@ -270,7 +270,7 @@ Key values to set:
 - `JWT_SECRET` — 64-char hex string (`openssl rand -hex 32`)
 - `MAIL_USERNAME` / `MAIL_PASSWORD` — Gmail address + App Password
 - `CORS_ALLOWED_ORIGINS` — your VM's public domain or IP, e.g. `http://procurex.eastus.cloudapp.azure.com`
-- `VITE_API_BASE_URL` — API Gateway URL, e.g. `http://procurex.eastus.cloudapp.azure.com:8080/api`
+- `VITE_API_BASE_URL` — bare VM origin, **no `/api` suffix**, e.g. `http://procurex.eastus.cloudapp.azure.com`
 
 #### Step 3: Build backend JARs
 ```bash
@@ -323,7 +323,17 @@ docker compose -f docker-compose.prod.yml --env-file .env.production \
 
 ### CI/CD (Automated Deployment)
 
-A GitHub Actions workflow (`.github/workflows/deploy.yml`) automatically deploys to the Azure VM on every push to `main`.
+Two GitHub Actions workflows handle CI and CD separately:
+
+- **`.github/workflows/ci.yml`** — runs on every push and pull request to `azure`
+  - Compiles all backend modules and runs the full test suite (`mvn clean verify`)
+  - Runs a Vite production build to validate the frontend
+  - Uploads compiled JARs as an artifact for the CD pipeline to consume
+
+- **`.github/workflows/cd.yml`** — triggers only after CI passes
+  - Downloads the JARs built in CI (no recompile on the VM)
+  - SSHes into the VM, rsyncs files, rebuilds Docker images, restarts containers
+  - Fails the deployment if the API Gateway does not become healthy within 5 minutes
 
 Required GitHub Secrets (set under **Settings → Secrets and variables → Actions**):
 
@@ -333,7 +343,7 @@ Required GitHub Secrets (set under **Settings → Secrets and variables → Acti
 | `VM_USER` | SSH username (e.g. `azureuser`) |
 | `VM_SSH_KEY` | Private SSH key (contents of `~/.ssh/id_rsa`) |
 
-The pipeline: checks out code → builds all JARs → SSHes into the VM → pulls latest code → rebuilds changed images → restarts containers with zero secrets leaving GitHub.
+> **Note:** `VITE_API_BASE_URL` in `.env.production` must be the bare VM origin with **no `/api` suffix** — e.g. `http://20.40.50.207`. The service files already prefix every request path with `/api/v1/...`, so including `/api` here causes doubled paths (`/api/api/v1/...`) and 404 errors.
 
 ---
 
