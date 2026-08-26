@@ -34,6 +34,9 @@ out/
 .env
 .env.local
 
+# Production secrets — never commit
+.env.production
+
 # Archive & Others
 archive/
 .agents

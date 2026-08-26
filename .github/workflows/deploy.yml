@@ -1,0 +1,138 @@
+# =============================================================================
+# ProcureX — CI/CD: Build & Deploy to Azure VM
+# =============================================================================
+# Triggers on every push to main.
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   VM_HOST        — VM public IP or DNS (e.g. procurex.eastus.cloudapp.azure.com)
+#   VM_USER        — SSH username (e.g. azureuser)
+#   VM_SSH_KEY     — Private SSH key contents (the full text of ~/.ssh/id_rsa)
+#
+# The .env.production file lives only on the VM and is never touched by this
+# pipeline — secrets never pass through GitHub.
+# =============================================================================
+
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+  # Allow manual trigger from the Actions tab
+  workflow_dispatch:
+
+env:
+  DEPLOY_PATH: /opt/procurex
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1: Build — compile all JARs and cache them as artifacts
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build Backend JARs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build all backend JARs (skip tests)
+        run: mvn clean package -DskipTests --no-transfer-progress
+        working-directory: backend
+
+      - name: Upload built JARs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jars
+          # Upload each service's target/ directory so the VM can use them
+          path: |
+            backend/*/target/*.jar
+            !backend/*/target/*-sources.jar
+            !backend/*/target/original-*.jar
+          retention-days: 1
+
+  # ---------------------------------------------------------------------------
+  # Job 2: Deploy — SSH into VM, pull code, copy JARs, rebuild & restart
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to Azure VM
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download built JARs
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-jars
+          # Restores to the same relative paths: backend/*/target/*.jar
+          path: .
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.VM_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Copy project files to VM
+        # rsync the full repo (including pre-built JARs) to the VM.
+        # --delete removes files on the VM that were deleted in the repo.
+        # Exclusions keep node_modules, .git, and secrets untouched on the VM.
+        run: |
+          rsync -avz --delete \
+            --exclude '.git' \
+            --exclude 'frontend/node_modules' \
+            --exclude '.env.production' \
+            --exclude '*.log' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ env.DEPLOY_PATH }}/
+
+      - name: Build images & restart containers on VM
+        # Runs entirely on the VM — the .env.production file stays there.
+        # Uses --no-deps so each service is rebuilt independently and
+        # other already-healthy containers are not bounced unnecessarily.
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no \
+            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
+            "
+              set -e
+              cd ${{ env.DEPLOY_PATH }}
+
+              echo '>>> Pulling latest base images...'
+              docker compose -f docker-compose.prod.yml --env-file .env.production pull mysql rabbitmq
+
+              echo '>>> Rebuilding and restarting all services...'
+              docker compose -f docker-compose.prod.yml --env-file .env.production \
+                up -d --build --remove-orphans
+
+              echo '>>> Waiting for gateway health check...'
+              for i in \$(seq 1 30); do
+                if curl -sf http://localhost:8080/actuator/health > /dev/null; then
+                  echo 'API Gateway is healthy.'
+                  break
+                fi
+                echo \"Attempt \$i/30 — waiting 10s...\"
+                sleep 10
+              done
+
+              echo '>>> Cleaning up unused images...'
+              docker image prune -f
+
+              echo '>>> Deployment complete.'
+              docker compose -f docker-compose.prod.yml ps
+            "
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
