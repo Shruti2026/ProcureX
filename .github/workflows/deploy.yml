@@ -75,7 +75,7 @@ jobs:
         with:
           name: backend-jars
           # Restores to the same relative paths: backend/*/target/*.jar
-          path: .
+          path: backend
 
       - name: Set up SSH key
         run: |
