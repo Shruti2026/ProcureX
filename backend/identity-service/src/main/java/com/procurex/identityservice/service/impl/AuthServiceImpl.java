@@ -149,15 +149,6 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid email or password");
         }
 
-        // Check if user is already logged in (active session exists)
-        // TODO [Redis]: Replace this DB check with a Redis-backed session lookup
-        //   to support per-device sessions and instant invalidation.
-        refreshTokenRepository.findByUser(user).ifPresent(token -> {
-            if (!token.isRevoked() && token.getExpiresAt().isAfter(LocalDateTime.now(ZoneOffset.UTC))) {
-                throw new ConflictException("You are already logged in");
-            }
-        });
-
         // 4. Reset failed attempts, update last login
         user.setFailedLoginAttempts(0);
         user.setLastLogin(LocalDateTime.now(ZoneOffset.UTC));

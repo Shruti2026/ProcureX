@@ -17,11 +17,31 @@ import VendorDashboard from "../pages/vendor/VendorDashboard";
 
 import { ROLES } from "../constants/roles";
 
+/**
+ * Resolves the home dashboard path for a given role.
+ * Returns null if the role is unrecognised.
+ */
+function getDashboardPath(role) {
+  switch (role) {
+    case ROLES.ADMIN:               return "/admin/dashboard";
+    case ROLES.PROCUREMENT_MANAGER: return "/procurement/dashboard";
+    case ROLES.INVENTORY_MANAGER:   return "/inventory/dashboard";
+    case ROLES.FINANCE_MANAGER:     return "/finance/dashboard";
+    case ROLES.VENDOR:              return "/vendor/dashboard";
+    default:                        return null;
+  }
+}
+
 export default function AppRouter({ user, onLogout }) {
+  // Redirect already-authenticated users away from the login page.
+  const loginElement = user
+    ? <Navigate to={getDashboardPath(user.role) ?? "/unauthorized"} replace />
+    : <LoginPage />;
+
   return (
       <Routes>
         {/* Public Routes */}
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={loginElement} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

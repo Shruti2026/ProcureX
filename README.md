@@ -243,6 +243,133 @@ The frontend will be available at: http://localhost:5173
 | Swagger UI (API Gateway) | http://localhost:8080/swagger-ui.html |
 | RabbitMQ Management | http://localhost:15672 |
 
+## ☁️ Azure VM Deployment
+
+### Prerequisites on the VM
+- Ubuntu 22.04/24.04 LTS, minimum **Standard D4s_v3** (4 vCPU / 16 GB RAM)
+- Docker Engine + Docker Compose v2 installed
+- Inbound NSG rules: port **22** (your IP only), **80**, **443**
+
+### First-time Setup
+
+#### Step 1: Clone the repo on the VM
+```bash
+git clone https://github.com/<your-org>/ProcureX.git /opt/procurex
+cd /opt/procurex
+```
+
+#### Step 2: Create the production secrets file
+```bash
+cp .env.production.example .env.production
+nano .env.production   # fill in every value — see comments in the file
+```
+
+Key values to set:
+- `MYSQL_ROOT_PASSWORD` — strong random password
+- `RABBITMQ_USER` / `RABBITMQ_PASSWORD` — strong credentials
+- `JWT_SECRET` — 64-char hex string (`openssl rand -hex 32`)
+- `MAIL_USERNAME` / `MAIL_PASSWORD` — Gmail address + App Password
+- `CORS_ALLOWED_ORIGINS` — your VM's public domain or IP, e.g. `http://procurex.eastus.cloudapp.azure.com`
+- `VITE_API_BASE_URL` — bare VM origin, **no `/api` suffix**, e.g. `http://procurex.eastus.cloudapp.azure.com`
+
+#### Step 3: Build backend JARs
+```bash
+cd /opt/procurex/backend
+mvn clean package -DskipTests
+```
+
+#### Step 4: Start everything
+```bash
+cd /opt/procurex
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+Startup takes ~3–5 minutes as health checks cascade:
+`MySQL + RabbitMQ` → `Eureka` → `7 microservices` → `API Gateway` → `Frontend`
+
+#### Step 5: Verify
+```bash
+# All containers healthy
+docker compose -f docker-compose.prod.yml ps
+
+# API Gateway responding
+curl http://localhost:8080/actuator/health
+
+# Frontend served
+curl http://localhost:80
+```
+
+---
+
+### Redeployment (manual)
+
+After pushing code changes, SSH into the VM and run:
+
+```bash
+cd /opt/procurex
+git pull
+cd backend && mvn clean package -DskipTests && cd ..
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+```
+
+To redeploy a single service without touching others:
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.production \
+  up -d --build --no-deps <service-name>
+# Example: --no-deps identity-service
+```
+
+---
+
+### CI/CD (Automated Deployment)
+
+Two GitHub Actions workflows handle CI and CD separately:
+
+- **`.github/workflows/ci.yml`** — runs on every push and pull request to `azure`
+  - Compiles all backend modules and runs the full test suite (`mvn clean verify`)
+  - Runs a Vite production build to validate the frontend
+  - Uploads compiled JARs as an artifact for the CD pipeline to consume
+
+- **`.github/workflows/cd.yml`** — triggers only after CI passes
+  - Downloads the JARs built in CI (no recompile on the VM)
+  - SSHes into the VM, rsyncs files, rebuilds Docker images, restarts containers
+  - Fails the deployment if the API Gateway does not become healthy within 5 minutes
+
+Required GitHub Secrets (set under **Settings → Secrets and variables → Actions**):
+
+| Secret | Description |
+|--------|-------------|
+| `VM_HOST` | VM public IP or DNS name |
+| `VM_USER` | SSH username (e.g. `azureuser`) |
+| `VM_SSH_KEY` | Private SSH key (contents of `~/.ssh/id_rsa`) |
+
+> **Note:** `VITE_API_BASE_URL` in `.env.production` must be the bare VM origin with **no `/api` suffix** — e.g. `http://20.40.50.207`. The service files already prefix every request path with `/api/v1/...`, so including `/api` here causes doubled paths (`/api/api/v1/...`) and 404 errors.
+
+---
+
+### Useful Commands on the VM
+
+```bash
+# Live logs for a service
+docker logs procurex-identity-service -f --tail 100
+
+# Resource usage
+docker stats
+
+# MySQL backup
+docker exec procurex-mysql mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+  --all-databases > backup_$(date +%Y%m%d_%H%M%S).sql
+
+# RabbitMQ management UI (via SSH tunnel from your machine)
+ssh -L 15672:localhost:15672 azureuser@<VM_IP>
+# Then open http://localhost:15672 in your browser
+
+# Stop everything
+docker compose -f docker-compose.prod.yml down
+```
+
+---
+
 ## 📝 Notes
 
 - All services register with Eureka Server. The API Gateway routes requests to the appropriate service.
