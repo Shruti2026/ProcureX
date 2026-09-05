@@ -1,12 +1,12 @@
 # =============================================================================
 # ProcureX — CI / CD Pipeline
 # =============================================================================
-# Runs on every push and pull request to the azure branch.
+# Runs on every push and pull request to both the azure and master branches.
 #
 # Jobs:
 #   backend-ci  — compile all modules and run the full test suite
 #   frontend-ci — install dependencies and run a production Vite build
-#   deploy      — deploy to Azure VM (push to azure only, skipped on PRs)
+#   deploy      — deploy to Azure VM (push to azure or master only, skipped on PRs)
 #
 # Required GitHub Secrets (Settings → Secrets and variables → Actions):
 #   VM_HOST    — VM public IP or DNS (e.g. 20.40.50.207)
@@ -27,9 +27,11 @@ on:
   push:
     branches:
       - azure
+      - master
   pull_request:
     branches:
       - azure
+      - master
 
 env:
   DEPLOY_PATH: /opt/procurex
@@ -99,7 +101,7 @@ jobs:
           VITE_API_BASE_URL: http://placeholder-ci-build
 
   # ---------------------------------------------------------------------------
-  # Job 3: Deploy — only on direct push to azure (not on pull requests)
+  # Job 3: Deploy — only on direct push to azure or master (not on pull requests)
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy to Azure VM
