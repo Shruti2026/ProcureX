@@ -42,3 +42,7 @@ archive/
 .agents
 AGENTS.md
 MEMORY.md
+.kiro
+skill-lock.json
+SKILLS.md
+GEMINI.md

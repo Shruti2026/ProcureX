@@ -100,104 +100,105 @@ jobs:
         env:
           VITE_API_BASE_URL: http://placeholder-ci-build
 
-  # ---------------------------------------------------------------------------
-  # Job 3: Deploy — only on direct push to azure or master (not on pull requests)
-  # ---------------------------------------------------------------------------
-  deploy:
-    name: Deploy to Azure VM
-    runs-on: ubuntu-latest
-    needs: [backend-ci, frontend-ci]
-    # Skip deployment on pull requests — only deploy merged code
-    if: github.event_name == 'push'
+  # The following part was when the project was deployed on Azure.
+  # # ---------------------------------------------------------------------------
+  # # Job 3: Deploy — only on direct push to azure or master (not on pull requests)
+  # # ---------------------------------------------------------------------------
+  # deploy:
+  #   name: Deploy to Azure VM
+  #   runs-on: ubuntu-latest
+  #   needs: [backend-ci, frontend-ci]
+  #   # Skip deployment on pull requests — only deploy merged code
+  #   if: github.event_name == 'push'
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v6
 
-      - name: Download built JARs from backend-ci
-        uses: actions/download-artifact@v6
-        with:
-          name: backend-jars
-          path: backend
+  #     - name: Download built JARs from backend-ci
+  #       uses: actions/download-artifact@v6
+  #       with:
+  #         name: backend-jars
+  #         path: backend
 
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.VM_HOST }}" >> ~/.ssh/known_hosts
+  #     - name: Set up SSH key
+  #       run: |
+  #         mkdir -p ~/.ssh
+  #         echo "${{ secrets.VM_SSH_KEY }}" > ~/.ssh/deploy_key
+  #         chmod 600 ~/.ssh/deploy_key
+  #         ssh-keyscan -H "${{ secrets.VM_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Ensure deploy directory exists on VM
-        run: |
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
-            "sudo mkdir -p ${{ env.DEPLOY_PATH }} && sudo chown ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} ${{ env.DEPLOY_PATH }}"
+  #     - name: Ensure deploy directory exists on VM
+  #       run: |
+  #         ssh -i ~/.ssh/deploy_key \
+  #           -o StrictHostKeyChecking=no \
+  #           ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
+  #           "sudo mkdir -p ${{ env.DEPLOY_PATH }} && sudo chown ${{ secrets.VM_USER }}:${{ secrets.VM_USER }} ${{ env.DEPLOY_PATH }}"
 
-      - name: Copy project files to VM
-        # --delete removes files on the VM that were deleted in the repo.
-        # Exclusions keep node_modules, .git, and secrets untouched on the VM.
-        run: |
-          rsync -avz --delete \
-            --exclude '.git' \
-            --exclude 'frontend/node_modules' \
-            --exclude '.env.production' \
-            --exclude '*.log' \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-            ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ env.DEPLOY_PATH }}/
+  #     - name: Copy project files to VM
+  #       # --delete removes files on the VM that were deleted in the repo.
+  #       # Exclusions keep node_modules, .git, and secrets untouched on the VM.
+  #       run: |
+  #         rsync -avz --delete \
+  #           --exclude '.git' \
+  #           --exclude 'frontend/node_modules' \
+  #           --exclude '.env.production' \
+  #           --exclude '*.log' \
+  #           -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+  #           ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:${{ env.DEPLOY_PATH }}/
 
-      - name: Build images & restart containers on VM
-        run: |
-          ssh -i ~/.ssh/deploy_key \
-            -o StrictHostKeyChecking=no \
-            ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
-            'bash -s' << 'REMOTE_SCRIPT'
-          set -e
+  #     - name: Build images & restart containers on VM
+  #       run: |
+  #         ssh -i ~/.ssh/deploy_key \
+  #           -o StrictHostKeyChecking=no \
+  #           ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
+  #           'bash -s' << 'REMOTE_SCRIPT'
+  #         set -e
 
-          # Find docker regardless of install method (apt, snap, custom)
-          DOCKER_BIN=$(command -v docker || \
-                       ls /snap/bin/docker /usr/bin/docker /usr/local/bin/docker 2>/dev/null | head -1)
-          if [ -z "$DOCKER_BIN" ]; then
-            echo "ERROR: docker not found on VM. Please install Docker first."
-            exit 1
-          fi
-          echo "Using docker at: $DOCKER_BIN"
-          "$DOCKER_BIN" --version
+  #         # Find docker regardless of install method (apt, snap, custom)
+  #         DOCKER_BIN=$(command -v docker || \
+  #                      ls /snap/bin/docker /usr/bin/docker /usr/local/bin/docker 2>/dev/null | head -1)
+  #         if [ -z "$DOCKER_BIN" ]; then
+  #           echo "ERROR: docker not found on VM. Please install Docker first."
+  #           exit 1
+  #         fi
+  #         echo "Using docker at: $DOCKER_BIN"
+  #         "$DOCKER_BIN" --version
 
-          cd /opt/procurex
+  #         cd /opt/procurex
 
-          echo ">>> Pulling latest base images..."
-          "$DOCKER_BIN" compose -f docker-compose.prod.yml --env-file .env.production pull mysql rabbitmq
+  #         echo ">>> Pulling latest base images..."
+  #         "$DOCKER_BIN" compose -f docker-compose.prod.yml --env-file .env.production pull mysql rabbitmq
 
-          echo ">>> Rebuilding and restarting all services..."
-          "$DOCKER_BIN" compose -f docker-compose.prod.yml --env-file .env.production \
-            up -d --build --remove-orphans
+  #         echo ">>> Rebuilding and restarting all services..."
+  #         "$DOCKER_BIN" compose -f docker-compose.prod.yml --env-file .env.production \
+  #           up -d --build --remove-orphans
 
-          echo ">>> Waiting for gateway health check (up to 5 min)..."
-          HEALTHY=false
-          for i in $(seq 1 30); do
-            if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
-              echo "API Gateway is healthy."
-              HEALTHY=true
-              break
-            fi
-            echo "Attempt $i/30 — waiting 10s..."
-            sleep 10
-          done
+  #         echo ">>> Waiting for gateway health check (up to 5 min)..."
+  #         HEALTHY=false
+  #         for i in $(seq 1 30); do
+  #           if curl -sf http://localhost:8080/actuator/health > /dev/null 2>&1; then
+  #             echo "API Gateway is healthy."
+  #             HEALTHY=true
+  #             break
+  #           fi
+  #           echo "Attempt $i/30 — waiting 10s..."
+  #           sleep 10
+  #         done
 
-          if [ "$HEALTHY" = false ]; then
-            echo "ERROR: API Gateway did not become healthy within 5 minutes."
-            "$DOCKER_BIN" compose -f docker-compose.prod.yml logs --tail=50 api-gateway
-            exit 1
-          fi
+  #         if [ "$HEALTHY" = false ]; then
+  #           echo "ERROR: API Gateway did not become healthy within 5 minutes."
+  #           "$DOCKER_BIN" compose -f docker-compose.prod.yml logs --tail=50 api-gateway
+  #           exit 1
+  #         fi
 
-          echo ">>> Cleaning up unused images..."
-          "$DOCKER_BIN" image prune -f
+  #         echo ">>> Cleaning up unused images..."
+  #         "$DOCKER_BIN" image prune -f
 
-          echo ">>> Deployment complete."
-          "$DOCKER_BIN" compose -f docker-compose.prod.yml ps
-          REMOTE_SCRIPT
+  #         echo ">>> Deployment complete."
+  #         "$DOCKER_BIN" compose -f docker-compose.prod.yml ps
+  #         REMOTE_SCRIPT
 
-      - name: Clean up SSH key
-        if: always()
-        run: rm -f ~/.ssh/deploy_key
+  #     - name: Clean up SSH key
+  #       if: always()
+  #       run: rm -f ~/.ssh/deploy_key
