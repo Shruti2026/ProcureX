@@ -158,16 +158,20 @@ public class AuthServiceImpl implements AuthService {
         String accessToken  = jwtUtil.generateAccessToken(user);
         String refreshToken = jwtUtil.generateRefreshToken();
 
-        // 6. Persist refresh token (replace existing if any)
-        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
-        refreshTokenRepository.flush();
-
-        RefreshToken tokenEntity = RefreshToken.builder()
-                .user(user)
-                .token(refreshToken)
-                .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000))
-                .revoked(false)
-                .build();
+        // 6. Persist refresh token (upsert existing token entity to prevent duplicate key race condition)
+        RefreshToken tokenEntity = refreshTokenRepository.findByUser(user)
+                .map(existing -> {
+                    existing.setToken(refreshToken);
+                    existing.setExpiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000));
+                    existing.setRevoked(false);
+                    return existing;
+                })
+                .orElseGet(() -> RefreshToken.builder()
+                        .user(user)
+                        .token(refreshToken)
+                        .expiresAt(LocalDateTime.now(ZoneOffset.UTC).plusSeconds(refreshTokenExpiryMs / 1000))
+                        .revoked(false)
+                        .build());
         refreshTokenRepository.save(tokenEntity);
 
         // 7. Write audit log
@@ -224,16 +228,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(String refreshToken, HttpServletResponse httpResponse) {
-        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
-                .orElseThrow(() -> new ConflictException("You are already logged out"));
-
-        if (token.isRevoked()) {
-            throw new ConflictException("You are already logged out");
+        if (refreshToken != null && !refreshToken.isBlank()) {
+            refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
+                if (!token.isRevoked()) {
+                    token.setRevoked(true);
+                    refreshTokenRepository.save(token);
+                }
+            });
         }
-
-        token.setRevoked(true);
-        refreshTokenRepository.save(token);
-
         clearRefreshCookie(httpResponse);
     }
 
@@ -324,11 +326,8 @@ public class AuthServiceImpl implements AuthService {
         user.setAccountStatus(AccountStatus.INACTIVE);
         userRepository.save(user);
 
-        // Revoke active refresh token in DB
-        refreshTokenRepository.findByUser(user).ifPresent(token -> {
-            token.setRevoked(true);
-            refreshTokenRepository.save(token);
-        });
+        // Revoke all active refresh tokens in DB
+        refreshTokenRepository.revokeAllActiveByUser(user);
 
         // Clear refresh cookie
         clearRefreshCookie(response);

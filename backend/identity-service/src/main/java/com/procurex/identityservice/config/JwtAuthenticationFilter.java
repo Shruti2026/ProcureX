@@ -26,6 +26,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final com.procurex.identityservice.repository.UserRepository userRepository;
 
     /**
      * Validates the JWT from the Authorization header and, if valid,
@@ -46,22 +47,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String token = authHeader.substring(7);
 
-        if (!jwtUtil.isTokenValid(token)) {
+        try {
+            var claims = jwtUtil.extractClaims(token);
+            if (claims.getExpiration().before(new java.util.Date())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                String email = claims.getSubject();
+                String role  = claims.get("role", String.class);
+
+                // Reject access if user is inactive, locked, suspended, or pending
+                var userOpt = userRepository.findByEmail(email);
+                if (userOpt.isEmpty() || userOpt.get().getAccountStatus() != com.procurex.identityservice.entity.AccountStatus.ACTIVE) {
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                var authentication = new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            // Invalid or expired token — proceed without populating authentication context
             filterChain.doFilter(request, response);
             return;
-        }
-
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            String email = jwtUtil.extractEmail(token);
-            String role  = jwtUtil.extractClaims(token).get("role", String.class);
-
-            var authentication = new UsernamePasswordAuthenticationToken(
-                    email,
-                    null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
-            );
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);

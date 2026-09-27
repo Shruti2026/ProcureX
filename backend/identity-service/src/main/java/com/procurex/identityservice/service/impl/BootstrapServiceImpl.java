@@ -33,6 +33,10 @@ public class BootstrapServiceImpl implements BootstrapService {
     @Override
     @Transactional
     public UserRegisterResponse createInitialAdmin(BootstrapAdminRequest request) {
+        if (userRepository.existsByRoleRoleName(RoleName.ADMIN)) {
+            throw new ConflictException("Initial administrator account has already been bootstrapped");
+        }
+
         if (userRepository.existsByEmail(request.email())) {
             throw new ConflictException("A user with this email already exists");
         }

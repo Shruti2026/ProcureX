@@ -5,6 +5,7 @@ import {
   login as loginService,
   logout as logoutService,
   restoreSession,
+  decodeToken,
 } from "../services/authService";
 
 export const AuthContext = createContext(null);
@@ -36,10 +37,13 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     const data = await loginService(credentials);
 
+    const decoded = data?.accessToken ? decodeToken(data.accessToken) : null;
+
     const userObject = {
       id: data.userId,
       role: data.role,
       organizationId: data.organizationId,
+      email: decoded?.email || credentials.email,
     };
 
     setUser(userObject);

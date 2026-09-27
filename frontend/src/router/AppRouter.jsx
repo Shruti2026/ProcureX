@@ -46,13 +46,21 @@ export default function AppRouter({ user, onLogout }) {
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Root Redirect */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/"
+          element={
+            user ? (
+              <Navigate to={getDashboardPath(user.role) ?? "/unauthorized"} replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
 
         {/* Protected Layout */}
         <Route
           element={
             <DashboardLayout
-              user={user}
               onLogout={onLogout}
             />
           }

@@ -109,10 +109,6 @@ public class AuthController {
             @CookieValue(name = "refreshToken", required = false) String refreshToken,
             HttpServletResponse httpResponse) {
 
-        if (refreshToken == null || refreshToken.isBlank()) {
-            throw new com.procurex.identityservice.exception.ConflictException("You are already logged out");
-        }
-
         authService.logout(refreshToken, httpResponse);
 
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));

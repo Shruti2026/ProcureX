@@ -30,7 +30,7 @@ const schema = yup.object({
 export default function LoginPage() {
   const navigate = useNavigate()
 
-  const { setUser } = useAuth()
+  const { login: contextLogin } = useAuth()
 
   const [showPassword, setShowPassword] = useState(false)
 
@@ -85,31 +85,11 @@ export default function LoginPage() {
   /* ---------------- Login Mutation ---------------- */
 
   const loginMutation = useMutation({
-    mutationFn: login,
+    mutationFn: (formData) => contextLogin(formData),
 
     onSuccess: (data) => {
-      /**
-       * Expected backend response:
-       *
-       * {
-       *   accessToken,
-       *   expiresIn,
-       *   userId,
-       *   role,
-       *   organizationId
-       * }
-       */
-      const user = {
-        id: data.userId,
-        role: data.role,
-        organizationId: data.organizationId
-      }
-
-      setUser(user)
-
       toast.success('Login successful')
-
-      redirectUser(user)
+      redirectUser(data)
     },
 
     onError: (error) => {
