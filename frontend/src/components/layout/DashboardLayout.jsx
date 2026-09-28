@@ -13,13 +13,13 @@ export default function DashboardLayout({ onLogout }) {
   const userRole = user?.role
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-[var(--color-surface-subtle)]">
       <Sidebar userRole={userRole} />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         <Navbar user={user} onLogout={onLogout} />
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 bg-[var(--color-surface-subtle)]">
           <Outlet />
         </main>
       </div>

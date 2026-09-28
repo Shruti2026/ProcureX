@@ -59,10 +59,10 @@ export default function Sidebar({ userRole }) {
   const links = NAV_LINKS[userRole] || []
 
   return (
-    <aside className="w-60 bg-gray-900 text-white flex flex-col shrink-0">
+    <aside className="w-60 bg-white border-r border-[var(--color-surface-border)] flex flex-col shrink-0">
       {/* Brand */}
-      <div className="px-5 py-5 border-b border-gray-700">
-        <span className="text-lg font-bold text-white tracking-tight">ProcureX</span>
+      <div className="px-5 py-5 border-b border-[var(--color-surface-border)]">
+        <span className="text-lg font-bold text-primary-600 tracking-tight">ProcureX</span>
       </div>
 
       {/* Nav */}
@@ -73,21 +73,28 @@ export default function Sidebar({ userRole }) {
             to={path}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium',
                 isActive
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                  ? 'bg-primary-50 text-primary-700'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-150'
               )
             }
           >
-            <Icon size={17} className="shrink-0" />
-            {label}
+            {({ isActive }) => (
+              <>
+                <Icon
+                  size={17}
+                  className={clsx('shrink-0', isActive ? 'text-primary-600' : 'text-gray-400')}
+                />
+                {label}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-gray-700 text-xs text-gray-500">
+      <div className="px-5 py-4 border-t border-[var(--color-surface-border)] text-xs text-gray-400">
         ProcureX v1.0
       </div>
     </aside>

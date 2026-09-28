@@ -6,14 +6,23 @@ import Spinner from './Spinner'
  *
  * Usage:
  *   <Table columns={['Name', 'Status', 'Date']} loading={isLoading} empty={data.length === 0}>
- *     {data.map(row => (
- *       <tr key={row.id}>
+ *     {data.map((row, i) => (
+ *       <tr
+ *         key={row.id}
+ *         className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+ *         style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
+ *       >
  *         <Table.Td>{row.name}</Table.Td>
  *         <Table.Td><Badge status={row.status} /></Table.Td>
  *         <Table.Td>{formatDate(row.createdAt)}</Table.Td>
  *       </tr>
  *     ))}
  *   </Table>
+ *
+ * Stagger delay pattern — define once above your component:
+ *   const reducedMotion =
+ *     typeof window !== 'undefined' &&
+ *     window.matchMedia('(prefers-reduced-motion: reduce)').matches
  */
 export default function Table({
   columns = [],
@@ -24,7 +33,7 @@ export default function Table({
   className,
 }) {
   return (
-    <div className={clsx('overflow-x-auto rounded-lg border border-gray-200', className)}>
+    <div className={clsx('overflow-x-auto rounded-xl border border-gray-200', className)}>
       <table className="min-w-full divide-y divide-gray-200 text-sm">
         <thead className="bg-gray-50">
           <tr>
@@ -32,7 +41,7 @@ export default function Table({
               <th
                 key={col}
                 scope="col"
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider"
               >
                 {col}
               </th>
@@ -44,7 +53,7 @@ export default function Table({
             <tr>
               <td colSpan={columns.length} className="px-4 py-10 text-center">
                 <div className="flex justify-center">
-                  <Spinner size="lg" className="text-primary-600" />
+                  <Spinner size="lg" className="text-primary-500" />
                 </div>
               </td>
             </tr>

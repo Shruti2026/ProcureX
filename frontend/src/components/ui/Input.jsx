@@ -32,8 +32,8 @@ const Input = forwardRef(function Input(
           'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
           'disabled:bg-gray-50 disabled:cursor-not-allowed',
           error
-            ? 'border-red-400 focus:ring-red-400'
-            : 'border-gray-300',
+            ? 'border-red-300 focus:ring-red-400'
+            : 'border-gray-200',
           className
         )}
         {...props}

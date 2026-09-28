@@ -40,7 +40,7 @@ export default function Navbar({ user, onLogout }) {
           <button
             id="navbar-notifications-btn"
             aria-label="Notifications"
-            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors duration-150"
           >
             <Bell size={20} />
           </button>
@@ -76,7 +76,7 @@ export default function Navbar({ user, onLogout }) {
 
             {/* Dropdown panel */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-52 rounded-xl border border-gray-200 bg-white shadow-lg ring-1 ring-black/5 py-1 z-50 animate-fade-in">
+              <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[var(--color-surface-border)] bg-white shadow-lg ring-1 ring-black/5 py-1 z-50 animate-fade-slide-up [animation-duration:150ms]">
                 {/* Role badge row */}
                 {userRole && (
                   <div className="px-4 py-2 border-b border-gray-100">
@@ -92,7 +92,7 @@ export default function Navbar({ user, onLogout }) {
                     setDropdownOpen(false)
                     setChangePasswordOpen(true)
                   }}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                 >
                   <KeyRound size={16} className="text-gray-500" />
                   Change Password
@@ -109,7 +109,7 @@ export default function Navbar({ user, onLogout }) {
                     setDropdownOpen(false)
                     onLogout()
                   }}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                 >
                   <LogOut size={16} className="text-red-500" />
                   Logout

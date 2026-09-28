@@ -8,12 +8,41 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 
-// Dashboards
+// Admin Pages
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import UsersPage from "../pages/admin/UsersPage";
+import AuditLogsPage from "../pages/admin/AuditLogsPage";
+import HealthPage from "../pages/admin/HealthPage";
+
+// Procurement Pages
 import ProcurementDashboard from "../pages/procurement/ProcurementDashboard";
+import RequisitionsPage from "../pages/procurement/RequisitionsPage";
+import RfqsPage from "../pages/procurement/RfqsPage";
+import OrdersPage from "../pages/procurement/OrdersPage";
+import AnalyticsPage from "../pages/procurement/AnalyticsPage";
+
+// Inventory Pages
 import InventoryDashboard from "../pages/inventory/InventoryDashboard";
+import StockPage from "../pages/inventory/StockPage";
+import WarehousesPage from "../pages/inventory/WarehousesPage";
+import GrnsPage from "../pages/inventory/GrnsPage";
+import TransactionsPage from "../pages/inventory/TransactionsPage";
+
+// Finance Pages
 import FinanceDashboard from "../pages/finance/FinanceDashboard";
+import InvoicesPage from "../pages/finance/InvoicesPage";
+import BudgetsPage from "../pages/finance/BudgetsPage";
+import PaymentsPage from "../pages/finance/PaymentsPage";
+
+// Vendor Pages
 import VendorDashboard from "../pages/vendor/VendorDashboard";
+import VendorRfqsPage from "../pages/vendor/VendorRfqsPage";
+import VendorQuotationsPage from "../pages/vendor/VendorQuotationsPage";
+import VendorOrdersPage from "../pages/vendor/VendorOrdersPage";
+import VendorInvoicesPage from "../pages/vendor/VendorInvoicesPage";
+
+// Shared Pages
+import NotificationsPage from "../pages/NotificationsPage";
 
 import { ROLES } from "../constants/roles";
 
@@ -76,8 +105,20 @@ export default function AppRouter({ user, onLogout }) {
                     element={<AdminDashboard />}
                   />
                   <Route
+                    path="users"
+                    element={<UsersPage />}
+                  />
+                  <Route
+                    path="audit-logs"
+                    element={<AuditLogsPage />}
+                  />
+                  <Route
+                    path="health"
+                    element={<HealthPage />}
+                  />
+                  <Route
                     path="*"
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="/admin/dashboard" replace />}
                   />
                 </Routes>
               </ProtectedRoute>
@@ -100,8 +141,24 @@ export default function AppRouter({ user, onLogout }) {
                     element={<ProcurementDashboard />}
                   />
                   <Route
+                    path="requisitions"
+                    element={<RequisitionsPage />}
+                  />
+                  <Route
+                    path="rfqs"
+                    element={<RfqsPage />}
+                  />
+                  <Route
+                    path="orders"
+                    element={<OrdersPage />}
+                  />
+                  <Route
+                    path="analytics"
+                    element={<AnalyticsPage />}
+                  />
+                  <Route
                     path="*"
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="/procurement/dashboard" replace />}
                   />
                 </Routes>
               </ProtectedRoute>
@@ -124,8 +181,24 @@ export default function AppRouter({ user, onLogout }) {
                     element={<InventoryDashboard />}
                   />
                   <Route
+                    path="stock"
+                    element={<StockPage />}
+                  />
+                  <Route
+                    path="warehouses"
+                    element={<WarehousesPage />}
+                  />
+                  <Route
+                    path="grns"
+                    element={<GrnsPage />}
+                  />
+                  <Route
+                    path="transactions"
+                    element={<TransactionsPage />}
+                  />
+                  <Route
                     path="*"
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="/inventory/dashboard" replace />}
                   />
                 </Routes>
               </ProtectedRoute>
@@ -148,8 +221,20 @@ export default function AppRouter({ user, onLogout }) {
                     element={<FinanceDashboard />}
                   />
                   <Route
+                    path="invoices"
+                    element={<InvoicesPage />}
+                  />
+                  <Route
+                    path="budgets"
+                    element={<BudgetsPage />}
+                  />
+                  <Route
+                    path="payments"
+                    element={<PaymentsPage />}
+                  />
+                  <Route
                     path="*"
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="/finance/dashboard" replace />}
                   />
                 </Routes>
               </ProtectedRoute>
@@ -169,10 +254,36 @@ export default function AppRouter({ user, onLogout }) {
                     element={<VendorDashboard />}
                   />
                   <Route
+                    path="rfqs"
+                    element={<VendorRfqsPage />}
+                  />
+                  <Route
+                    path="quotations"
+                    element={<VendorQuotationsPage />}
+                  />
+                  <Route
+                    path="orders"
+                    element={<VendorOrdersPage />}
+                  />
+                  <Route
+                    path="invoices"
+                    element={<VendorInvoicesPage />}
+                  />
+                  <Route
                     path="*"
-                    element={<Navigate to="dashboard" replace />}
+                    element={<Navigate to="/vendor/dashboard" replace />}
                   />
                 </Routes>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Shared Notifications */}
+          <Route
+            path="/notifications"
+            element={
+              <ProtectedRoute allowedRoles={Object.values(ROLES)}>
+                <NotificationsPage />
               </ProtectedRoute>
             }
           />

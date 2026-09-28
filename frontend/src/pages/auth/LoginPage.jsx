@@ -106,13 +106,13 @@ export default function LoginPage() {
     loginMutation.mutate(formData)
   }
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl shadow-gray-200/60 ring-1 ring-gray-200 p-8 animate-fade-slide-up">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-100">
-            <LogIn className="h-8 w-8 text-primary-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50">
+            <LogIn size={32} className="text-primary-600" />
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">
