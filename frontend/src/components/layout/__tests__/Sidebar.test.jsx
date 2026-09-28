@@ -158,4 +158,30 @@ describe('Property 1 — Active navigation link styling invariant', () => {
       { numRuns: 50 }
     )
   })
+
+  // ── Collapsible behavior tests ─────────────────────────────────────────────
+  it('renders collapsed state with w-16 and expand button', () => {
+    const { container, getByRole } = render(
+      <MemoryRouter initialEntries={['/admin/dashboard']}>
+        <Sidebar userRole={ROLES.ADMIN} collapsed={true} onToggle={() => {}} />
+      </MemoryRouter>
+    )
+
+    const aside = container.querySelector('aside')
+    expect(aside.className).toContain('w-16')
+    // The expand button (Menu icon) should be present in the header
+    expect(getByRole('button', { name: /expand sidebar/i })).toBeDefined()
+  })
+
+  it('renders expanded state with w-60 and full brand title', () => {
+    const { container, getByText } = render(
+      <MemoryRouter initialEntries={['/admin/dashboard']}>
+        <Sidebar userRole={ROLES.ADMIN} collapsed={false} onToggle={() => {}} />
+      </MemoryRouter>
+    )
+
+    const aside = container.querySelector('aside')
+    expect(aside.className).toContain('w-60')
+    expect(getByText('ProcureX')).toBeDefined()
+  })
 })

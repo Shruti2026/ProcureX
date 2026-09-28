@@ -28,12 +28,7 @@ export default function Navbar({ user, onLogout }) {
 
   return (
     <>
-      <nav className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between shrink-0 z-30">
-        {/* Logo */}
-        <span className="text-xl font-bold text-primary-600 tracking-tight">
-          ProcureX
-        </span>
-
+      <nav className="h-16 bg-white border-b border-[var(--color-surface-border)] px-6 flex items-center justify-end shrink-0 z-30">
         {/* Right side */}
         <div className="flex items-center gap-4">
           {/* Notification bell */}
