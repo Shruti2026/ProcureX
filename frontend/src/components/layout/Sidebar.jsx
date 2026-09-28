@@ -15,6 +15,8 @@ import {
   Bell,
   Tag,
   Boxes,
+  ChevronLeft,
+  Menu,
 } from 'lucide-react'
 import { ROLES } from '../../constants/roles'
 
@@ -55,38 +57,93 @@ const NAV_LINKS = {
   ],
 }
 
-export default function Sidebar({ userRole }) {
+export default function Sidebar({ userRole, collapsed = false, onToggle }) {
   const links = NAV_LINKS[userRole] || []
 
   return (
-    <aside className="w-60 bg-white border-r border-[var(--color-surface-border)] flex flex-col shrink-0">
-      {/* Brand */}
-      <div className="px-5 py-5 border-b border-[var(--color-surface-border)]">
-        <span className="text-lg font-bold text-primary-600 tracking-tight">ProcureX</span>
+    <aside
+      className={clsx(
+        'bg-white border-r border-[var(--color-surface-border)] flex flex-col shrink-0 transition-all duration-200 ease-in-out',
+        collapsed ? 'w-16' : 'w-60'
+      )}
+    >
+      {/* Brand & Toggle */}
+      <div
+        className={clsx(
+          'h-16 flex items-center border-b border-[var(--color-surface-border)] shrink-0',
+          collapsed ? 'justify-center px-2' : 'justify-between px-5'
+        )}
+      >
+        {collapsed ? (
+          /* When collapsed: show PX abbreviation centered */
+          <span
+            className="text-base font-bold text-primary-600 tracking-tight select-none"
+            title="ProcureX"
+          >
+            PX
+          </span>
+        ) : (
+          /* When expanded: brand on left, collapse button on right */
+          <>
+            <span
+              className="text-lg font-bold text-primary-600 tracking-tight"
+              title="ProcureX"
+            >
+              ProcureX
+            </span>
+
+            {onToggle && (
+              <button
+                type="button"
+                onClick={onToggle}
+                aria-label="Collapse sidebar"
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Collapse sidebar"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <nav className={clsx('flex-1 overflow-y-auto py-4 space-y-1', collapsed ? 'px-2' : 'px-3')}>
+        {/* Hamburger expand button at top of nav — visible only when collapsed */}
+        {collapsed && onToggle && (
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+            className="flex w-full justify-center p-2.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors mb-1"
+          >
+            <Menu size={18} />
+          </button>
+        )}
+
         {links.map(({ label, path, icon: Icon }) => (
           <NavLink
             key={path}
             to={path}
+            title={collapsed ? label : undefined}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium',
+                'flex items-center rounded-lg text-sm font-medium transition-colors duration-150',
+                collapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2',
                 isActive
                   ? 'bg-primary-50 text-primary-700'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-150'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
               )
             }
           >
             {({ isActive }) => (
               <>
                 <Icon
-                  size={17}
+                  size={18}
                   className={clsx('shrink-0', isActive ? 'text-primary-600' : 'text-gray-400')}
                 />
-                {label}
+                {!collapsed && <span className="truncate">{label}</span>}
               </>
             )}
           </NavLink>
@@ -94,9 +151,11 @@ export default function Sidebar({ userRole }) {
       </nav>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-[var(--color-surface-border)] text-xs text-gray-400">
-        ProcureX v1.0
-      </div>
+      {!collapsed && (
+        <div className="px-5 py-4 border-t border-[var(--color-surface-border)] text-xs text-gray-400 shrink-0">
+          ProcureX v1.0
+        </div>
+      )}
     </aside>
   )
 }
