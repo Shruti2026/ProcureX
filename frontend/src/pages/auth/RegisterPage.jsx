@@ -14,6 +14,7 @@ import {
   UserPlus,
   Building,
   Phone,
+  CheckCircle2,
 } from "lucide-react";
 
 import Input from "../../components/ui/Input";
@@ -98,10 +99,10 @@ export default function RegisterPage() {
 
   if (isRegistered) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <UserPlus className="h-8 w-8 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-xl shadow-gray-200/60 ring-1 ring-gray-200 p-8 text-center animate-fade-slide-up">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+            <CheckCircle2 size={32} className="text-green-600" />
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">
@@ -128,13 +129,13 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl shadow-gray-200/60 ring-1 ring-gray-200 p-8 animate-fade-slide-up">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-100">
-            <UserPlus className="h-8 w-8 text-primary-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary-50">
+            <UserPlus size={32} className="text-primary-600" />
           </div>
 
           <h1 className="text-3xl font-bold text-gray-900">
@@ -298,4 +299,4 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-}
+}
