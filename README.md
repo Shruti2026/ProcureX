@@ -44,7 +44,6 @@ ProcureX/
 │   ├── finance-service/          # Invoice, Payment, Budget (port 8085)
 │   ├── notification-service/     # Email & In-App Notifications (port 8086)
 │   └── analytics-service/        # Reporting & Metrics (port 8087)
-└── docs/                         # Project Documentation
 ```
 
 ## 🚀 How to Run
