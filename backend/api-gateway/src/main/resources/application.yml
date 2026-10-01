@@ -6,6 +6,9 @@ cors:
   # Override with CORS_ALLOWED_ORIGINS env var in production (e.g. "http://your-vm-domain.com").
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
 
+jwt:
+  secret: ${JWT_SECRET:404D6351665468576D5A7134743777217A25432A462D4A614E645267556B5870}
+
 spring:
   application:
     name: procurex-api-gateway
@@ -24,6 +27,14 @@ spring:
               uri: lb://procurex-identity-service
               predicates:
                 - Path=/api/v1/admin/**
+            - id: vendor-catalog-service
+              uri: lb://procurex-vendor-catalog-service
+              predicates:
+                - Path=/api/v1/vendors/**, /api/v1/products/**, /api/v1/categories/**
+            - id: procurement-service
+              uri: lb://procurex-procurement-service
+              predicates:
+                - Path=/api/v1/procurement/**
 
 eureka:
   client:
