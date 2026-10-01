@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import toast from 'react-hot-toast'
-import { Eye, Plus, PlusCircle, Trash2, X, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
+import { ArrowLeft, Pencil, PlusCircle, Trash2, X, FileText } from 'lucide-react'
 import clsx from 'clsx'
 
 import Button from '../../components/ui/Button'
@@ -13,17 +13,17 @@ import Input from '../../components/ui/Input'
 import Badge from '../../components/ui/Badge'
 import Table from '../../components/ui/Table'
 import Spinner from '../../components/ui/Spinner'
-import { formatDate } from '../../utils/formatters'
+import { formatDate, formatDateTime } from '../../utils/formatters'
 import {
-  getRequisitions,
-  createRequisition,
+  getRequisitionById,
+  updateRequisition,
   getProducts,
 } from '../../services/requisitionService'
 
 /* ─────────────────────────────────────────
-   Validation schema for CreateRequisitionModal
+   Validation schema for EditRequisitionModal
 ───────────────────────────────────────── */
-const createSchema = yup.object({
+const editSchema = yup.object({
   title: yup
     .string()
     .required('Title is required')
@@ -48,23 +48,20 @@ const createSchema = yup.object({
     .min(1, 'At least one item is required'),
 })
 
-/* ─────────────────────────────────────────
-   Status filter tabs configuration
-───────────────────────────────────────── */
-const STATUS_TABS = [
-  { label: 'All', value: '' },
-  { label: 'Created', value: 'CREATED' },
-  { label: 'RFQ Created', value: 'RFQ_CREATED' },
-  { label: 'Closed', value: 'CLOSED' },
-]
-
-const TABLE_COLUMNS = ['Req. Number', 'Title', 'Status', 'Required Date', 'Created', 'Actions']
+const ITEMS_COLUMNS = ['Product', 'Unit', 'Quantity', 'Remarks']
 
 /* ─────────────────────────────────────────
-   CreateRequisitionModal (inline)
+   EditRequisitionModal (inline)
 ───────────────────────────────────────── */
-function CreateRequisitionModal({ isOpen, onClose }) {
+function EditRequisitionModal({ isOpen, onClose, requisition }) {
   const queryClient = useQueryClient()
+
+  const defaultItems =
+    requisition?.items?.map((item) => ({
+      productId: item.productId ?? item.product?.id ?? '',
+      quantity: item.quantity ?? 1,
+      remarks: item.remarks ?? '',
+    })) ?? [{ productId: '', quantity: 1, remarks: '' }]
 
   const {
     register,
@@ -73,18 +70,20 @@ function CreateRequisitionModal({ isOpen, onClose }) {
     reset,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(createSchema),
+    resolver: yupResolver(editSchema),
     defaultValues: {
-      title: '',
-      requiredDate: '',
-      description: '',
-      items: [{ productId: '', quantity: 1, remarks: '' }],
+      title: requisition?.title ?? '',
+      requiredDate: requisition?.requiredDate
+        ? requisition.requiredDate.substring(0, 10)
+        : '',
+      description: requisition?.description ?? '',
+      items: defaultItems,
     },
   })
 
   const { fields, append, remove } = useFieldArray({ control, name: 'items' })
 
-  /* Fetch products for the selector */
+  /* Fetch products */
   const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ['products'],
     queryFn: () => getProducts(),
@@ -94,15 +93,15 @@ function CreateRequisitionModal({ isOpen, onClose }) {
   const products = productsData?.content ?? productsData ?? []
 
   const mutation = useMutation({
-    mutationFn: (payload) => createRequisition(payload),
+    mutationFn: (payload) => updateRequisition(requisition.id, payload),
     onSuccess: () => {
-      toast.success('Requisition created successfully')
+      toast.success('Requisition updated successfully')
+      queryClient.invalidateQueries({ queryKey: ['requisition', requisition.id] })
       queryClient.invalidateQueries({ queryKey: ['requisitions'] })
-      reset()
       onClose()
     },
     onError: (err) => {
-      toast.error(err?.response?.data?.message || 'Failed to create requisition')
+      toast.error(err?.response?.data?.message || 'Failed to update requisition')
     },
   })
 
@@ -141,8 +140,10 @@ function CreateRequisitionModal({ isOpen, onClose }) {
                 <FileText className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-white">New Purchase Requisition</h2>
-                <p className="text-xs text-primary-100">Fill in the details below</p>
+                <h2 className="text-lg font-semibold text-white">Edit Requisition</h2>
+                <p className="text-xs text-primary-100">
+                  {requisition?.requisitionNumber ?? ''}
+                </p>
               </div>
             </div>
             <button
@@ -307,7 +308,7 @@ function CreateRequisitionModal({ isOpen, onClose }) {
               className="flex-1"
               loading={mutation.isPending}
             >
-              Create Requisition
+              Save Changes
             </Button>
           </div>
         </form>
@@ -317,144 +318,150 @@ function CreateRequisitionModal({ isOpen, onClose }) {
 }
 
 /* ─────────────────────────────────────────
-   RequisitionsPage
+   RequisitionDetailPage
 ───────────────────────────────────────── */
-export default function RequisitionsPage() {
+export default function RequisitionDetailPage() {
+  const { requisitionId } = useParams()
   const navigate = useNavigate()
-  const [activeStatus, setActiveStatus] = useState('')
-  const [page, setPage] = useState(0)
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['requisitions', { status: activeStatus, page }],
-    queryFn: () =>
-      getRequisitions({
-        ...(activeStatus ? { status: activeStatus } : {}),
-        page,
-        size: 20,
-      }),
-    keepPreviousData: true,
+  const { data: requisition, isLoading, isError } = useQuery({
+    queryKey: ['requisition', requisitionId],
+    queryFn: () => getRequisitionById(requisitionId),
+    retry: (failCount, error) => {
+      if (error?.response?.status === 404) return false
+      return failCount < 2
+    },
   })
 
-  const requisitions = data?.content ?? data ?? []
-  const totalPages = data?.totalPages ?? 1
-  const isFirst = page === 0
-  const isLast = page >= totalPages - 1
-
-  const handleStatusChange = (value) => {
-    setActiveStatus(value)
-    setPage(0)
+  /* ── Loading ── */
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Spinner size="lg" className="text-primary-500" />
+      </div>
+    )
   }
+
+  /* ── Not found / error ── */
+  if (isError || !requisition) {
+    return (
+      <div className="space-y-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/procurement/requisitions')}
+        >
+          <ArrowLeft size={15} />
+          Back to Requisitions
+        </Button>
+        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
+          <p className="text-gray-500">Requisition not found.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const items = requisition.items ?? []
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Purchase Requisitions</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Create, track, and manage internal purchase requisitions.
-          </p>
-        </div>
-        <Button
-          variant="primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
-          <Plus size={16} />
-          New Requisition
-        </Button>
-      </div>
 
-      {/* Status filter tabs */}
-      <div className="flex gap-1 border-b border-gray-200">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.value}
-            type="button"
-            onClick={() => handleStatusChange(tab.value)}
-            className={clsx(
-              'px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none',
-              activeStatus === tab.value
-                ? 'border-b-2 border-primary-600 text-primary-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Table */}
-      <Table
-        columns={TABLE_COLUMNS}
-        loading={isLoading}
-        empty={!isLoading && requisitions.length === 0}
-        emptyMessage="No requisitions found."
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate('/procurement/requisitions')}
       >
-        {requisitions.map((row, i) => (
-          <tr
-            key={row.id}
-            className="hover:bg-gray-50 transition-colors duration-100"
-          >
-            <Table.Td className="font-mono text-xs text-gray-500">
-              {row.requisitionNumber ?? row.id?.slice(-8).toUpperCase()}
-            </Table.Td>
-            <Table.Td className="font-medium text-gray-900 max-w-[220px] truncate">
-              {row.title}
-            </Table.Td>
-            <Table.Td>
-              <Badge status={row.status} />
-            </Table.Td>
-            <Table.Td>{formatDate(row.requiredDate)}</Table.Td>
-            <Table.Td>{formatDate(row.createdAt)}</Table.Td>
-            <Table.Td>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(`/procurement/requisitions/${row.id}`)}
-              >
-                <Eye size={14} />
-                View
-              </Button>
-            </Table.Td>
-          </tr>
-        ))}
-      </Table>
+        <ArrowLeft size={15} />
+        Back to Requisitions
+      </Button>
 
-      {/* Pagination */}
-      {!isLoading && requisitions.length > 0 && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-gray-500">
-            Page {page + 1} of {totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isFirst}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <ChevronLeft size={15} />
-              Prev
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isLast}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-              <ChevronRight size={15} />
-            </Button>
+      {/* Header card */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="font-mono text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                {requisition.requisitionNumber ?? requisition.id?.slice(-8).toUpperCase()}
+              </span>
+              <Badge status={requisition.status} />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900">{requisition.title}</h1>
+            {requisition.description && (
+              <p className="text-sm text-gray-500 max-w-2xl">{requisition.description}</p>
+            )}
           </div>
+        </div>
+
+        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 pt-5">
+          <div>
+            <dt className="text-xs text-gray-400 uppercase tracking-wide">Required By</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800">
+              {formatDate(requisition.requiredDate)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-gray-400 uppercase tracking-wide">Created</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800">
+              {formatDateTime(requisition.createdAt)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-gray-400 uppercase tracking-wide">Last Updated</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800">
+              {formatDateTime(requisition.updatedAt)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-gray-400 uppercase tracking-wide">Items</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800">{items.length}</dd>
+          </div>
+        </dl>
+      </div>
+
+      {/* Items table */}
+      <div>
+        <h2 className="text-base font-semibold text-gray-800 mb-3">Requisition Items</h2>
+        <Table
+          columns={ITEMS_COLUMNS}
+          empty={items.length === 0}
+          emptyMessage="No items on this requisition."
+        >
+          {items.map((item, i) => (
+            <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
+              <Table.Td className="font-medium text-gray-900">
+                {item.productName ?? item.product?.name ?? '—'}
+              </Table.Td>
+              <Table.Td>{item.unitOfMeasure ?? item.product?.unitOfMeasure ?? '—'}</Table.Td>
+              <Table.Td>{item.quantity}</Table.Td>
+              <Table.Td className="text-gray-500">{item.remarks || '—'}</Table.Td>
+            </tr>
+          ))}
+        </Table>
+      </div>
+
+      {/* Action bar — only visible when CREATED */}
+      {requisition.status === 'CREATED' && (
+        <div className="flex justify-end border-t border-gray-100 pt-4">
+          <Button
+            variant="secondary"
+            onClick={() => setIsEditOpen(true)}
+          >
+            <Pencil size={15} />
+            Edit Requisition
+          </Button>
         </div>
       )}
 
-      {/* Create modal */}
-      <CreateRequisitionModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-      />
+      {/* Edit modal — only mounted when status is CREATED */}
+      {requisition.status === 'CREATED' && (
+        <EditRequisitionModal
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          requisition={requisition}
+        />
+      )}
     </div>
   )
 }
