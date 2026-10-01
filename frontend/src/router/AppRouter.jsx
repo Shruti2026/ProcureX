@@ -17,6 +17,7 @@ import HealthPage from "../pages/admin/HealthPage";
 // Procurement Pages
 import ProcurementDashboard from "../pages/procurement/ProcurementDashboard";
 import RequisitionsPage from "../pages/procurement/RequisitionsPage";
+import RequisitionDetailPage from "../pages/procurement/RequisitionDetailPage";
 import RfqsPage from "../pages/procurement/RfqsPage";
 import OrdersPage from "../pages/procurement/OrdersPage";
 import AnalyticsPage from "../pages/procurement/AnalyticsPage";
@@ -143,6 +144,10 @@ export default function AppRouter({ user, onLogout }) {
                   <Route
                     path="requisitions"
                     element={<RequisitionsPage />}
+                  />
+                  <Route
+                    path="requisitions/:requisitionId"
+                    element={<RequisitionDetailPage />}
                   />
                   <Route
                     path="rfqs"
