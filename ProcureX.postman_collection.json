@@ -209,11 +209,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Wed, 05 Aug 2026 11:43:53 GMT"
+                  "value": "Mon, 28 Sep 2026 14:11:58 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"da63ac65-6454-4003-921d-a0a40826192d\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"kUlcrpw4vsT@Wcqj\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"a7c1203d-a0b1-4cb0-8189-662d94bc90b5\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"x4VTF@FtCr0K@VAd\"\n    }\n}"
             }
           ]
         },
@@ -332,11 +332,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Wed, 05 Aug 2026 11:44:09 GMT"
+                  "value": "Mon, 28 Sep 2026 14:12:10 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"2135aa2d-ef9d-49bb-92ee-5ad7a723fdba\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"l58mJixmsSkXzUPn\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"263e63be-8587-47b0-8ed0-8c4511cc81ae\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"vwpSUcwzlBDS3NX$\"\n    }\n}"
             }
           ]
         },
@@ -455,11 +455,11 @@
                 },
                 {
                   "key": "Date",
-                  "value": "Wed, 05 Aug 2026 11:44:26 GMT"
+                  "value": "Mon, 28 Sep 2026 14:12:19 GMT"
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"c365c7ec-b609-4e05-a0dd-c951457ef3e6\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"fA3Y8!QBGlvgDyo3\"\n    }\n}"
+              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"574853fe-0458-4571-b081-568be8322944\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"$0Fx2suW4eyv2UNO\"\n    }\n}"
             }
           ]
         },
@@ -571,7 +571,7 @@
             "method": "PUT",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/admin/vendors/b6bfb8b4-7572-4a12-b8d2-cf91acaf0d2d/approve",
+              "raw": "{{BASE_URL}}/api/v1/admin/vendors/f01640bb-49c3-429e-953f-939f35167d38/approve",
               "host": [
                 "{{BASE_URL}}"
               ],
@@ -580,7 +580,7 @@
                 "v1",
                 "admin",
                 "vendors",
-                "b6bfb8b4-7572-4a12-b8d2-cf91acaf0d2d",
+                "f01640bb-49c3-429e-953f-939f35167d38",
                 "approve"
               ]
             }
@@ -841,7 +841,7 @@
       "name": "Vendors",
       "item": [
         {
-          "name": "1_Self_Registration",
+          "name": "01_Self_Registration",
           "request": {
             "method": "POST",
             "header": [],
@@ -871,25 +871,15 @@
           "response": []
         },
         {
-          "name": "2_Vendor_Login",
+          "name": "02_Vendor_Login",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"VENDOR_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"Vendor token updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"VENDOR_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"Vendor token updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -921,25 +911,15 @@
           "response": []
         },
         {
-          "name": "3_Refresh_Token",
+          "name": "03_Refresh_Token",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"VENDOR_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"Vendor token updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"VENDOR_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"Vendor token updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -965,7 +945,7 @@
           "response": []
         },
         {
-          "name": "4_Get_Self_Profile_Details",
+          "name": "04_Get_Self_Profile_Details",
           "request": {
             "auth": {
               "type": "bearer",
@@ -995,7 +975,7 @@
           "response": []
         },
         {
-          "name": "5_Change_Password",
+          "name": "05_Change_Password",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1034,7 +1014,7 @@
           "response": []
         },
         {
-          "name": "6_Logout",
+          "name": "06_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1064,20 +1044,7 @@
           "response": []
         },
         {
-          "name": "7_Vendor_Self_Delete",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
+          "name": "07_Vendor_Self_Delete",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1113,25 +1080,15 @@
       "name": "Procurement Manager",
       "item": [
         {
-          "name": "1_Login",
+          "name": "01_Login",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"PROCUREMENT MANAGER token updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"PROCUREMENT_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1163,25 +1120,15 @@
           "response": []
         },
         {
-          "name": "2_Refresh_Token",
+          "name": "02_Refresh_Token",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"PROCUREMENT_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"PROCUREMENT MANAGER token updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"PROCUREMENT_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1207,7 +1154,7 @@
           "response": []
         },
         {
-          "name": "3_Get_Self_Profile_Details",
+          "name": "03_Get_Self_Profile_Details",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1231,6 +1178,25 @@
                 "v1",
                 "auth",
                 "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04_Create_Category",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": [
+                "{{BASE_URL}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "categories"
               ]
             }
           },
@@ -1312,25 +1278,15 @@
       "name": "Inventory Manager",
       "item": [
         {
-          "name": "1_Login",
+          "name": "01_Login",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"INVENTORY_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"INVENTORY_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1362,25 +1318,15 @@
           "response": []
         },
         {
-          "name": "2_Refresh_Token",
+          "name": "02_Refresh_Token",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"INVENTORY_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"INVENTORY_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1406,7 +1352,7 @@
           "response": []
         },
         {
-          "name": "3_Get_Self_Profile_Details",
+          "name": "03_Get_Self_Profile_Details",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1436,7 +1382,7 @@
           "response": []
         },
         {
-          "name": "4_Change_Password",
+          "name": "04_Change_Password",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1475,7 +1421,7 @@
           "response": []
         },
         {
-          "name": "5_Logout",
+          "name": "05_Logout",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1511,25 +1457,15 @@
       "name": "Finance Manager",
       "item": [
         {
-          "name": "1_Login",
+          "name": "01_Login",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"FINANCE_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"FINANCE MANAGER TOKEN updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"FINANCE_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1561,25 +1497,15 @@
           "response": []
         },
         {
-          "name": "2_Refresh_Token",
+          "name": "02_Refresh_Token",
           "event": [
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"FINANCE_MANAGER_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"FINANCE MANAGER TOKEN updated!\");\r",
-                  "}"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"FINANCE_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
+                ]
               }
             }
           ],
@@ -1605,7 +1531,7 @@
           "response": []
         },
         {
-          "name": "3_Get_Self_Profile_Details",
+          "name": "03_Get_Self_Profile_Details",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1635,7 +1561,7 @@
           "response": []
         },
         {
-          "name": "4_Change_Password",
+          "name": "04_Change_Password",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1674,7 +1600,7 @@
           "response": []
         },
         {
-          "name": "5_Logout",
+          "name": "05_Logout",
           "request": {
             "auth": {
               "type": "bearer",
