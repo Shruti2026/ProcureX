@@ -19,6 +19,14 @@ spring:
               uri: lb://procurex-identity-service
               predicates:
                 - Path=/api/v1/admin/**
+            - id: vendor-catalog-service
+              uri: lb://procurex-vendor-catalog-service
+              predicates:
+                - Path=/api/v1/vendors/**, /api/v1/products/**, /api/v1/categories/**
+            - id: procurement-service
+              uri: lb://procurex-procurement-service
+              predicates:
+                - Path=/api/v1/procurement/**
 
 eureka:
   client:
