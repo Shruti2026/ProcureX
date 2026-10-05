@@ -104,8 +104,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGeneral(
             Exception ex, HttpServletRequest request) {
 
-        log.error("Unhandled exception at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request);
+        // Include exception type + message in response to aid debugging
+        String detail = ex.getClass().getName() + ": " + ex.getMessage();
+        log.error("Unhandled exception at {}: {}", request.getRequestURI(), detail, ex);
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, detail, request);
     }
 
     // -------------------------------------------------------------------------
