@@ -67,6 +67,16 @@ public class GlobalExceptionHandler {
     }
 
     // -------------------------------------------------------------------------
+    // 422 – Vendor not found / unavailable
+    // -------------------------------------------------------------------------
+    @ExceptionHandler(VendorNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleVendorNotFound(
+            VendorNotFoundException ex, HttpServletRequest request) {
+
+        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request);
+    }
+
+    // -------------------------------------------------------------------------
     // 422 – Illegal state (e.g. editing a requisition that is no longer CREATED)
     // -------------------------------------------------------------------------
     @ExceptionHandler(IllegalStateException.class)

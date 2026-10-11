@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -17,4 +18,6 @@ public interface PurchaseRequisitionRepository extends JpaRepository<PurchaseReq
     Page<PurchaseRequisition> findByOrganizationIdAndStatus(UUID organizationId, RequisitionStatus status, Pageable pageable);
 
     long countByRequisitionNumberStartingWith(String prefix);
+
+    Optional<PurchaseRequisition> findByRequisitionIdAndOrganizationId(UUID requisitionId, UUID organizationId);
 }
