@@ -33,6 +33,13 @@ const STATUS_COLORS = {
   FLAGGED_VARIANCE:     'bg-orange-100 text-orange-800 ring-orange-200',
   PAID:                 'bg-teal-100 text-teal-800 ring-teal-200',
 
+  // RFQ Invitation
+  SENT:                 'bg-blue-100 text-blue-800 ring-blue-200',
+  VIEWED:               'bg-indigo-100 text-indigo-800 ring-indigo-200',
+  RESPONDED:            'bg-green-100 text-green-800 ring-green-200',
+  DECLINED:             'bg-red-100 text-red-800 ring-red-200',
+  EXPIRED:              'bg-gray-100 text-gray-600 ring-gray-200',
+
   // Payment
   INITIATED:            'bg-blue-100 text-blue-800 ring-blue-200',
   PROCESSING:           'bg-indigo-100 text-indigo-800 ring-indigo-200',

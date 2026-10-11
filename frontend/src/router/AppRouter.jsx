@@ -13,12 +13,15 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import UsersPage from "../pages/admin/UsersPage";
 import AuditLogsPage from "../pages/admin/AuditLogsPage";
 import HealthPage from "../pages/admin/HealthPage";
+import ProductCatalogPage from "../pages/admin/ProductCatalogPage";
+import CategoryPage from "../pages/admin/CategoryPage";
 
 // Procurement Pages
 import ProcurementDashboard from "../pages/procurement/ProcurementDashboard";
 import RequisitionsPage from "../pages/procurement/RequisitionsPage";
 import RequisitionDetailPage from "../pages/procurement/RequisitionDetailPage";
 import RfqsPage from "../pages/procurement/RfqsPage";
+import RFQDetailPage from "../pages/procurement/RFQDetailPage";
 import OrdersPage from "../pages/procurement/OrdersPage";
 import AnalyticsPage from "../pages/procurement/AnalyticsPage";
 
@@ -118,6 +121,14 @@ export default function AppRouter({ user, onLogout }) {
                     element={<HealthPage />}
                   />
                   <Route
+                    path="products"
+                    element={<ProductCatalogPage />}
+                  />
+                  <Route
+                    path="categories"
+                    element={<CategoryPage />}
+                  />
+                  <Route
                     path="*"
                     element={<Navigate to="/admin/dashboard" replace />}
                   />
@@ -152,6 +163,10 @@ export default function AppRouter({ user, onLogout }) {
                   <Route
                     path="rfqs"
                     element={<RfqsPage />}
+                  />
+                  <Route
+                    path="rfqs/:rfqId"
+                    element={<RFQDetailPage />}
                   />
                   <Route
                     path="orders"
