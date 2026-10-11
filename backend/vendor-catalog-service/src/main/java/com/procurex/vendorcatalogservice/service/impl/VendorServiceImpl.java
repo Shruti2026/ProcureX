@@ -107,6 +107,37 @@ public class VendorServiceImpl implements VendorService {
                 .map(this::toResponse);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public VendorResponse getVendorByUserId(UUID userId) {
+        Vendor vendor = vendorRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Vendor profile not found for user id: " + userId));
+        return toResponse(vendor);
+    }
+
+    @Override
+    public VendorResponse activateVendor(UUID vendorId) {
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Vendor not found with id: " + vendorId));
+        vendor.setVendorStatus(VendorStatus.ACTIVE);
+        Vendor saved = vendorRepository.save(vendor);
+        log.info("Activated vendor id={}", vendorId);
+        return toResponse(saved);
+    }
+
+    @Override
+    public VendorResponse suspendVendor(UUID vendorId) {
+        Vendor vendor = vendorRepository.findById(vendorId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Vendor not found with id: " + vendorId));
+        vendor.setVendorStatus(VendorStatus.SUSPENDED);
+        Vendor saved = vendorRepository.save(vendor);
+        log.info("Suspended vendor id={}", vendorId);
+        return toResponse(saved);
+    }
+
     private VendorResponse toResponse(Vendor v) {
         return new VendorResponse(
                 v.getVendorId(),

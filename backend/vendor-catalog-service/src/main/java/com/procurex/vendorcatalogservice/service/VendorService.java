@@ -18,4 +18,10 @@ public interface VendorService {
     VendorResponse getVendorById(UUID vendorId);
 
     Page<VendorResponse> getAllVendors(Pageable pageable, VendorStatus status);
+
+    VendorResponse getVendorByUserId(UUID userId);
+
+    VendorResponse activateVendor(UUID vendorId);
+
+    VendorResponse suspendVendor(UUID vendorId);
 }

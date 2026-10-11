@@ -1,6 +1,7 @@
 package com.procurex.vendorcatalogservice.service.impl;
 
 import com.procurex.vendorcatalogservice.dto.request.CreateProductRequest;
+import com.procurex.vendorcatalogservice.dto.request.UpdateProductRequest;
 import com.procurex.vendorcatalogservice.dto.response.ProductResponse;
 import com.procurex.vendorcatalogservice.entity.Category;
 import com.procurex.vendorcatalogservice.entity.Product;
@@ -67,6 +68,42 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Product not found with id: " + productId));
         return toResponse(product);
+    }
+
+    @Override
+    public ProductResponse update(UUID productId, UpdateProductRequest request) {
+        Product product = productRepository.findById(productId)
+                .filter(p -> !p.isDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with id: " + productId));
+
+        if (request.categoryId() != null) {
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Category not found with id: " + request.categoryId()));
+            product.setCategory(category);
+        }
+
+        product.setProductName(request.productName());
+        product.setDescription(request.description());
+        product.setUnitOfMeasure(request.unitOfMeasure());
+        product.setMinimumStock(request.minimumStock());
+
+        Product saved = productRepository.save(product);
+        log.info("Updated product '{}' with id {}", saved.getProductName(), saved.getProductId());
+        return toResponse(saved);
+    }
+
+    @Override
+    public void softDelete(UUID productId) {
+        Product product = productRepository.findById(productId)
+                .filter(p -> !p.isDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product not found with id: " + productId));
+
+        product.setDeleted(true);
+        productRepository.save(product);
+        log.info("Soft-deleted product id={}", productId);
     }
 
     private ProductResponse toResponse(Product p) {
