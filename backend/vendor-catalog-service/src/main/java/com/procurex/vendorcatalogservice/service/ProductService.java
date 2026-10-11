@@ -1,6 +1,7 @@
 package com.procurex.vendorcatalogservice.service;
 
 import com.procurex.vendorcatalogservice.dto.request.CreateProductRequest;
+import com.procurex.vendorcatalogservice.dto.request.UpdateProductRequest;
 import com.procurex.vendorcatalogservice.dto.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,4 +15,8 @@ public interface ProductService {
     Page<ProductResponse> getAllProducts(Pageable pageable, UUID categoryId);
 
     ProductResponse getProductById(UUID productId);
+
+    ProductResponse update(UUID productId, UpdateProductRequest request);
+
+    void softDelete(UUID productId);
 }

@@ -44,6 +44,14 @@ public class VendorController {
         return ResponseEntity.ok(ApiResponse.success("Vendors retrieved successfully", page));
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<VendorResponse>> getMyVendorProfile(
+            @RequestHeader("X-User-Id") String userId) {
+        VendorResponse response = vendorService.getVendorByUserId(UUID.fromString(userId));
+        return ResponseEntity.ok(ApiResponse.success("Vendor profile retrieved successfully", response));
+    }
+
     @GetMapping("/{vendorId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<VendorResponse>> getVendorById(
@@ -59,5 +67,21 @@ public class VendorController {
             @Valid @RequestBody UpdateVendorRequest request) {
         VendorResponse response = vendorService.updateVendor(vendorId, request);
         return ResponseEntity.ok(ApiResponse.success("Vendor updated successfully", response));
+    }
+
+    @PatchMapping("/{vendorId}/activate")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROCUREMENT_MANAGER')")
+    public ResponseEntity<ApiResponse<VendorResponse>> activateVendor(
+            @PathVariable UUID vendorId) {
+        VendorResponse response = vendorService.activateVendor(vendorId);
+        return ResponseEntity.ok(ApiResponse.success("Vendor activated successfully", response));
+    }
+
+    @PatchMapping("/{vendorId}/suspend")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROCUREMENT_MANAGER')")
+    public ResponseEntity<ApiResponse<VendorResponse>> suspendVendor(
+            @PathVariable UUID vendorId) {
+        VendorResponse response = vendorService.suspendVendor(vendorId);
+        return ResponseEntity.ok(ApiResponse.success("Vendor suspended successfully", response));
     }
 }

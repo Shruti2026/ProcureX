@@ -39,8 +39,12 @@ public class VendorProduct {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "unit_price", precision = 15, scale = 2)
-    private BigDecimal unitPrice;
+    @Column(name = "vendor_price", precision = 15, scale = 2)
+    private BigDecimal vendorPrice;
+
+    @Column(name = "minimum_order_quantity", nullable = false)
+    @Builder.Default
+    private int minimumOrderQuantity = 1;
 
     @Column(name = "lead_time_days")
     private Integer leadTimeDays;

@@ -1,6 +1,7 @@
 package com.procurex.vendorcatalogservice.controller;
 
 import com.procurex.vendorcatalogservice.dto.request.CreateProductRequest;
+import com.procurex.vendorcatalogservice.dto.request.UpdateProductRequest;
 import com.procurex.vendorcatalogservice.dto.response.ApiResponse;
 import com.procurex.vendorcatalogservice.dto.response.ProductResponse;
 import com.procurex.vendorcatalogservice.service.ProductService;
@@ -48,5 +49,25 @@ public class ProductController {
             @PathVariable UUID productId) {
         ProductResponse response = productService.getProductById(productId);
         return ResponseEntity.ok(ApiResponse.success("Product retrieved successfully", response));
+    }
+
+    @PutMapping("/{productId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROCUREMENT_MANAGER')")
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
+            @PathVariable UUID productId,
+            @Valid @RequestBody UpdateProductRequest request,
+            @RequestHeader("X-Organization-Id") String orgId) {
+        ProductResponse response = productService.update(productId, request);
+        return ResponseEntity.ok(ApiResponse.success("Product updated successfully", response));
+    }
+
+    @DeleteMapping("/{productId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
+            @PathVariable UUID productId,
+            @RequestHeader("X-Organization-Id") String orgId) {
+        productService.softDelete(productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.success("Product deleted successfully"));
     }
 }
