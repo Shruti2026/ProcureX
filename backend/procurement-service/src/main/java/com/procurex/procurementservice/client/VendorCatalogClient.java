@@ -19,4 +19,7 @@ public interface VendorCatalogClient {
 
     @GetMapping("/api/v1/vendors/{vendorId}")
     VendorApiResponse getVendor(@PathVariable("vendorId") UUID vendorId);
+
+    @GetMapping("/api/v1/vendors/by-user/{userId}")
+    VendorApiResponse getVendorByUserId(@PathVariable("userId") UUID userId);
 }

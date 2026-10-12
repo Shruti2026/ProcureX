@@ -5,28 +5,36 @@ spring:
   application:
     name: procurex-inventory-service
   datasource:
-    url: jdbc:mysql://localhost:3306/procurex_inventory?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-    username: ${DB_USERNAME:root}
+    url: jdbc:mysql://localhost:3306/inventory_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
     password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        preferred_uuid_jdbc_type: CHAR
   flyway:
     enabled: true
-    baseline-on-migrate: true
     locations: classpath:db/migration
   rabbitmq:
-    host: localhost
+    host: ${RABBITMQ_HOST:localhost}
     port: 5672
-    username: guest
-    password: guest
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
 
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
+logging:
+  level:
+    com.procurex: DEBUG
