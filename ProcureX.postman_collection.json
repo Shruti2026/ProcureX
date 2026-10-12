@@ -10,6 +10,7 @@
   "item": [
     {
       "name": "Admin",
+      "description": "## Admin\n\nThis folder contains all API endpoints related to **Admin-level operations** in the ProcureX procurement management platform. It covers the full lifecycle of admin activity — from initial setup and authentication to user management, vendor oversight, session control, and procurement catalog operations.\n\n### What's included\n\n- **Bootstrap & Authentication** — Admin registration, login, logout, password change, and token refresh.\n- **User Management** — Create and manage internal roles such as Procurement Manager, Finance Manager, and Inventory Manager. List internal employees and update user account statuses.\n- **Vendor Management** — List all vendors, view pending vendor registrations, and approve or reject vendor applications.\n- **Categories** — Create, list, update, and delete (soft) product categories.\n- **Products** — Create, list, get, update, and delete (soft) products. Delete also deactivates vendor-product mappings.\n- **Vendor Records** — Create, list, get, update, activate, and suspend vendor records.\n- **Vendor-Product Mappings** — Create and manage price/MOQ mappings between vendors and products.\n- **Requisitions** — Create, list, retrieve, and update procurement requisitions.\n- **RFQs** — Create, list, get, and close RFQs. Get RFQ by ID is also accessible to VENDOR.\n\n### Usage\n\nAll requests in this folder are intended to be executed with admin-level credentials. Begin with the login request to obtain a valid access token, then use it in subsequent requests via the collection's authorization configuration.",
       "item": [
         {
           "name": "01_Admin_Register",
@@ -19,25 +20,14 @@
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"fullName\": \"Shruti Gupta\",\r\n  \"email\": \"admin@procurex.com\",\r\n  \"password\": \"SecureP@ssw0rd!\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"9876543210\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "http://localhost:8081/api/v1/bootstrap/admin",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8081",
-              "path": [
-                "api",
-                "v1",
-                "bootstrap",
-                "admin"
-              ]
+              "path": ["api", "v1", "bootstrap", "admin"]
             }
           },
           "response": []
@@ -49,19 +39,9 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"ADMIN_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
-                  "}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"ADMIN_TOKEN\", response.data.accessToken);\r\n    console.log(\"Admin token updated!\");\r\n}"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             }
           ],
@@ -71,25 +51,14 @@
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"email\": \"admin@procurex.com\",\r\n  \"password\": \"SecureP@ssw0rd!\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "http://localhost:8081/api/v1/auth/login",
               "protocol": "http",
-              "host": [
-                "localhost"
-              ],
+              "host": ["localhost"],
               "port": "8081",
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "response": []
@@ -97,399 +66,70 @@
         {
           "name": "03_Create_Procurement_Manager",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"fullName\": \"Sarah Connor\",\r\n  \"email\": \"sarah.procurement@procurex.com\",\r\n  \"role\": \"PROCUREMENT_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567890\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users"]
             }
           },
-          "response": [
-            {
-              "name": "03_Create_Procurement_Manager",
-              "originalRequest": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n  \"fullName\": \"Sarah Connor\",\r\n  \"email\": \"sarah.procurement@procurex.com\",\r\n  \"role\": \"PROCUREMENT_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567890\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/v1/admin/users",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "admin",
-                    "users"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": null,
-              "header": [
-                {
-                  "key": "transfer-encoding",
-                  "value": "chunked"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Origin"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Method"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Headers"
-                },
-                {
-                  "key": "X-Content-Type-Options",
-                  "value": "nosniff"
-                },
-                {
-                  "key": "X-XSS-Protection",
-                  "value": "0"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "no-cache, no-store, max-age=0, must-revalidate"
-                },
-                {
-                  "key": "Pragma",
-                  "value": "no-cache"
-                },
-                {
-                  "key": "Expires",
-                  "value": "0"
-                },
-                {
-                  "key": "X-Frame-Options",
-                  "value": "DENY"
-                },
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                },
-                {
-                  "key": "Date",
-                  "value": "Mon, 28 Sep 2026 14:11:58 GMT"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"a7c1203d-a0b1-4cb0-8189-662d94bc90b5\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Sarah Connor\",\n        \"email\": \"sarah.procurement@procurex.com\",\n        \"role\": \"PROCUREMENT_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"x4VTF@FtCr0K@VAd\"\n    }\n}"
-            }
-          ]
+          "response": []
         },
         {
           "name": "04_Create_Inventory_Manager",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"email\": \"john.inventory@procurex.com\",\r\n  \"role\": \"INVENTORY_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567891\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users"]
             }
           },
-          "response": [
-            {
-              "name": "04_Create_Inventory_Manager",
-              "originalRequest": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n  \"fullName\": \"John Doe\",\r\n  \"email\": \"john.inventory@procurex.com\",\r\n  \"role\": \"INVENTORY_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567891\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/v1/admin/users",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "admin",
-                    "users"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": null,
-              "header": [
-                {
-                  "key": "transfer-encoding",
-                  "value": "chunked"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Origin"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Method"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Headers"
-                },
-                {
-                  "key": "X-Content-Type-Options",
-                  "value": "nosniff"
-                },
-                {
-                  "key": "X-XSS-Protection",
-                  "value": "0"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "no-cache, no-store, max-age=0, must-revalidate"
-                },
-                {
-                  "key": "Pragma",
-                  "value": "no-cache"
-                },
-                {
-                  "key": "Expires",
-                  "value": "0"
-                },
-                {
-                  "key": "X-Frame-Options",
-                  "value": "DENY"
-                },
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                },
-                {
-                  "key": "Date",
-                  "value": "Mon, 28 Sep 2026 14:12:10 GMT"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"263e63be-8587-47b0-8ed0-8c4511cc81ae\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"John Doe\",\n        \"email\": \"john.inventory@procurex.com\",\n        \"role\": \"INVENTORY_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"vwpSUcwzlBDS3NX$\"\n    }\n}"
-            }
-          ]
+          "response": []
         },
         {
           "name": "05_Create_Finance_Manager",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"fullName\": \"Bruce Wayne\",\r\n  \"email\": \"bruce.finance@procurex.com\",\r\n  \"role\": \"FINANCE_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567892\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users"]
             }
           },
-          "response": [
-            {
-              "name": "05_Create_Finance_Manager",
-              "originalRequest": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n  \"fullName\": \"Bruce Wayne\",\r\n  \"email\": \"bruce.finance@procurex.com\",\r\n  \"role\": \"FINANCE_MANAGER\",\r\n  \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\r\n  \"phoneNumber\": \"1234567892\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{BASE_URL}}/api/v1/admin/users",
-                  "host": [
-                    "{{BASE_URL}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "admin",
-                    "users"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": null,
-              "header": [
-                {
-                  "key": "transfer-encoding",
-                  "value": "chunked"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Origin"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Method"
-                },
-                {
-                  "key": "Vary",
-                  "value": "Access-Control-Request-Headers"
-                },
-                {
-                  "key": "X-Content-Type-Options",
-                  "value": "nosniff"
-                },
-                {
-                  "key": "X-XSS-Protection",
-                  "value": "0"
-                },
-                {
-                  "key": "Cache-Control",
-                  "value": "no-cache, no-store, max-age=0, must-revalidate"
-                },
-                {
-                  "key": "Pragma",
-                  "value": "no-cache"
-                },
-                {
-                  "key": "Expires",
-                  "value": "0"
-                },
-                {
-                  "key": "X-Frame-Options",
-                  "value": "DENY"
-                },
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                },
-                {
-                  "key": "Date",
-                  "value": "Mon, 28 Sep 2026 14:12:19 GMT"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n    \"success\": true,\n    \"message\": \"Employee created successfully\",\n    \"data\": {\n        \"userId\": \"574853fe-0458-4571-b081-568be8322944\",\n        \"organizationId\": \"20e3006c-86ad-11f1-aa2e-462403e66e86\",\n        \"fullName\": \"Bruce Wayne\",\n        \"email\": \"bruce.finance@procurex.com\",\n        \"role\": \"FINANCE_MANAGER\",\n        \"accountStatus\": \"ACTIVE\",\n        \"temporaryPassword\": \"$0Fx2suW4eyv2UNO\"\n    }\n}"
-            }
-          ]
+          "response": []
         },
         {
           "name": "06_List_Internal_Employees",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users/employees",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users",
-                "employees"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users", "employees"]
             }
           },
           "response": []
@@ -497,30 +137,13 @@
         {
           "name": "07_List_Pending_Vendors",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/vendors/pending",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "vendors",
-                "pending"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "vendors", "pending"]
             }
           },
           "response": []
@@ -528,29 +151,13 @@
         {
           "name": "08_List_All_Vendors",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/vendors",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "vendors"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "vendors"]
             }
           },
           "response": []
@@ -558,31 +165,13 @@
         {
           "name": "09_Approve_Pending_Vendors",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/vendors/f01640bb-49c3-429e-953f-939f35167d38/approve",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "vendors",
-                "f01640bb-49c3-429e-953f-939f35167d38",
-                "approve"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "vendors", "f01640bb-49c3-429e-953f-939f35167d38", "approve"]
             }
           },
           "response": []
@@ -590,31 +179,13 @@
         {
           "name": "10_Reject_Pending_Vendors",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/vendors/bef8a5d3-033c-47aa-a7f1-c9d88b496070/reject",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "vendors",
-                "bef8a5d3-033c-47aa-a7f1-c9d88b496070",
-                "reject"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "vendors", "bef8a5d3-033c-47aa-a7f1-c9d88b496070", "reject"]
             }
           },
           "response": []
@@ -622,40 +193,18 @@
         {
           "name": "11_Update_User_Status",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"status\": \"ACTIVE\" // Allowed values: ACTIVE, INACTIVE, PENDING, REJECTED, SUSPENDED, LOCKED\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\r\n    \"status\": \"ACTIVE\"\r\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users/c365c7ec-b609-4e05-a0dd-c951457ef3e6/status",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users",
-                "c365c7ec-b609-4e05-a0dd-c951457ef3e6",
-                "status"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users", "c365c7ec-b609-4e05-a0dd-c951457ef3e6", "status"]
             }
           },
           "response": []
@@ -663,30 +212,13 @@
         {
           "name": "12_Delete_Employees_or_Vendors",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/admin/users/c365c7ec-b609-4e05-a0dd-c951457ef3e6",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "admin",
-                "users",
-                "c365c7ec-b609-4e05-a0dd-c951457ef3e6"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "admin", "users", "c365c7ec-b609-4e05-a0dd-c951457ef3e6"]
             }
           },
           "response": []
@@ -694,38 +226,18 @@
         {
           "name": "13_Change_Password",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"currentPassword\": \"SecureP@ssw0rd!\",\r\n    \"newPassword\": \"SecureP@ssw0rd!1\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/change-password",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "change-password"]
             }
           },
           "response": []
@@ -733,29 +245,13 @@
         {
           "name": "14_Get_Self_Profile_Details",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
             }
           },
           "response": []
@@ -767,39 +263,20 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "if (response.success) {\r",
-                  "    pm.collectionVariables.set(\r",
-                  "        \"ADMIN_TOKEN\",\r",
-                  "        response.data.accessToken\r",
-                  "    );\r",
-                  "    console.log(\"Admin token updated!\");\r",
-                  "}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"ADMIN_TOKEN\", response.data.accessToken);\r\n    console.log(\"Admin token updated!\");\r\n}"
                 ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "type": "text/javascript"
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/refresh",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
             }
           },
           "response": []
@@ -808,16 +285,7 @@
           "name": "16_List_Categories",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -832,16 +300,7 @@
           "name": "17_List_Products",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -862,16 +321,7 @@
           "name": "18_Get_Product_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -886,16 +336,7 @@
           "name": "19_Get_Vendor_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -910,22 +351,28 @@
           "name": "20_Get_Requisition_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
               "host": ["{{BASE_URL}}"],
               "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "21_Get_RFQ_By_ID",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Procurement Manager and Vendors folders.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/{{rfqId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs", "{{rfqId}}"]
             }
           },
           "response": []
@@ -938,16 +385,7 @@
               "name": "01_Create_Category",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "POST",
                 "header": [],
                 "body": {
@@ -964,19 +402,30 @@
               "response": []
             },
             {
-              "name": "02_Create_Product",
+              "name": "02_Update_Category",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Note: categoryName must be unique. Returns 409 Conflict if the name is already taken.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"categoryName\": \"IT Equipment\",\r\n  \"description\": \"Laptops, desktops, peripherals and accessories\"\r\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/categories/{{categoryId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "categories", "{{categoryId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "03_Create_Product",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "POST",
                 "header": [],
                 "body": {
@@ -993,19 +442,30 @@
               "response": []
             },
             {
-              "name": "03_Create_Vendor_Record",
+              "name": "04_Update_Product",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. categoryId is optional — omit it to leave the category unchanged.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"productName\": \"A4 Copy Paper 80GSM\",\r\n  \"description\": \"White 80 GSM copy paper, 500 sheets per ream\",\r\n  \"categoryId\": \"{{categoryId}}\",\r\n  \"unitOfMeasure\": \"REAM\",\r\n  \"minimumStock\": 20\r\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/products/{{productId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "products", "{{productId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "05_Create_Vendor_Record",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "POST",
                 "header": [],
                 "body": {
@@ -1022,19 +482,10 @@
               "response": []
             },
             {
-              "name": "04_List_Vendor_Records",
+              "name": "06_List_Vendor_Records",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -1052,19 +503,10 @@
               "response": []
             },
             {
-              "name": "05_Update_Vendor_Record",
+              "name": "07_Update_Vendor_Record",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "PUT",
                 "header": [],
                 "body": {
@@ -1081,19 +523,110 @@
               "response": []
             },
             {
-              "name": "06_Create_Requisition",
+              "name": "08_Activate_Vendor",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Transitions the vendor to ACTIVE status. Idempotent — safe to call on an already ACTIVE vendor.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}/activate",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendors", "{{vendorId}}", "activate"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "09_Suspend_Vendor",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Transitions the vendor to SUSPENDED status. A suspended vendor cannot be invited to new RFQs. Idempotent — safe to call on an already SUSPENDED vendor.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}/suspend",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendors", "{{vendorId}}", "suspend"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "10_Create_Vendor_Product_Mapping",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Returns 409 Conflict if a mapping for the same (vendorId, productId) pair already exists.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"vendorId\": \"{{vendorId}}\",\r\n  \"productId\": \"{{productId}}\",\r\n  \"vendorPrice\": 450.00,\r\n  \"minimumOrderQuantity\": 10,\r\n  \"leadTimeDays\": 7\r\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendor-products",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendor-products"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "11_List_Vendor_Product_Mappings_By_Vendor",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Vendors and Procurement Manager folders.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendor-products/vendor/{{vendorId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendor-products", "vendor", "{{vendorId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "12_List_Vendor_Product_Mappings_By_Product",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Useful when building an RFQ to see which vendors supply a product and at what price.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendor-products/product/{{productId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendor-products", "product", "{{productId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "13_Update_Vendor_Product_Mapping",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Use status INACTIVE to hide the mapping from active listings without deleting pricing history.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"vendorPrice\": 420.00,\r\n  \"minimumOrderQuantity\": 5,\r\n  \"leadTimeDays\": 5,\r\n  \"status\": \"ACTIVE\"\r\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/vendor-products/{{vendorProductId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "vendor-products", "{{vendorProductId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "14_Create_Requisition",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "POST",
                 "header": [],
                 "body": {
@@ -1110,19 +643,10 @@
               "response": []
             },
             {
-              "name": "07_List_Organization_Requisitions",
+              "name": "15_List_Organization_Requisitions",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "GET",
                 "header": [],
                 "url": {
@@ -1139,19 +663,10 @@
               "response": []
             },
             {
-              "name": "08_Update_Requisition",
+              "name": "16_Update_Requisition",
               "request": {
                 "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder.",
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ADMIN_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
                 "method": "PUT",
                 "header": [],
                 "body": {
@@ -1166,44 +681,119 @@
                 }
               },
               "response": []
+            },
+            {
+              "name": "17_Create_RFQ",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. The referenced requisition must have status CREATED. All invitedVendorIds must exist and be ACTIVE. On success the requisition status transitions to RFQ_CREATED.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"requisitionId\": \"{{requisitionId}}\",\r\n  \"closingDate\": \"2026-11-15\",\r\n  \"invitedVendorIds\": [\r\n    \"{{vendorId}}\"\r\n  ]\r\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/procurement/rfqs",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "procurement", "rfqs"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "18_List_RFQs",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. Filter by status using ?status=OPEN, CLOSED, or AWARDED. Omit status to return all.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/procurement/rfqs?page=0&size=20",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "procurement", "rfqs"],
+                  "query": [
+                    { "key": "page", "value": "0" },
+                    { "key": "size", "value": "20" },
+                    { "key": "status", "value": "OPEN", "disabled": true }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "19_Close_RFQ",
+              "request": {
+                "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. Since ADMIN has access to everything, it is also available here under the Admin folder. The RFQ must have status OPEN. Returns 422 Unprocessable Entity if already CLOSED or AWARDED.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/{{rfqId}}/close",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "procurement", "rfqs", "{{rfqId}}", "close"]
+                }
+              },
+              "response": []
             }
           ]
         },
         {
-          "name": "21_Logout",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ADMIN_TOKEN}}",
-                  "type": "string"
+          "name": "Admin_Only_APIs",
+          "description": "These APIs are exclusively for ADMIN. They are not accessible to any other role.",
+          "item": [
+            {
+              "name": "01_Delete_Category",
+              "request": {
+                "description": "Roles: ADMIN only. Soft-deletes the category. Returns 422 Unprocessable Entity if the category still has active products assigned to it.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/categories/{{categoryId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "categories", "{{categoryId}}"]
                 }
-              ]
+              },
+              "response": []
             },
+            {
+              "name": "02_Delete_Product",
+              "request": {
+                "description": "Roles: ADMIN only. Soft-deletes the product. Also deactivates all vendor-product mappings for this product, preserving pricing history.",
+                "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/api/v1/products/{{productId}}",
+                  "host": ["{{BASE_URL}}"],
+                  "path": ["api", "v1", "products", "{{productId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "22_Logout",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/logout",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           },
           "response": []
         }
-      ],
-      "description": "## Admin\n\nThis folder contains all API endpoints related to **Admin-level operations** in the ProcureX procurement management platform. It covers the full lifecycle of admin activity — from initial setup and authentication to user management, vendor oversight, session control, and procurement catalog operations.\n\n### What's included\n\n- **Bootstrap & Authentication** — Admin registration, login, logout, password change, and token refresh.\n- **User Management** — Create and manage internal roles such as Procurement Manager, Finance Manager, and HR Manager. List internal employees and update user account statuses.\n- **Vendor Management** — List all vendors, view pending vendor registrations, and approve or reject vendor applications.\n- **Categories** — Create and list product categories.\n- **Products** — Create products, list products with pagination and filters, and retrieve a product by ID.\n- **Vendor Records** — Create vendor records, list vendors with pagination and status filters, retrieve a vendor by ID, and update vendor details.\n- **Requisitions** — Create, list, retrieve, and update procurement requisitions.\n\n### Usage\n\nAll requests in this folder are intended to be executed with admin-level credentials. Begin with the login request to obtain a valid access token, then use it in subsequent requests via the collection's authorization configuration."
+      ]
     },
     {
       "name": "Vendors",
+      "description": "## Vendors\n\nThis folder contains all API endpoints related to **Vendor operations** in the ProcureX procurement management platform. It covers the full lifecycle of a vendor's interaction with the platform — from self-registration and authentication to profile management, catalog access, and RFQ invitations.\n\n### What's included\n\n- **Registration & Authentication** — Vendor self-registration, login, logout, and token refresh.\n- **Profile Management** — View own auth profile, change password, get own vendor catalog profile.\n- **Account Management** — Vendor self-deletion.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, get requisition by ID.\n- **Vendor-Product Mappings** — List own vendor-product mappings (prices and products supplied).\n- **RFQs** — Get RFQ by ID, get own invitations.\n\n### Usage\n\nVendors interact with the platform independently. Start with the self-registration request to create a vendor account, then log in to obtain an access token. Use the token for all subsequent authenticated requests.",
       "item": [
         {
           "name": "01_Self_Registration",
@@ -1213,24 +803,12 @@
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"companyName\": \"Acme Supplier Inc\",\r\n  \"contactPerson\": \"Jane Smith\",\r\n  \"email\": \"sales@acmesupplier.com\",\r\n  \"password\": \"vendorPassword999\",\r\n  \"phone\": \"9876543210\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/vendor/register",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "vendor",
-                "register"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "vendor", "register"]
             }
           },
           "response": []
@@ -1243,7 +821,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"VENDOR_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"Vendor token updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"VENDOR_TOKEN\", response.data.accessToken);\r\n    console.log(\"Vendor token updated!\");\r\n}"
                 ]
               }
             }
@@ -1254,23 +832,12 @@
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"email\": \"sales@acmesupplier.com\",\r\n    \"password\": \"vendorPassword999\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/login",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "response": []
@@ -1283,175 +850,104 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"VENDOR_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"Vendor token updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"VENDOR_TOKEN\", response.data.accessToken);\r\n    console.log(\"Vendor token updated!\");\r\n}"
                 ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/refresh",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
             }
           },
           "response": []
         },
         {
-          "name": "04_Get_Self_Profile_Details",
+          "name": "04_Get_Self_Auth_Profile",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
             }
           },
           "response": []
         },
         {
-          "name": "05_Change_Password",
+          "name": "05_Get_My_Vendor_Profile",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "description": "Roles: Any authenticated user (primarily VENDOR). This API is accessible to all roles but is intended for VENDOR use — it looks up the vendor catalog record whose userId matches the caller's JWT. Returns 404 if no vendor record exists for this user.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendors/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06_Change_Password",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/change-password",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "change-password"]
             }
           },
           "response": []
         },
         {
-          "name": "06_Logout",
+          "name": "07_Logout",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/logout",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           },
           "response": []
         },
         {
-          "name": "07_Vendor_Self_Delete",
+          "name": "08_Vendor_Self_Delete",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
             }
           },
           "response": []
         },
         {
-          "name": "08_List_Categories",
+          "name": "09_List_Categories",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -1463,19 +959,294 @@
           "response": []
         },
         {
+          "name": "10_List_Products",
+          "request": {
+            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products?page=0&size=20&sort=productName,asc",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sort", "value": "productName,asc" },
+                { "key": "categoryId", "value": "{{categoryId}}", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "11_Get_Product_By_ID",
+          "request": {
+            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products/{{productId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12_Get_Vendor_By_ID",
+          "request": {
+            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "{{vendorId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13_Get_Requisition_By_ID",
+          "request": {
+            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14_List_My_Vendor_Product_Mappings",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Admin and Procurement Manager folders. A vendor uses this to see the products they supply and their own listed prices.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendor-products/vendor/{{vendorId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendor-products", "vendor", "{{vendorId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15_Get_RFQ_By_ID",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Admin and Procurement Manager folders. A vendor uses this to view the details of an RFQ they have been invited to.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/{{rfqId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs", "{{rfqId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16_Get_My_RFQ_Invitations",
+          "request": {
+            "description": "Roles: VENDOR only. Returns a paginated list of RFQs this vendor has been invited to. The vendor identity is resolved from the JWT — no vendorId in the path. Calling this as PROCUREMENT_MANAGER or ADMIN returns 403 Forbidden.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/my-invitations?page=0&size=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs", "my-invitations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Procurement Manager",
+      "description": "## Procurement Manager\n\nThis folder contains all API endpoints available to the **Procurement Manager** role in the ProcureX procurement management platform. It covers authentication, session management, and all procurement and vendor catalog operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Categories** — Create, list, and update product categories.\n- **Products** — Create, list, get, and update products.\n- **Vendors** — Create, list, get, update, activate, and suspend vendor records.\n- **Vendor-Product Mappings** — Create and manage vendor-product price mappings. List by vendor and by product.\n- **Requisitions** — Create, list, retrieve, and update procurement requisitions.\n- **RFQs** — Create, list, get, and close RFQs.\n\n### Usage\n\nUse the login request to authenticate as a Procurement Manager and obtain an access token. The token is required for all subsequent requests. Follow the suggested test order: create a category, create a product, create and activate a vendor record, create a vendor-product mapping, create a requisition, then create an RFQ.",
+      "item": [
+        {
+          "name": "01_Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"PROCUREMENT_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02_Refresh_Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"PROCUREMENT_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03_Get_Self_Profile_Details",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04_Create_Category",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"categoryName\": \"Office Supplies\",\r\n  \"description\": \"Stationery and general office supplies\"\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05_Update_Category",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. categoryName must be unique — returns 409 Conflict if name is already taken.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"categoryName\": \"IT Equipment\",\r\n  \"description\": \"Laptops, desktops, peripherals and accessories\"\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories/{{categoryId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "categories", "{{categoryId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06_List_Categories",
+          "request": {
+            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/categories",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "07_Create_Product",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"categoryId\": \"{{categoryId}}\",\r\n  \"productName\": \"A4 Copy Paper\",\r\n  \"description\": \"80 GSM white copy paper\",\r\n  \"unitOfMeasure\": \"REAM\",\r\n  \"minimumStock\": 10\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "08_Update_Product",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. categoryId is optional.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"productName\": \"A4 Copy Paper 80GSM\",\r\n  \"description\": \"White 80 GSM copy paper, 500 sheets per ream\",\r\n  \"categoryId\": \"{{categoryId}}\",\r\n  \"unitOfMeasure\": \"REAM\",\r\n  \"minimumStock\": 20\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products/{{productId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "09_List_Products",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -1496,16 +1267,7 @@
           "name": "10_Get_Product_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -1517,743 +1279,364 @@
           "response": []
         },
         {
-          "name": "11_Get_Vendor_By_ID",
-          "request": {
-            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "vendors", "{{vendorId}}"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "12_Get_Requisition_By_ID",
-          "request": {
-            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{VENDOR_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
-            }
-          },
-          "response": []
-        }
-      ],
-      "description": "## Vendors\n\nThis folder contains all API endpoints related to **Vendor operations** in the ProcureX procurement management platform. It covers the full lifecycle of a vendor's interaction with the platform — from self-registration and authentication to profile management and account deletion.\n\n### What's included\n\n- **Registration & Authentication** — Vendor self-registration, login, logout, and token refresh.\n- **Profile Management** — View and manage the vendor's own profile details and change password.\n- **Account Management** — Vendor self-deletion to remove their own account from the platform.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, and get requisition by ID.\n\n### Usage\n\nVendors interact with the platform independently. Start with the self-registration request to create a vendor account, then log in to obtain an access token. Use the token for all subsequent authenticated requests."
-    },
-    {
-      "name": "Procurement Manager",
-      "item": [
-        {
-          "name": "01_Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"PROCUREMENT_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/auth/login",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02_Refresh_Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"PROCUREMENT_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"PROCUREMENT MANAGER token updated!\");\r\n}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "03_Get_Self_Profile_Details",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "04_Create_Category",
+          "name": "11_Create_Vendor_Record",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"categoryName\": \"Office Supplies\",\r\n  \"description\": \"Stationery and general office supplies\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/categories",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "05_List_Categories",
-          "request": {
-            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/categories",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "categories"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "06_Create_Product",
-          "request": {
-            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"categoryId\": \"{{categoryId}}\",\r\n  \"productName\": \"A4 Copy Paper\",\r\n  \"description\": \"80 GSM white copy paper\",\r\n  \"unitOfMeasure\": \"REAM\",\r\n  \"minimumStock\": 10\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/products",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "07_List_Products",
-          "request": {
-            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/products?page=0&size=20&sort=productName,asc",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products"
-              ],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "0"
-                },
-                {
-                  "key": "size",
-                  "value": "20"
-                },
-                {
-                  "key": "sort",
-                  "value": "productName,asc"
-                },
-                {
-                  "key": "categoryId",
-                  "value": "{{categoryId}}",
-                  "disabled": true
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "08_Get_Product_By_ID",
-          "request": {
-            "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/v1/products/{{productId}}",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "products",
-                "{{productId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "09_Create_Vendor_Record",
-          "request": {
-            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"companyName\": \"Acme Industrial Supplies\",\r\n  \"contactPerson\": \"Priya Sharma\",\r\n  \"email\": \"contact@acme.example\",\r\n  \"phoneNumber\": \"+91-9876543210\",\r\n  \"address\": \"12 Industrial Estate\",\r\n  \"city\": \"Pune\",\r\n  \"state\": \"Maharashtra\",\r\n  \"country\": \"India\",\r\n  \"postalCode\": \"411001\",\r\n  \"gstNumber\": \"27ABCDE1234F1Z5\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/vendors",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vendors"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors"]
             }
           },
           "response": []
         },
         {
-          "name": "10_List_Vendor_Records",
+          "name": "12_List_Vendor_Records",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/vendors?page=0&size=20&sort=companyName,asc",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vendors"
-              ],
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors"],
               "query": [
-                {
-                  "key": "page",
-                  "value": "0"
-                },
-                {
-                  "key": "size",
-                  "value": "20"
-                },
-                {
-                  "key": "sort",
-                  "value": "companyName,asc"
-                },
-                {
-                  "key": "status",
-                  "value": "ACTIVE",
-                  "disabled": true
-                }
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "sort", "value": "companyName,asc" },
+                { "key": "status", "value": "ACTIVE", "disabled": true }
               ]
             }
           },
           "response": []
         },
         {
-          "name": "11_Get_Vendor_By_ID",
+          "name": "13_Get_Vendor_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vendors",
-                "{{vendorId}}"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "{{vendorId}}"]
             }
           },
           "response": []
         },
         {
-          "name": "12_Update_Vendor_Record",
+          "name": "14_Update_Vendor_Record",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"companyName\": \"Acme Industrial Supplies Pvt Ltd\",\r\n  \"contactPerson\": \"Priya Sharma\",\r\n  \"email\": \"contact@acme.example\",\r\n  \"phoneNumber\": \"+91-9876543210\",\r\n  \"address\": \"14 Industrial Estate\",\r\n  \"city\": \"Pune\",\r\n  \"state\": \"Maharashtra\",\r\n  \"country\": \"India\",\r\n  \"postalCode\": \"411001\",\r\n  \"gstNumber\": \"27ABCDE1234F1Z5\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vendors",
-                "{{vendorId}}"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "{{vendorId}}"]
             }
           },
           "response": []
         },
         {
-          "name": "13_Create_Requisition",
+          "name": "15_Activate_Vendor",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. Must activate a vendor before they can be invited to an RFQ.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}/activate",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "{{vendorId}}", "activate"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16_Suspend_Vendor",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. A suspended vendor cannot be invited to new RFQs.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendors/{{vendorId}}/suspend",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendors", "{{vendorId}}", "suspend"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "17_Create_Vendor_Product_Mapping",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. Returns 409 Conflict if a mapping for this (vendorId, productId) pair already exists.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"vendorId\": \"{{vendorId}}\",\r\n  \"productId\": \"{{productId}}\",\r\n  \"vendorPrice\": 450.00,\r\n  \"minimumOrderQuantity\": 10,\r\n  \"leadTimeDays\": 7\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendor-products",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendor-products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18_List_Vendor_Product_Mappings_By_Vendor",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Admin and Vendors folders.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendor-products/vendor/{{vendorId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendor-products", "vendor", "{{vendorId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "19_List_Vendor_Product_Mappings_By_Product",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendor-products/product/{{productId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendor-products", "product", "{{productId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "20_Update_Vendor_Product_Mapping",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"vendorPrice\": 420.00,\r\n  \"minimumOrderQuantity\": 5,\r\n  \"leadTimeDays\": 5,\r\n  \"status\": \"ACTIVE\"\r\n}",
+              "options": { "raw": { "language": "json" } }
             },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/vendor-products/{{vendorProductId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "vendor-products", "{{vendorProductId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "21_Create_Requisition",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"title\": \"Quarterly office supplies\",\r\n  \"description\": \"Paper and writing supplies for Q4\",\r\n  \"requiredDate\": \"2026-12-15\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"{{productId}}\",\r\n      \"quantity\": 25,\r\n      \"remarks\": \"Deliver to the main office\"\r\n    }\r\n  ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "procurement",
-                "requisitions"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "requisitions"]
             }
           },
           "response": []
         },
         {
-          "name": "14_List_Organization_Requisitions",
+          "name": "22_List_Organization_Requisitions",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions?page=0&size=20",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "procurement",
-                "requisitions"
-              ],
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "requisitions"],
               "query": [
-                {
-                  "key": "page",
-                  "value": "0"
-                },
-                {
-                  "key": "size",
-                  "value": "20"
-                },
-                {
-                  "key": "status",
-                  "value": "CREATED",
-                  "disabled": true
-                }
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "status", "value": "CREATED", "disabled": true }
               ]
             }
           },
           "response": []
         },
         {
-          "name": "15_Get_Requisition_By_ID",
+          "name": "23_Get_Requisition_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "procurement",
-                "requisitions",
-                "{{requisitionId}}"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
             }
           },
           "response": []
         },
         {
-          "name": "16_Update_Requisition",
+          "name": "24_Update_Requisition",
           "request": {
             "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"title\": \"Updated quarterly office supplies\",\r\n  \"description\": \"Updated delivery requirements\",\r\n  \"requiredDate\": \"2026-12-20\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"{{productId}}\",\r\n      \"quantity\": 30,\r\n      \"remarks\": \"Deliver to the main office\"\r\n    }\r\n  ]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "procurement",
-                "requisitions",
-                "{{requisitionId}}"
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "25_Create_RFQ",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. The requisition must have status CREATED. All invitedVendorIds must be ACTIVE vendors. On success the requisition transitions to RFQ_CREATED.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"requisitionId\": \"{{requisitionId}}\",\r\n  \"closingDate\": \"2026-11-15\",\r\n  \"invitedVendorIds\": [\r\n    \"{{vendorId}}\"\r\n  ]\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "26_List_RFQs",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. Use ?status=OPEN, CLOSED, or AWARDED to filter. Omit status to return all.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "status", "value": "OPEN", "disabled": true }
               ]
             }
           },
           "response": []
         },
         {
-          "name": "17_Change_Password",
+          "name": "27_Get_RFQ_By_ID",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER, VENDOR. This API is accessible to multiple roles. It also appears in the Admin and Vendors folders.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/{{rfqId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs", "{{rfqId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "28_Close_RFQ",
+          "request": {
+            "description": "Roles: ADMIN, PROCUREMENT_MANAGER. This API is primarily for PROCUREMENT_MANAGER. ADMIN also has access since it has access to everything. RFQ must have status OPEN. Returns 422 if already CLOSED or AWARDED.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/{{rfqId}}/close",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "rfqs", "{{rfqId}}", "close"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "29_Change_Password",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/change-password",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "change-password"]
             }
           },
           "response": []
         },
         {
-          "name": "18_Logout",
+          "name": "30_Logout",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{PROCUREMENT_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/logout",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           },
           "response": []
         }
-      ],
-      "description": "## Procurement Manager\n\nThis folder contains all API endpoints available to the **Procurement Manager** role in the ProcureX procurement management platform. It covers authentication, session management, and all procurement and vendor catalog operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the procurement manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Categories** — Create and list product categories.\n- **Products** — Create products, list products with pagination and filters, and retrieve a product by ID.\n- **Vendors** — Create vendor records, list vendors with pagination and status filters, retrieve a vendor by ID, and update vendor details.\n- **Requisitions** — Create, list, retrieve, and update procurement requisitions.\n\n### Usage\n\nUse the login request to authenticate as a Procurement Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating. Follow the suggested test order: create a category, create a product, create a vendor record, then create and manage requisitions."
+      ]
     },
     {
       "name": "Inventory Manager",
+      "description": "## Inventory Manager\n\nThis folder contains all API endpoints available to the **Inventory Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, and get requisition by ID.\n\n### Usage\n\nUse the login request to authenticate as an Inventory Manager and obtain an access token. The token is required for all subsequent requests.",
       "item": [
         {
           "name": "01_Login",
@@ -2263,7 +1646,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"INVENTORY_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"INVENTORY_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
                 ]
               }
             }
@@ -2273,24 +1656,13 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\r\n    \"email\": \"john.inventory@procurex.com\",\r\n    \"password\": \"<temporary-password>\"\r\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/login",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "response": []
@@ -2303,28 +1675,19 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"INVENTORY_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"INVENTORY_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"INVENTORY MANAGER TOKEN updated!\");\r\n}"
                 ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/refresh",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
             }
           },
           "response": []
@@ -2332,29 +1695,13 @@
         {
           "name": "03_Get_Self_Profile_Details",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
             }
           },
           "response": []
@@ -2362,38 +1709,18 @@
         {
           "name": "04_Change_Password",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/change-password",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "change-password"]
             }
           },
           "response": []
@@ -2401,29 +1728,13 @@
         {
           "name": "05_Logout",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/logout",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           },
           "response": []
@@ -2432,16 +1743,7 @@
           "name": "06_List_Categories",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2456,16 +1758,7 @@
           "name": "07_List_Products",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2486,16 +1779,7 @@
           "name": "08_Get_Product_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2510,16 +1794,7 @@
           "name": "09_Get_Vendor_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2534,16 +1809,7 @@
           "name": "10_Get_Requisition_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{INVENTORY_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2554,11 +1820,11 @@
           },
           "response": []
         }
-      ],
-      "description": "## Inventory Manager\n\nThis folder contains all API endpoints available to the **Inventory Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the inventory manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, and get requisition by ID.\n\n### Usage\n\nUse the login request to authenticate as an Inventory Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating."
+      ]
     },
     {
       "name": "Finance Manager",
+      "description": "## Finance Manager\n\nThis folder contains all API endpoints available to the **Finance Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, and get requisition by ID.\n\n### Usage\n\nUse the login request to authenticate as a Finance Manager and obtain an access token. The token is required for all subsequent requests.",
       "item": [
         {
           "name": "01_Login",
@@ -2568,7 +1834,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"FINANCE_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"FINANCE_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
                 ]
               }
             }
@@ -2578,24 +1844,13 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"sarah.procurement@procurex.com\",\r\n    \"password\": \"594yUbx!UI6o5Hj%\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\r\n    \"email\": \"bruce.finance@procurex.com\",\r\n    \"password\": \"<temporary-password>\"\r\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/login",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "login"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "login"]
             }
           },
           "response": []
@@ -2608,28 +1863,19 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\r\n        \"FINANCE_MANAGER_TOKEN\",\r\n        response.data.accessToken\r\n    );\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
+                  "const response = pm.response.json();\r\n\r\nif (response.success) {\r\n    pm.collectionVariables.set(\"FINANCE_MANAGER_TOKEN\", response.data.accessToken);\r\n    console.log(\"FINANCE MANAGER TOKEN updated!\");\r\n}"
                 ]
               }
             }
           ],
           "request": {
-            "auth": {
-              "type": "noauth"
-            },
+            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/refresh",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
             }
           },
           "response": []
@@ -2637,29 +1883,13 @@
         {
           "name": "03_Get_Self_Profile_Details",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/me",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "me"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "me"]
             }
           },
           "response": []
@@ -2667,38 +1897,18 @@
         {
           "name": "04_Change_Password",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\r\n    \"currentPassword\": \"<your-current-or-temporary-password>\",\r\n    \"newPassword\": \"<your-new-secure-password>\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/change-password",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "change-password"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "change-password"]
             }
           },
           "response": []
@@ -2706,29 +1916,13 @@
         {
           "name": "05_Logout",
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/v1/auth/logout",
-              "host": [
-                "{{BASE_URL}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "auth",
-                "logout"
-              ]
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
             }
           },
           "response": []
@@ -2737,16 +1931,7 @@
           "name": "06_List_Categories",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2761,16 +1946,7 @@
           "name": "07_List_Products",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2791,16 +1967,7 @@
           "name": "08_Get_Product_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2815,16 +1982,7 @@
           "name": "09_Get_Vendor_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2839,16 +1997,7 @@
           "name": "10_Get_Requisition_By_ID",
           "request": {
             "description": "Roles: Any authenticated user. This API is accessible to all roles (ADMIN, PROCUREMENT_MANAGER, INVENTORY_MANAGER, FINANCE_MANAGER, VENDOR) as long as a valid token is provided.",
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{FINANCE_MANAGER_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{FINANCE_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "GET",
             "header": [],
             "url": {
@@ -2859,74 +2008,31 @@
           },
           "response": []
         }
-      ],
-      "description": "## Finance Manager\n\nThis folder contains all API endpoints available to the **Finance Manager** role in the ProcureX procurement management platform. It covers authentication and session management operations for this role.\n\n### What's included\n\n- **Authentication** — Login and token refresh to establish and maintain an authenticated session.\n- **Profile Management** — View the finance manager's own profile details and change password.\n- **Session Control** — Logout to securely end the session.\n- **Read-only Catalog Access** — List categories, list products, get product by ID, get vendor by ID, and get requisition by ID.\n\n### Usage\n\nUse the login request to authenticate as a Finance Manager and obtain an access token. The token is required for all subsequent requests. Use the refresh token endpoint to renew the session without re-authenticating."
+      ]
     }
   ],
   "event": [
     {
       "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
+      "script": { "type": "text/javascript", "packages": {}, "exec": [""] }
     },
     {
       "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
+      "script": { "type": "text/javascript", "packages": {}, "exec": [""] }
     }
   ],
   "variable": [
-    {
-      "key": "ADMIN_TOKEN",
-      "value": ""
-    },
-    {
-      "key": "VENDOR_TOKEN",
-      "value": ""
-    },
-    {
-      "key": "PROCUREMENT_MANAGER_TOKEN",
-      "value": ""
-    },
-    {
-      "key": "INVENTORY_MANAGER_TOKEN",
-      "value": ""
-    },
-    {
-      "key": "FINANCE_MANAGER_TOKEN",
-      "value": ""
-    },
-    {
-      "key": "BASE_URL",
-      "value": "http://localhost:8080"
-    },
-    {
-      "key": "categoryId",
-      "value": ""
-    },
-    {
-      "key": "productId",
-      "value": ""
-    },
-    {
-      "key": "vendorId",
-      "value": ""
-    },
-    {
-      "key": "requisitionId",
-      "value": ""
-    }
+    { "key": "ADMIN_TOKEN", "value": "" },
+    { "key": "VENDOR_TOKEN", "value": "" },
+    { "key": "PROCUREMENT_MANAGER_TOKEN", "value": "" },
+    { "key": "INVENTORY_MANAGER_TOKEN", "value": "" },
+    { "key": "FINANCE_MANAGER_TOKEN", "value": "" },
+    { "key": "BASE_URL", "value": "http://localhost:8080" },
+    { "key": "categoryId", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "vendorId", "value": "" },
+    { "key": "requisitionId", "value": "" },
+    { "key": "vendorProductId", "value": "" },
+    { "key": "rfqId", "value": "" }
   ]
 }
