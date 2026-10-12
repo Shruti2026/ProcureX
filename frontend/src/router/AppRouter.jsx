@@ -19,7 +19,8 @@ import ProcurementDashboard from "../pages/procurement/ProcurementDashboard";
 import RequisitionsPage from "../pages/procurement/RequisitionsPage";
 import RequisitionDetailPage from "../pages/procurement/RequisitionDetailPage";
 import RfqsPage from "../pages/procurement/RfqsPage";
-import OrdersPage from "../pages/procurement/OrdersPage";
+import PurchaseOrdersPage from "../pages/procurement/PurchaseOrdersPage";
+import PurchaseOrderDetailPage from "../pages/procurement/PurchaseOrderDetailPage";
 import AnalyticsPage from "../pages/procurement/AnalyticsPage";
 
 // Inventory Pages
@@ -27,6 +28,7 @@ import InventoryDashboard from "../pages/inventory/InventoryDashboard";
 import StockPage from "../pages/inventory/StockPage";
 import WarehousesPage from "../pages/inventory/WarehousesPage";
 import GrnsPage from "../pages/inventory/GrnsPage";
+import GrnDetailPage from "../pages/inventory/GrnDetailPage";
 import TransactionsPage from "../pages/inventory/TransactionsPage";
 
 // Finance Pages
@@ -155,7 +157,11 @@ export default function AppRouter({ user, onLogout }) {
                   />
                   <Route
                     path="orders"
-                    element={<OrdersPage />}
+                    element={<PurchaseOrdersPage />}
+                  />
+                  <Route
+                    path="orders/:poId"
+                    element={<PurchaseOrderDetailPage />}
                   />
                   <Route
                     path="analytics"
@@ -196,6 +202,10 @@ export default function AppRouter({ user, onLogout }) {
                   <Route
                     path="grns"
                     element={<GrnsPage />}
+                  />
+                  <Route
+                    path="grns/:grnId"
+                    element={<GrnDetailPage />}
                   />
                   <Route
                     path="transactions"
