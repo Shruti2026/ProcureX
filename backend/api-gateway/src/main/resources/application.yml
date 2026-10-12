@@ -39,6 +39,10 @@ spring:
               uri: lb://procurex-procurement-service
               predicates:
                 - Path=/api/v1/procurement/**
+            - id: inventory-service
+              uri: lb://procurex-inventory-service
+              predicates:
+                - Path=/api/v1/inventory/**
 
 eureka:
   client:
