@@ -776,7 +776,41 @@
           ]
         },
         {
-          "name": "22_Logout",
+          "name": "22_Get_Purchase_Order_By_ID",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN, INVENTORY_MANAGER. Get a single purchase order by ID.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders/{{purchaseOrderId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders", "{{purchaseOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "23_Get_Stock_Levels",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER, PROCUREMENT_MANAGER. Returns current quantity_on_hand and quantity_reserved per product per warehouse.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/stock?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "stock"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "24_Logout",
           "request": {
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{ADMIN_TOKEN}}", "type": "string" }] },
             "method": "POST",
@@ -1065,6 +1099,45 @@
               "raw": "{{BASE_URL}}/api/v1/procurement/rfqs/my-invitations?page=0&size=10",
               "host": ["{{BASE_URL}}"],
               "path": ["api", "v1", "procurement", "rfqs", "my-invitations"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "17_Submit_Quotation",
+          "request": {
+            "description": "Roles: VENDOR only. Submit a quotation in response to an RFQ invitation. The RFQ must be OPEN and the vendor must be in the invited list.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"rfqId\": \"{{rfqId}}\",\r\n  \"validityDate\": \"2026-11-30\",\r\n  \"deliveryDays\": 7,\r\n  \"paymentTerms\": \"Net 30\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"{{productId}}\",\r\n      \"quantity\": 25,\r\n      \"unitPrice\": 420.00\r\n    }\r\n  ]\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/quotations",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "quotations"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18_Get_My_Quotations",
+          "request": {
+            "description": "Roles: VENDOR only. Returns a paginated list of quotations submitted by the authenticated vendor.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{VENDOR_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/quotations/my-quotations?page=0&size=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "quotations", "my-quotations"],
               "query": [
                 { "key": "page", "value": "0" },
                 { "key": "size", "value": "10" }
@@ -1600,7 +1673,113 @@
           "response": []
         },
         {
-          "name": "29_Change_Password",
+          "name": "29_Get_Quotations_By_RFQ",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN. Returns all quotations submitted by vendors for the specified RFQ.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/quotations/rfq/{{rfqId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "quotations", "rfq", "{{rfqId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "30_Create_Purchase_Order",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN. Creates a purchase order from a selected quotation. The quotation must be in a valid state.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"quotationId\": \"{{quotationId}}\",\r\n  \"expectedDelivery\": \"2026-12-30\"\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "31_List_Purchase_Orders",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN, INVENTORY_MANAGER. Returns a paginated list of purchase orders. Filter by status using the optional query param.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "status", "value": "CREATED", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "32_Get_Purchase_Order_By_ID",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN, INVENTORY_MANAGER. Get a single purchase order by its ID.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders/{{purchaseOrderId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders", "{{purchaseOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "33_Approve_Purchase_Order",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN. Approve a purchase order. Optional remarks can be passed as a query param.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders/{{purchaseOrderId}}/approve",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders", "{{purchaseOrderId}}", "approve"],
+              "query": [
+                { "key": "remarks", "value": "Approved after review", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "34_Cancel_Purchase_Order",
+          "request": {
+            "description": "Roles: PROCUREMENT_MANAGER, ADMIN. Cancel a purchase order. Optional remarks can be passed as a query param.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders/{{purchaseOrderId}}/cancel",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders", "{{purchaseOrderId}}", "cancel"],
+              "query": [
+                { "key": "remarks", "value": "Cancelled due to budget constraints", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "35_Change_Password",
           "request": {
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
@@ -1619,7 +1798,7 @@
           "response": []
         },
         {
-          "name": "30_Logout",
+          "name": "36_Logout",
           "request": {
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{PROCUREMENT_MANAGER_TOKEN}}", "type": "string" }] },
             "method": "POST",
@@ -1816,6 +1995,220 @@
               "raw": "{{BASE_URL}}/api/v1/procurement/requisitions/{{requisitionId}}",
               "host": ["{{BASE_URL}}"],
               "path": ["api", "v1", "procurement", "requisitions", "{{requisitionId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "11_Get_Purchase_Order_By_ID",
+          "request": {
+            "description": "Roles: INVENTORY_MANAGER, PROCUREMENT_MANAGER, ADMIN. Get a single purchase order by ID to verify it is APPROVED before creating a GRN.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/procurement/orders/{{purchaseOrderId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "procurement", "orders", "{{purchaseOrderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "12_Create_Warehouse",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Creates a new warehouse record for the organization.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"warehouseName\": \"Main Warehouse\",\r\n  \"location\": \"Plot 12, Industrial Area, Pune\",\r\n  \"capacity\": 5000\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/warehouses",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "warehouses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "13_List_Warehouses",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER, PROCUREMENT_MANAGER. Returns all warehouses for the organization.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/warehouses",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "warehouses"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "14_Get_Warehouse_By_ID",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Get a single warehouse by its ID.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/warehouses/{{warehouseId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "warehouses", "{{warehouseId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "15_Update_Warehouse",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Update warehouse details such as name, location, or capacity.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"warehouseName\": \"Main Warehouse - Updated\",\r\n  \"location\": \"Plot 12, Industrial Area, Pune\",\r\n  \"capacity\": 8000\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/warehouses/{{warehouseId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "warehouses", "{{warehouseId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "16_Create_GRN",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Create a Goods Receipt Note. PO must have status APPROVED. receivedQty must be <= orderedQty.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"purchaseOrderId\": \"{{purchaseOrderId}}\",\r\n  \"warehouseId\": \"{{warehouseId}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"{{productId}}\",\r\n      \"quantityReceived\": 20\r\n    }\r\n  ]\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/grns",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "grns"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "17_List_GRNs",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER, PROCUREMENT_MANAGER. Returns a paginated list of GRNs. Filter by status using the optional query param.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/grns?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "grns"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "status", "value": "PENDING_INSPECTION", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "18_Get_GRN_By_ID",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER, PROCUREMENT_MANAGER. Get a single GRN by its ID.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/grns/{{grnId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "grns", "{{grnId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "19_Submit_Inspection",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Submit a quality inspection for a GRN. GRN must be in PENDING_INSPECTION status. Updates inventory stock levels on completion.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"grnId\": \"{{grnId}}\",\r\n  \"items\": [\r\n    {\r\n      \"productId\": \"{{productId}}\",\r\n      \"acceptedQuantity\": 18,\r\n      \"rejectedQuantity\": 2,\r\n      \"reasonForRejection\": \"Damaged packaging\"\r\n    }\r\n  ]\r\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/inspections",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "inspections"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "20_Get_Inspection_By_GRN",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Retrieve the quality inspection record for a given GRN.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/inspections/grn/{{grnId}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "inspections", "grn", "{{grnId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "21_Get_Stock_Levels",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER, PROCUREMENT_MANAGER. Returns current quantity_on_hand and quantity_reserved per product per warehouse.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/stock?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "stock"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "22_Get_Stock_Transactions",
+          "request": {
+            "description": "Roles: ADMIN, INVENTORY_MANAGER. Returns a paginated list of stock transactions. Filter by productId using the optional query param.",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{INVENTORY_MANAGER_TOKEN}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/inventory/stock-transactions?page=0&size=20",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "inventory", "stock-transactions"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "productId", "value": "{{productId}}", "disabled": true }
+              ]
             }
           },
           "response": []
@@ -2033,6 +2426,10 @@
     { "key": "vendorId", "value": "" },
     { "key": "requisitionId", "value": "" },
     { "key": "vendorProductId", "value": "" },
-    { "key": "rfqId", "value": "" }
+    { "key": "rfqId", "value": "" },
+    { "key": "quotationId", "value": "" },
+    { "key": "purchaseOrderId", "value": "" },
+    { "key": "grnId", "value": "" },
+    { "key": "warehouseId", "value": "" }
   ]
 }
