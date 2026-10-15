@@ -1,17 +1,33 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Bell, ChevronDown, KeyRound, LogOut, User } from 'lucide-react'
 import Badge from '../ui/Badge'
 import { ROLE_LABELS } from '../../constants/roles'
 import ChangePasswordModal from '../auth/ChangePasswordModal'
+import { notificationService } from '../../services/notificationService'
 
 /**
  * Top navigation bar with user profile dropdown.
  * Displays user role, notification bell, Change Password modal, and Logout.
  */
 export default function Navbar({ user, onLogout }) {
+  const navigate = useNavigate()
   const [dropdownOpen, setDropdownOpen]   = useState(false)
   const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
+
+  // Fetch unread notification count on mount and poll every 30 seconds
+  useEffect(() => {
+    const fetchUnreadCount = () => {
+      notificationService.getUnreadCount()
+        .then(res => setUnreadCount(res.data?.data ?? 0))
+        .catch(() => {})
+    }
+    fetchUnreadCount()
+    const intervalId = setInterval(fetchUnreadCount, 30000)
+    return () => clearInterval(intervalId)
+  }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -35,9 +51,15 @@ export default function Navbar({ user, onLogout }) {
           <button
             id="navbar-notifications-btn"
             aria-label="Notifications"
+            onClick={() => navigate('/notifications')}
             className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors duration-150"
           >
             <Bell size={20} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
 
           {/* Divider */}

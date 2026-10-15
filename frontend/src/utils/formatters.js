@@ -47,3 +47,13 @@ export const shortId = (uuid) => {
   if (!uuid) return '—'
   return uuid.slice(-8).toUpperCase()
 }
+
+/**
+ * Days remaining until a date
+ * Returns negative if the date is in the past.
+ * e.g. daysUntil('2026-12-31') → 180
+ */
+export const daysUntil = (dateStr) => {
+  if (!dateStr) return null
+  return Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000)
+}

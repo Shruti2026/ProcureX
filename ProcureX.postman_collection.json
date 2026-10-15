@@ -2705,6 +2705,119 @@
                                       "response":  [
 
                                                    ]
+                                  },
+                                  {
+                                      "name":  "23_Mark_Notification_As_Read",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/{{notificationId}}/read"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{VENDOR_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Vendor marks a notification as read. Unread count decrements on success."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "24_Get_Notification_Preferences",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/preferences"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{VENDOR_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns the vendor\u0027s email and in-app notification preferences."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "25_Update_Notification_Preferences",
+                                      "request":  {
+                                                      "method":  "PUT",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/preferences"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{VENDOR_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\"emailEnabled\":true,\"inAppEnabled\":true,\"subscribedEventTypes\":[\"VENDOR_APPROVED\",\"PO_APPROVED\",\"PAYMENT_COMPLETED\",\"RFQ_INVITATION\"]}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               },
+                                                      "description":  "Updates the vendor\u0027s notification preferences. All fields are optional — omit any to keep the current value."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "26_Get_Unread_Count",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/unread-count"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{VENDOR_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns the unread notification count for the vendor. Used by the Navbar bell badge."
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },
@@ -4203,6 +4316,110 @@
                                       "response":  [
 
                                                    ]
+                                  },
+                                  {
+                                      "name":  "37_Get_Analytics_Procurement_Summary",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/procurement-summary"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns KPI summary: open requisitions, active RFQs, pending PO approvals, total PO value MTD. Used by the Procurement Dashboard."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "38_Get_Analytics_Vendor_Performance",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/vendor-performance"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns vendor rating cards with on-time delivery %, quality %, and performance score (0.0-5.0). Recalculated hourly by the ScorecardScheduler."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "39_Get_Analytics_Dashboard_Metrics",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/dashboard-metrics"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns all key-value dashboard metrics for the organization."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "40_Mark_Notification_As_Read",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/{{notificationId}}/read"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Marks the specified notification as read for the procurement manager."
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },
@@ -5093,6 +5310,32 @@
                                                                                 }
                                                                             ]
                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "23_Get_Inspection_By_ID",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/inventory/inspections/grn/{{grnId}}"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{INVENTORY_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Retrieves the quality inspection result for a specific GRN. Returns accepted/rejected quantities per line item."
                                                   },
                                       "response":  [
 
@@ -6017,6 +6260,58 @@
                                       "response":  [
 
                                                    ]
+                                  },
+                                  {
+                                      "name":  "23_Get_Analytics_Dashboard_Metrics",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/dashboard-metrics"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{FINANCE_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Finance managers have access to dashboard metrics. Returns all key-value metrics for the organization including TOTAL_PAYMENTS_MTD, PENDING_INVOICE_COUNT, FLAGGED_INVOICE_COUNT."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "24_Get_Spend_By_Department",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/spend-by-department"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{FINANCE_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Returns total spend aggregated by department. Used by the Finance Dashboard budget utilization chart."
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },
@@ -6185,6 +6480,32 @@
                                                                                }
                                                                },
                                                       "description":  "Roles: Any authenticated user. Creates the preference row on first call, updates it on subsequent calls. Setting emailEnabled=false suppresses future email delivery."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "05_Mark_Notification_As_Read",
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/notifications/{{notificationId}}/read"
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{ADMIN_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Marks a single notification as read. Works for all roles — each user can only mark their own notifications."
                                                   },
                                       "response":  [
 
@@ -6449,6 +6770,16 @@
                          "key":  "paymentId",
                          "type":  "string",
                          "value":  ""
+                     },
+                     {
+                         "key":  "inspectionId",
+                         "value":  "",
+                         "type":  "string"
+                     },
+                     {
+                         "key":  "notificationId",
+                         "value":  "",
+                         "type":  "string"
                      }
                  ]
 }
