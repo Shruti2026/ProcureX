@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Payment Completed</title></head>
+<body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+  <div style="background: #1e40af; padding: 24px; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 20px;">ProcureX</h1>
+  </div>
+  <div style="padding: 32px 24px;">
+    <h2 style="color: #16a34a;">Payment Completed</h2>
+    <p>Hello <strong th:text="${vendorName}">Vendor Name</strong>,</p>
+    <p>A payment has been processed for your invoice.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+      <tr>
+        <td style="padding: 8px; color: #666;">Invoice Number</td>
+        <td style="padding: 8px; font-weight: bold;" th:text="${invoiceNumber}">INV-2026-00001</td>
+      </tr>
+      <tr style="background: #f9fafb;">
+        <td style="padding: 8px; color: #666;">Amount</td>
+        <td style="padding: 8px; font-weight: bold;" th:text="${amount}">5000.00</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; color: #666;">Transaction Reference</td>
+        <td style="padding: 8px; font-family: monospace;" th:text="${transactionRef}">TXN-123456789</td>
+      </tr>
+      <tr style="background: #f9fafb;">
+        <td style="padding: 8px; color: #666;">Payment Method</td>
+        <td style="padding: 8px;" th:text="${paymentMethod}">ACH</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

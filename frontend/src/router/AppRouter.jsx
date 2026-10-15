@@ -34,6 +34,7 @@ import TransactionsPage from "../pages/inventory/TransactionsPage";
 // Finance Pages
 import FinanceDashboard from "../pages/finance/FinanceDashboard";
 import InvoicesPage from "../pages/finance/InvoicesPage";
+import InvoiceDetailPage from "../pages/finance/InvoiceDetailPage";
 import BudgetsPage from "../pages/finance/BudgetsPage";
 import PaymentsPage from "../pages/finance/PaymentsPage";
 
@@ -238,6 +239,10 @@ export default function AppRouter({ user, onLogout }) {
                   <Route
                     path="invoices"
                     element={<InvoicesPage />}
+                  />
+                  <Route
+                    path="invoices/:invoiceId"
+                    element={<InvoiceDetailPage />}
                   />
                   <Route
                     path="budgets"
