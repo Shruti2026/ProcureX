@@ -55,6 +55,12 @@ spring:
                 - Path=/api/v1/notifications/**
               filters:
                 - RewritePath=/api/v1/notifications/(?<segment>.*), /api/v1/notifications/${segment}
+            - id: analytics-service
+              uri: lb://procurex-analytics-service
+              predicates:
+                - Path=/api/v1/reports/**
+              filters:
+                - RewritePath=/api/v1/reports/(?<segment>.*), /api/v1/reports/${segment}
 
 eureka:
   client:
