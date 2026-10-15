@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Account Approved</title></head>
+<body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+  <div style="background: #1e40af; padding: 24px; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 20px;">ProcureX</h1>
+  </div>
+  <div style="padding: 32px 24px;">
+    <h2 style="color: #1e40af;">Vendor Account Approved</h2>
+    <p>Hello <strong th:text="${vendorName}">Vendor Name</strong>,</p>
+    <p>Your vendor account on ProcureX has been approved. You can now log in and start responding to RFQ invitations.</p>
+    <div style="text-align: center; margin: 32px 0;">
+      <a th:href="${loginUrl}" href="#"
+         style="background: #1e40af; color: white; padding: 12px 28px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+        Login to ProcureX
+      </a>
+    </div>
+    <p style="color: #666; font-size: 13px;">If you did not register on ProcureX, please ignore this email.</p>
+  </div>
+</body>
+</html>

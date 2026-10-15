@@ -1,14 +1,18 @@
 package com.procurex.identityservice.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
+import com.procurex.identityservice.entity.OutboxEvent;
 import com.procurex.identityservice.entity.Role;
 import com.procurex.identityservice.entity.RoleName;
 import com.procurex.identityservice.entity.User;
 import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.repository.AuditLogRepository;
+import com.procurex.identityservice.repository.OutboxEventRepository;
 import com.procurex.identityservice.repository.RefreshTokenRepository;
 import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
@@ -23,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,6 +64,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final AuditLogRepository  auditLogRepository;
     private final PasswordEncoder     passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper          objectMapper;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -152,6 +159,25 @@ public class AdminUserServiceImpl implements AdminUserService {
         vendor.setAccountStatus(AccountStatus.ACTIVE);
         vendor.setUpdatedBy(admin.getUserId());
         User saved = userRepository.save(vendor);
+
+        // Publish vendor-approved event via transactional outbox
+        try {
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventType("identity.vendor.approved")
+                    .aggregateType("VENDOR")
+                    .aggregateId(saved.getUserId())
+                    .payload(objectMapper.writeValueAsString(Map.of(
+                            "userId",         saved.getUserId().toString(),
+                            "vendorId",       saved.getUserId().toString(),
+                            "organizationId", saved.getOrganizationId().toString(),
+                            "email",          saved.getEmail(),
+                            "vendorName",     saved.getFullName()
+                    )))
+                    .build();
+            outboxEventRepository.save(outboxEvent);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize vendor approved outbox event", e);
+        }
 
         writeAuditLog(admin, "APPROVE_VENDOR", USERS_ENTITY, vendorUserId.toString());
         log.info("Vendor approved: userId={}, by admin={}", vendorUserId, adminEmail);

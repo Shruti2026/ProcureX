@@ -46,3 +46,9 @@ eureka:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+app:
+  mail:
+    from: noreply@procurex.com
+  portal:
+    url: http://localhost:5173

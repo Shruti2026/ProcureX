@@ -1,71 +1,155 @@
-import { useMemo } from 'react'
-import { Receipt, CheckCircle2, Tag, CreditCard } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Receipt, CheckCircle2, Tag, CreditCard, Eye, Play, CheckCircle } from 'lucide-react'
+import toast from 'react-hot-toast'
 import StatCard from '../../components/ui/StatCard'
 import Table from '../../components/ui/Table'
 import Badge from '../../components/ui/Badge'
+import Button from '../../components/ui/Button'
+import Spinner from '../../components/ui/Spinner'
+import { formatDate, formatCurrency } from '../../utils/formatters'
+import { invoiceService } from '../../services/invoiceService'
+import { budgetService } from '../../services/budgetService'
+import { paymentService } from '../../services/paymentService'
+import { useAuth } from '../../context/AuthContext'
+import { ROLES } from '../../constants/roles'
 
 const reducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-const STAT_CARDS = [
-  {
-    title: 'Pending Invoices',
-    value: 14,
-    icon: Receipt,
-    iconColor: 'text-amber-600',
-    iconBg: 'bg-amber-50',
-    trend: { direction: 'up', label: '+3 this week' },
-  },
-  {
-    title: 'Verified Invoices',
-    value: 57,
-    icon: CheckCircle2,
-    iconColor: 'text-green-600',
-    iconBg: 'bg-green-50',
-    trend: { direction: 'up', label: '+8 this month' },
-  },
-  {
-    title: 'Active Budgets',
-    value: 8,
-    icon: Tag,
-    iconColor: 'text-violet-600',
-    iconBg: 'bg-violet-50',
-  },
-  {
-    title: 'Payments This Month',
-    value: '$124,500',
-    icon: CreditCard,
-    iconColor: 'text-blue-600',
-    iconBg: 'bg-blue-50',
-    trend: { direction: 'up', label: '+12% vs last month' },
-  },
-]
-
-const COLUMNS = ['Invoice ID', 'Vendor', 'Amount', 'Status', 'Date']
-
-const INVOICE_ROWS = [
-  { id: 'INV-2024-041', vendor: 'Acme Supplies Ltd',    amount: '$12,400', status: 'PENDING_VERIFICATION', date: 'Dec 10, 2024' },
-  { id: 'INV-2024-040', vendor: 'TechPro Solutions',    amount: '$8,750',  status: 'VERIFIED',             date: 'Dec 09, 2024' },
-  { id: 'INV-2024-039', vendor: 'Global Parts Inc',     amount: '$31,200', status: 'PAID',                 date: 'Dec 07, 2024' },
-  { id: 'INV-2024-038', vendor: 'Office Depot Co',      amount: '$2,150',  status: 'FLAGGED_VARIANCE',     date: 'Dec 06, 2024' },
-  { id: 'INV-2024-037', vendor: 'Warehouse Essentials', amount: '$18,900', status: 'VERIFIED',             date: 'Dec 04, 2024' },
-  { id: 'INV-2024-036', vendor: 'FastShip Logistics',   amount: '$5,600',  status: 'PAID',                 date: 'Dec 02, 2024' },
-]
-
 const STAGGER_DELAYS = [0, 75, 150, 225]
+const RECENT_COLUMNS = ['Invoice Number', 'Vendor ID', 'Amount', 'Status', 'Submitted', 'Actions']
 
 export default function FinanceDashboard() {
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const [kpi, setKpi] = useState({ pending: 0, flagged: 0, budgets: 0, paymentsTotal: 0 })
+  const [kpiLoading, setKpiLoading] = useState(true)
+  const [invoices, setInvoices] = useState([])
+  const [invoicesLoading, setInvoicesLoading] = useState(true)
+  const [actionLoading, setActionLoading] = useState(null)
+
   const today = useMemo(
-    () =>
-      new Date().toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }),
+    () => new Date().toLocaleDateString('en-IN', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    }),
     []
   )
+
+  useEffect(() => {
+    loadKpis()
+    loadRecentInvoices()
+  }, [])
+
+  const loadKpis = async () => {
+    setKpiLoading(true)
+    try {
+      const [pendingRes, flaggedRes, budgetRes, paymentsRes] = await Promise.all([
+        invoiceService.getInvoices({ status: 'PENDING_VERIFICATION', page: 0, size: 1 }),
+        invoiceService.getInvoices({ status: 'FLAGGED_VARIANCE', page: 0, size: 1 }),
+        budgetService.getBudgets({ page: 0, size: 1 }),
+        paymentService.getPayments({ page: 0, size: 100 }),
+      ])
+
+      const now = new Date()
+      const currentMonth = now.getMonth()
+      const currentYear = now.getFullYear()
+      const payments = paymentsRes.data?.data?.content ?? []
+      const paymentsTotal = payments.reduce((sum, p) => {
+        const initiated = p.initiatedAt ? new Date(p.initiatedAt) : null
+        if (initiated && initiated.getMonth() === currentMonth && initiated.getFullYear() === currentYear) {
+          return sum + (parseFloat(p.amount) || 0)
+        }
+        return sum
+      }, 0)
+
+      setKpi({
+        pending: pendingRes.data?.data?.totalElements ?? 0,
+        flagged: flaggedRes.data?.data?.totalElements ?? 0,
+        budgets: budgetRes.data?.data?.totalElements ?? 0,
+        paymentsTotal,
+      })
+    } catch {
+      // silent — stat cards will show 0
+    } finally {
+      setKpiLoading(false)
+    }
+  }
+
+  const loadRecentInvoices = async () => {
+    setInvoicesLoading(true)
+    try {
+      const res = await invoiceService.getInvoices({ page: 0, size: 10 })
+      setInvoices(res.data?.data?.content ?? [])
+    } catch {
+      // silent
+    } finally {
+      setInvoicesLoading(false)
+    }
+  }
+
+  const handleRunMatch = async (invoiceId) => {
+    setActionLoading(invoiceId + '-match')
+    try {
+      await invoiceService.runMatch(invoiceId)
+      toast.success('Three-way match completed')
+      loadRecentInvoices()
+      loadKpis()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Match failed')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleApprove = async (invoiceId) => {
+    setActionLoading(invoiceId + '-approve')
+    try {
+      await invoiceService.approveInvoice(invoiceId)
+      toast.success('Invoice approved')
+      loadRecentInvoices()
+      loadKpis()
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Approval failed')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const isFinanceManager = user?.role === ROLES.FINANCE_MANAGER || user?.role === ROLES.ADMIN
+
+  const statCards = [
+    {
+      title: 'Pending Invoices',
+      value: kpiLoading ? '...' : kpi.pending,
+      icon: Receipt,
+      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-50',
+    },
+    {
+      title: 'Flagged Invoices',
+      value: kpiLoading ? '...' : kpi.flagged,
+      icon: CheckCircle2,
+      iconColor: 'text-red-600',
+      iconBg: 'bg-red-50',
+    },
+    {
+      title: 'Active Budgets',
+      value: kpiLoading ? '...' : kpi.budgets,
+      icon: Tag,
+      iconColor: 'text-violet-600',
+      iconBg: 'bg-violet-50',
+    },
+    {
+      title: 'Payments This Month',
+      value: kpiLoading ? '...' : formatCurrency(kpi.paymentsTotal),
+      icon: CreditCard,
+      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-50',
+    },
+  ]
 
   return (
     <div className="space-y-6">
@@ -75,31 +159,69 @@ export default function FinanceDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {STAT_CARDS.map((card, i) => (
+        {statCards.map((card, i) => (
           <StatCard
             key={card.title}
             {...card}
-            style={{
-              animationDelay: reducedMotion ? '0ms' : `${STAGGER_DELAYS[i]}ms`,
-            }}
+            style={{ animationDelay: reducedMotion ? '0ms' : `${STAGGER_DELAYS[i]}ms` }}
           />
         ))}
       </div>
 
       <div>
         <h2 className="text-base font-semibold text-gray-800 mb-3">Recent Invoices</h2>
-        <Table columns={COLUMNS}>
-          {INVOICE_ROWS.map((row, i) => (
+        <Table
+          columns={RECENT_COLUMNS}
+          loading={invoicesLoading}
+          empty={!invoicesLoading && invoices.length === 0}
+          emptyMessage="No invoices found."
+        >
+          {invoices.map((inv, i) => (
             <tr
-              key={row.id}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+              key={inv.invoiceId}
+              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
+              onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
             >
-              <Table.Td className="font-medium text-gray-900">{row.id}</Table.Td>
-              <Table.Td>{row.vendor}</Table.Td>
-              <Table.Td className="font-medium">{row.amount}</Table.Td>
-              <Table.Td><Badge status={row.status} /></Table.Td>
-              <Table.Td className="text-gray-400">{row.date}</Table.Td>
+              <Table.Td className="font-medium text-gray-900">{inv.invoiceNumber}</Table.Td>
+              <Table.Td className="text-gray-400 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
+              <Table.Td className="font-medium">{formatCurrency(inv.invoiceAmount)}</Table.Td>
+              <Table.Td><Badge status={inv.status} /></Table.Td>
+              <Table.Td className="text-gray-400">{formatDate(inv.submittedAt)}</Table.Td>
+              <Table.Td onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center gap-1">
+                  {inv.status === 'PENDING_VERIFICATION' && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      loading={actionLoading === inv.invoiceId + '-match'}
+                      onClick={() => handleRunMatch(inv.invoiceId)}
+                    >
+                      <Play size={12} />
+                      Run Match
+                    </Button>
+                  )}
+                  {inv.status === 'VERIFIED' && isFinanceManager && (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      loading={actionLoading === inv.invoiceId + '-approve'}
+                      onClick={() => handleApprove(inv.invoiceId)}
+                    >
+                      <CheckCircle size={12} />
+                      Approve
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
+                  >
+                    <Eye size={12} />
+                    View
+                  </Button>
+                </div>
+              </Table.Td>
             </tr>
           ))}
         </Table>

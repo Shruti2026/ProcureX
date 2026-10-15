@@ -43,6 +43,18 @@ spring:
               uri: lb://procurex-inventory-service
               predicates:
                 - Path=/api/v1/inventory/**
+            - id: finance-service
+              uri: lb://procurex-finance-service
+              predicates:
+                - Path=/api/v1/finance/**
+              filters:
+                - RewritePath=/api/v1/finance/(?<segment>.*), /api/v1/finance/${segment}
+            - id: notification-service
+              uri: lb://procurex-notification-service
+              predicates:
+                - Path=/api/v1/notifications/**
+              filters:
+                - RewritePath=/api/v1/notifications/(?<segment>.*), /api/v1/notifications/${segment}
 
 eureka:
   client:
