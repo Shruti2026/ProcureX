@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { Receipt, CheckCircle2, Tag, CreditCard, Eye, Play, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -8,6 +9,7 @@ import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import Spinner from '../../components/ui/Spinner'
 import { formatDate, formatCurrency } from '../../utils/formatters'
+import api from '../../services/api'
 import { invoiceService } from '../../services/invoiceService'
 import { budgetService } from '../../services/budgetService'
 import { paymentService } from '../../services/paymentService'
@@ -30,6 +32,7 @@ export default function FinanceDashboard() {
   const [invoices, setInvoices] = useState([])
   const [invoicesLoading, setInvoicesLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(null)
+  const [budgets, setBudgets] = useState([])
 
   const today = useMemo(
     () => new Date().toLocaleDateString('en-IN', {
@@ -71,6 +74,15 @@ export default function FinanceDashboard() {
         budgets: budgetRes.data?.data?.totalElements ?? 0,
         paymentsTotal,
       })
+
+      api.get('/api/v1/finance/budgets?page=0&size=50').then(r => {
+        const data = r.data?.data?.content ?? r.data?.data ?? []
+        setBudgets(data.map(b => ({
+          department: b.departmentName ?? b.department ?? b.name ?? 'Unknown',
+          used: b.usedAmount ?? b.spentAmount ?? 0,
+          allocated: b.allocatedAmount ?? b.totalAmount ?? 1,
+        })))
+      }).catch(() => {})
     } catch {
       // silent — stat cards will show 0
     } finally {
@@ -167,6 +179,23 @@ export default function FinanceDashboard() {
           />
         ))}
       </div>
+
+      {budgets.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">Budget Utilization</h2>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart layout="vertical" data={budgets} margin={{ left: 20 }}>
+              <XAxis type="number" tickFormatter={(v) => `${v}%`} />
+              <YAxis type="category" dataKey="department" width={120} />
+              <Tooltip formatter={(value, name, props) => [
+                `${((props.payload.used / props.payload.allocated) * 100).toFixed(1)}%`,
+                'Utilization'
+              ]} />
+              <Bar dataKey="used" fill="#4f46e5" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       <div>
         <h2 className="text-base font-semibold text-gray-800 mb-3">Recent Invoices</h2>
