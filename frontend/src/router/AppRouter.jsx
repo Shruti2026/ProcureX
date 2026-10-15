@@ -137,6 +137,7 @@ export default function AppRouter({ user, onLogout }) {
                 allowedRoles={[
                   ROLES.PROCUREMENT_MANAGER,
                   ROLES.ADMIN,
+                  ROLES.FINANCE_MANAGER,
                 ]}
               >
                 <Routes>

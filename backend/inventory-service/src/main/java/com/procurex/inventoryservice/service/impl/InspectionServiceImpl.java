@@ -1,5 +1,8 @@
 package com.procurex.inventoryservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.procurex.inventoryservice.client.ProcurementServiceClient;
+import com.procurex.inventoryservice.client.PurchaseOrderClientResponse;
 import com.procurex.inventoryservice.dto.request.InspectionItemRequest;
 import com.procurex.inventoryservice.dto.request.SubmitInspectionRequest;
 import com.procurex.inventoryservice.dto.response.InspectionItemResponse;
@@ -8,6 +11,7 @@ import com.procurex.inventoryservice.entity.GoodsReceiptNote;
 import com.procurex.inventoryservice.entity.GrnItem;
 import com.procurex.inventoryservice.entity.Inventory;
 import com.procurex.inventoryservice.entity.InspectionItem;
+import com.procurex.inventoryservice.entity.OutboxEvent;
 import com.procurex.inventoryservice.entity.QualityInspection;
 import com.procurex.inventoryservice.entity.StockTransaction;
 import com.procurex.inventoryservice.enums.GrnStatus;
@@ -18,9 +22,11 @@ import com.procurex.inventoryservice.exception.ResourceNotFoundException;
 import com.procurex.inventoryservice.exception.ValidationException;
 import com.procurex.inventoryservice.repository.GoodsReceiptNoteRepository;
 import com.procurex.inventoryservice.repository.InventoryRepository;
+import com.procurex.inventoryservice.repository.OutboxEventRepository;
 import com.procurex.inventoryservice.repository.QualityInspectionRepository;
 import com.procurex.inventoryservice.repository.StockTransactionRepository;
 import com.procurex.inventoryservice.service.InspectionService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -31,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -47,6 +54,9 @@ public class InspectionServiceImpl implements InspectionService {
     private final QualityInspectionRepository qualityInspectionRepository;
     private final InventoryRepository inventoryRepository;
     private final StockTransactionRepository stockTransactionRepository;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ProcurementServiceClient procurementClient;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -188,6 +198,46 @@ public class InspectionServiceImpl implements InspectionService {
 
         log.debug("Inspection {} submitted for GRN {} with status {}", inspection.getInspectionId(),
                 grn.getGrnId(), inspectionStatus);
+
+        // 11. Write outbox event for inspection completion
+        try {
+            int totalAccepted = inspection.getItems().stream()
+                    .mapToInt(InspectionItem::getAcceptedQuantity).sum();
+            int totalRejected = inspection.getItems().stream()
+                    .mapToInt(InspectionItem::getRejectedQuantity).sum();
+
+            // Resolve vendorId from the linked PO
+            UUID vendorId = null;
+            try {
+                PurchaseOrderClientResponse poResponse = procurementClient
+                        .getPurchaseOrder(grn.getPurchaseOrderId(), orgId.toString());
+                if (poResponse.data() != null) {
+                    vendorId = poResponse.data().vendorId();
+                }
+            } catch (FeignException e) {
+                log.warn("Could not resolve vendorId for PO {} during outbox event write: {}",
+                        grn.getPurchaseOrderId(), e.getMessage());
+            }
+
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("inspectionId", inspection.getInspectionId().toString());
+            payloadMap.put("grnId", grn.getGrnId().toString());
+            payloadMap.put("totalAccepted", totalAccepted);
+            payloadMap.put("totalRejected", totalRejected);
+            payloadMap.put("vendorId", vendorId != null ? vendorId.toString() : "");
+            payloadMap.put("organizationId", inspection.getOrganizationId().toString());
+
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventType("inventory.inspection.completed")
+                    .aggregateType("Inspection")
+                    .aggregateId(inspection.getInspectionId())
+                    .payload(objectMapper.writeValueAsString(payloadMap))
+                    .status(OutboxEvent.Status.PENDING)
+                    .build();
+            outboxEventRepository.save(outboxEvent);
+        } catch (Exception e) {
+            log.error("Failed to write inventory.inspection.completed outbox event: {}", e.getMessage());
+        }
 
         return toResponse(inspection);
     }

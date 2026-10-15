@@ -1,12 +1,15 @@
 package com.procurex.vendorcatalogservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.procurex.vendorcatalogservice.dto.request.CreateVendorRequest;
 import com.procurex.vendorcatalogservice.dto.request.UpdateVendorRequest;
 import com.procurex.vendorcatalogservice.dto.response.VendorResponse;
+import com.procurex.vendorcatalogservice.entity.OutboxEvent;
 import com.procurex.vendorcatalogservice.entity.Vendor;
 import com.procurex.vendorcatalogservice.entity.VendorStatus;
 import com.procurex.vendorcatalogservice.exception.ConflictException;
 import com.procurex.vendorcatalogservice.exception.ResourceNotFoundException;
+import com.procurex.vendorcatalogservice.repository.OutboxEventRepository;
 import com.procurex.vendorcatalogservice.repository.VendorRepository;
 import com.procurex.vendorcatalogservice.service.VendorService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -27,6 +31,8 @@ import java.util.UUID;
 public class VendorServiceImpl implements VendorService {
 
     private final VendorRepository vendorRepository;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
     private final HttpServletRequest httpServletRequest;
 
     @Override
@@ -124,6 +130,26 @@ public class VendorServiceImpl implements VendorService {
         vendor.setVendorStatus(VendorStatus.ACTIVE);
         Vendor saved = vendorRepository.save(vendor);
         log.info("Activated vendor id={}", vendorId);
+
+        try {
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventType("vendor.registration.approved")
+                    .aggregateType("Vendor")
+                    .aggregateId(saved.getVendorId())
+                    .payload(objectMapper.writeValueAsString(Map.of(
+                            "vendorId", saved.getVendorId().toString(),
+                            "companyName", saved.getCompanyName() != null ? saved.getCompanyName() : "",
+                            "email", saved.getEmail() != null ? saved.getEmail() : "",
+                            "organizationId", saved.getOrganizationId() != null ? saved.getOrganizationId().toString() : ""
+                    )))
+                    .status(OutboxEvent.Status.PENDING)
+                    .build();
+            outboxEventRepository.save(outboxEvent);
+            log.info("Outbox event written for vendor.registration.approved, vendorId={}", saved.getVendorId());
+        } catch (Exception e) {
+            log.error("Failed to write vendor.registration.approved outbox event: {}", e.getMessage());
+        }
+
         return toResponse(saved);
     }
 

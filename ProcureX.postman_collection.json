@@ -6191,6 +6191,152 @@
                                                    ]
                                   }
                               ]
+                 },
+                 {
+                     "name":  "Analytics",
+                     "description":  "## Analytics\n\nReporting endpoints from the Analytics Service (port 8087). All metrics are pre-aggregated from RabbitMQ events in real time — no polling the source services directly.\n\n### What\u0027s included\n- Procurement summary KPIs (Total POs, PO Value MTD, GRNs, Open RFQs)\n- Vendor performance cards (on-time ratio, quality ratio, performance score 0-5)\n- Raw dashboard metrics (all key-value metric entries for the organization)\n- Spend summary (PO value vs payments, MTD)\n\n### Roles\n- ADMIN and PROCUREMENT_MANAGER: access to procurement-summary, vendor-performance, dashboard-metrics\n- ADMIN and FINANCE_MANAGER: access to spend-by-department and dashboard-metrics",
+                     "item":  [
+                                  {
+                                      "name":  "01_Get_Procurement_Summary",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/procurement-summary",
+                                                                  "host":  [
+                                                                               "{{BASE_URL}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "reports",
+                                                                               "procurement-summary"
+                                                                           ]
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Roles: ADMIN, PROCUREMENT_MANAGER. Returns pre-aggregated KPIs: totalPOCount, totalPOValueMTD, totalGrnCount, openRfqCount. Metrics update within 5s of each PO approval, GRN creation, or RFQ creation event."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "02_Get_Vendor_Performance",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/vendor-performance",
+                                                                  "host":  [
+                                                                               "{{BASE_URL}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "reports",
+                                                                               "vendor-performance"
+                                                                           ]
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Roles: ADMIN, PROCUREMENT_MANAGER. Returns vendor rating cards with onTimeRatio, qualityRatio, and performanceScore (0.0-5.0). Scores are recalculated hourly by the ScorecardScheduler. Cards are created from inventory.inspection.completed events."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "03_Get_Dashboard_Metrics",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/dashboard-metrics",
+                                                                  "host":  [
+                                                                               "{{BASE_URL}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "reports",
+                                                                               "dashboard-metrics"
+                                                                           ]
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{PROCUREMENT_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Roles: ADMIN, PROCUREMENT_MANAGER, FINANCE_MANAGER. Returns all raw dashboard_metrics rows for the org. Metric types: COUNT (parse as long) or AMOUNT (parse as decimal). Keys: TOTAL_PO_COUNT, TOTAL_PO_VALUE_MTD, TOTAL_GRN_COUNT, OPEN_RFQ_COUNT, TOTAL_INSPECTIONS, TOTAL_PAYMENTS_MTD."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "04_Get_Spend_By_Department",
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+
+                                                                 ],
+                                                      "url":  {
+                                                                  "raw":  "{{BASE_URL}}/api/v1/reports/spend-by-department",
+                                                                  "host":  [
+                                                                               "{{BASE_URL}}"
+                                                                           ],
+                                                                  "path":  [
+                                                                               "api",
+                                                                               "v1",
+                                                                               "reports",
+                                                                               "spend-by-department"
+                                                                           ]
+                                                              },
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{FINANCE_MANAGER_TOKEN}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "description":  "Roles: ADMIN, FINANCE_MANAGER. Returns org-wide spend totals: TOTAL_PO_VALUE_MTD and TOTAL_PAYMENTS_MTD. Full department-level breakdown (linked to Finance Service budgets) is planned for Day 8."
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  }
+                              ]
                  }
              ],
     "event":  [

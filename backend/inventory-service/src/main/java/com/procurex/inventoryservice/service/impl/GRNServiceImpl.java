@@ -1,5 +1,6 @@
 package com.procurex.inventoryservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.procurex.inventoryservice.client.POItemData;
 import com.procurex.inventoryservice.client.ProcurementServiceClient;
 import com.procurex.inventoryservice.client.PurchaseOrderClientResponse;
@@ -9,12 +10,14 @@ import com.procurex.inventoryservice.dto.response.GrnItemResponse;
 import com.procurex.inventoryservice.dto.response.GrnResponse;
 import com.procurex.inventoryservice.entity.GoodsReceiptNote;
 import com.procurex.inventoryservice.entity.GrnItem;
+import com.procurex.inventoryservice.entity.OutboxEvent;
 import com.procurex.inventoryservice.entity.Warehouse;
 import com.procurex.inventoryservice.enums.GrnStatus;
 import com.procurex.inventoryservice.exception.ConflictException;
 import com.procurex.inventoryservice.exception.ResourceNotFoundException;
 import com.procurex.inventoryservice.exception.ValidationException;
 import com.procurex.inventoryservice.repository.GoodsReceiptNoteRepository;
+import com.procurex.inventoryservice.repository.OutboxEventRepository;
 import com.procurex.inventoryservice.repository.WarehouseRepository;
 import com.procurex.inventoryservice.service.GRNService;
 import com.procurex.inventoryservice.util.GRNNumberGenerator;
@@ -42,6 +45,8 @@ public class GRNServiceImpl implements GRNService {
     private final WarehouseRepository warehouseRepository;
     private final ProcurementServiceClient procurementClient;
     private final GRNNumberGenerator grnNumberGenerator;
+    private final OutboxEventRepository outboxEventRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
@@ -125,6 +130,24 @@ public class GRNServiceImpl implements GRNService {
 
         grn = grnRepository.save(grn);
         log.debug("Created GRN {} for org {}", grn.getGrnNumber(), orgId);
+
+        try {
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventType("inventory.grn.created")
+                    .aggregateType("GRN")
+                    .aggregateId(grn.getGrnId())
+                    .payload(objectMapper.writeValueAsString(Map.of(
+                            "grnId", grn.getGrnId().toString(),
+                            "purchaseOrderId", grn.getPurchaseOrderId().toString(),
+                            "organizationId", grn.getOrganizationId().toString()
+                    )))
+                    .status(OutboxEvent.Status.PENDING)
+                    .build();
+            outboxEventRepository.save(outboxEvent);
+        } catch (Exception e) {
+            log.error("Failed to write inventory.grn.created outbox event: {}", e.getMessage());
+        }
+
         return toResponse(grn);
     }
 

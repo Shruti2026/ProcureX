@@ -1,5 +1,6 @@
 package com.procurex.identityservice.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.procurex.identityservice.config.JwtUtil;
 import com.procurex.identityservice.dto.request.ChangePasswordRequest;
 import com.procurex.identityservice.dto.request.LoginRequest;
@@ -10,6 +11,7 @@ import com.procurex.identityservice.dto.response.VendorRegisterResponse;
 import com.procurex.identityservice.dto.response.UserProfileResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
+import com.procurex.identityservice.entity.OutboxEvent;
 import com.procurex.identityservice.entity.RefreshToken;
 import com.procurex.identityservice.entity.Role;
 import com.procurex.identityservice.entity.RoleName;
@@ -22,6 +24,7 @@ import com.procurex.identityservice.exception.AccountSuspendedException;
 import com.procurex.identityservice.exception.ConflictException;
 import com.procurex.identityservice.exception.InvalidTokenException;
 import com.procurex.identityservice.repository.AuditLogRepository;
+import com.procurex.identityservice.repository.OutboxEventRepository;
 import com.procurex.identityservice.repository.RefreshTokenRepository;
 import com.procurex.identityservice.repository.RoleRepository;
 import com.procurex.identityservice.repository.UserRepository;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -55,8 +59,10 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuditLogRepository     auditLogRepository;
     private final RoleRepository         roleRepository;
+    private final OutboxEventRepository  outboxEventRepository;
     private final JwtUtil                jwtUtil;
     private final PasswordEncoder        passwordEncoder;
+    private final ObjectMapper           objectMapper;
 
     @Value("${jwt.refresh-token-expiry}")
     private long refreshTokenExpiryMs;
@@ -89,6 +95,25 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         User saved = userRepository.save(user);
+
+        // Write outbox event for downstream services (e.g. vendor-service)
+        try {
+            OutboxEvent outboxEvent = OutboxEvent.builder()
+                    .eventType("identity.vendor.user.created")
+                    .aggregateType("User")
+                    .aggregateId(saved.getUserId())
+                    .payload(objectMapper.writeValueAsString(Map.of(
+                            "userId",         saved.getUserId().toString(),
+                            "email",          saved.getEmail(),
+                            "organizationId", saved.getOrganizationId() != null
+                                              ? saved.getOrganizationId().toString() : ""
+                    )))
+                    .status(OutboxEvent.Status.PENDING)
+                    .build();
+            outboxEventRepository.save(outboxEvent);
+        } catch (Exception e) {
+            log.error("Failed to write outbox event for vendor user creation: {}", e.getMessage());
+        }
 
         // Write audit log — no external creator, so we use the vendor's own userId
         writeAuditLog(saved, "VENDOR_REGISTER", "users", saved.getUserId().toString(), null);
