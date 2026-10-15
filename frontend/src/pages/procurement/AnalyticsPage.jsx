@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BarChart2, Package, DollarSign, ClipboardList, ShoppingCart, RefreshCw } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import clsx from 'clsx'
 
 import StatCard from '../../components/ui/StatCard'
@@ -51,6 +52,7 @@ export default function AnalyticsPage() {
 
   const [summary, setSummary]         = useState(null)
   const [vendorData, setVendorData]   = useState([])
+  const [spendData, setSpendData]     = useState([])
 
   const loadData = async () => {
     setSummaryLoading(true)
@@ -74,6 +76,15 @@ export default function AnalyticsPage() {
       setSummaryLoading(false)
       setVendorLoading(false)
     }
+
+    // Load spend-by-department independently so failures don't affect main data
+    analyticsService.getSpendByDepartment().then(r => {
+      const raw = r.data?.data ?? []
+      setSpendData(raw.map(d => ({
+        department: d.department ?? d.departmentName ?? d.name ?? 'Unknown',
+        totalSpend:  d.totalSpend ?? d.amount ?? d.total ?? 0,
+      })))
+    }).catch(() => {})
   }
 
   useEffect(() => {
@@ -146,6 +157,21 @@ export default function AnalyticsPage() {
           />
         ))}
       </div>
+
+      {/* Spend by Department chart */}
+      {spendData.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">Spend by Department</h2>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart layout="vertical" data={spendData} margin={{ left: 20 }}>
+              <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} />
+              <YAxis type="category" dataKey="department" width={140} />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Total Spend']} />
+              <Bar dataKey="totalSpend" fill="#6366f1" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Vendor Performance table */}
       <div>
