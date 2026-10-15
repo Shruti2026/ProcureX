@@ -42,10 +42,11 @@ const NAV_LINKS = {
     { label: 'Transactions', path: '/inventory/transactions',  icon: Activity },
   ],
   [ROLES.FINANCE_MANAGER]: [
-    { label: 'Dashboard', path: '/finance/dashboard', icon: LayoutDashboard },
-    { label: 'Invoices',  path: '/finance/invoices',  icon: Receipt },
-    { label: 'Budgets',   path: '/finance/budgets',   icon: Tag },
-    { label: 'Payments',  path: '/finance/payments',  icon: CreditCard },
+    { label: 'Dashboard', path: '/finance/dashboard',        icon: LayoutDashboard },
+    { label: 'Invoices',  path: '/finance/invoices',         icon: Receipt },
+    { label: 'Budgets',   path: '/finance/budgets',          icon: Tag },
+    { label: 'Payments',  path: '/finance/payments',         icon: CreditCard },
+    { label: 'Analytics', path: '/procurement/analytics',    icon: BarChart2 },
   ],
   [ROLES.VENDOR]: [
     { label: 'Dashboard',       path: '/vendor/dashboard',  icon: LayoutDashboard },
