@@ -1,5 +1,5 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 COPY target/*.jar app.jar
 EXPOSE 8083
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]

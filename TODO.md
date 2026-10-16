@@ -1,5 +1,9 @@
 # ProcureX TODO
 
+- [ ] **Warnings only (non-blocking):**
+  - [ ] `Jackson2JsonMessageConverter` deprecation across several `RabbitMQConfig.java` files — existing code, not introduced today
+  - [ ] `SecurityContextFilter` using deprecated servlet API — same, pre-existing
+
 - [ ] '`GET /api/v1/procurement/requisitions/{requisitionId}` — Get requisition by ID' - Check if this api is really needed by all (admin, vendor, managers)
   - [ ] Check same things for all other apis
 
