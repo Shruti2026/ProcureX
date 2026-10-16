@@ -7,6 +7,9 @@ import com.procurex.analyticsservice.entity.DashboardMetric;
 import com.procurex.analyticsservice.repository.DashboardMetricRepository;
 import com.procurex.analyticsservice.service.AnalyticsService;
 import com.procurex.analyticsservice.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +22,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
+@Tag(name = "Reports & Analytics", description = "Procurement reports and analytics — procurement summary, vendor performance, dashboard metrics, and spend analysis")
 public class ReportController {
 
     private final AnalyticsService analyticsService;
@@ -26,6 +30,12 @@ public class ReportController {
 
     @GetMapping("/procurement-summary")
     @PreAuthorize("hasAnyRole('ADMIN','PROCUREMENT_MANAGER')")
+    @Operation(summary = "Get a high-level procurement summary for the organization")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Procurement summary retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<ProcurementSummaryResponse>> getProcurementSummary(
             @RequestHeader("X-Organization-Id") String orgId) {
 
@@ -42,6 +52,12 @@ public class ReportController {
 
     @GetMapping("/vendor-performance")
     @PreAuthorize("hasAnyRole('ADMIN','PROCUREMENT_MANAGER')")
+    @Operation(summary = "Get vendor performance scores and delivery metrics for the organization")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Vendor performance data retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<List<VendorPerformanceResponse>>> getVendorPerformance(
             @RequestHeader("X-Organization-Id") String orgId) {
 
@@ -62,6 +78,12 @@ public class ReportController {
 
     @GetMapping("/dashboard-metrics")
     @PreAuthorize("hasAnyRole('ADMIN','PROCUREMENT_MANAGER','FINANCE_MANAGER')")
+    @Operation(summary = "Get all dashboard KPI metrics for the organization")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Dashboard metrics retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<List<DashboardMetricResponse>>> getDashboardMetrics(
             @RequestHeader("X-Organization-Id") String orgId) {
 
@@ -75,6 +97,12 @@ public class ReportController {
 
     @GetMapping("/spend-by-department")
     @PreAuthorize("hasAnyRole('ADMIN','FINANCE_MANAGER')")
+    @Operation(summary = "Get spend breakdown by department for the current month-to-date")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Spend by department retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<Map<String, String>>> getSpendByDepartment(
             @RequestHeader("X-Organization-Id") String orgId) {
 

@@ -5,6 +5,9 @@ import com.procurex.procurementservice.dto.response.ApiResponse;
 import com.procurex.procurementservice.dto.response.PurchaseOrderResponse;
 import com.procurex.procurementservice.entity.POStatus;
 import com.procurex.procurementservice.service.PurchaseOrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/procurement/orders")
 @RequiredArgsConstructor
+@Tag(name = "Purchase Orders", description = "Manage purchase orders — create from quotations, list, retrieve, approve, and cancel")
 public class PurchaseOrderController {
 
     private final PurchaseOrderService purchaseOrderService;
@@ -30,6 +34,14 @@ public class PurchaseOrderController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "Create a purchase order from a selected quotation")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Purchase order created successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request payload"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Quotation not in a selectable state")
+    })
     public ResponseEntity<ApiResponse<PurchaseOrderResponse>> createPurchaseOrder(
             @Valid @RequestBody CreatePurchaseOrderRequest request,
             @RequestHeader("X-User-Id") String userId,
@@ -50,6 +62,12 @@ public class PurchaseOrderController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "List purchase orders for the organization with optional status filter")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase orders retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<Page<PurchaseOrderResponse>>> getAllPurchaseOrders(
             @RequestHeader("X-Organization-Id") String orgId,
             @RequestParam(required = false) POStatus status,
@@ -68,6 +86,13 @@ public class PurchaseOrderController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN', 'INVENTORY_MANAGER')")
+    @Operation(summary = "Get a single purchase order by ID")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase order retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Purchase order not found")
+    })
     public ResponseEntity<ApiResponse<PurchaseOrderResponse>> getPurchaseOrderById(
             @PathVariable UUID id,
             @RequestHeader("X-Organization-Id") String orgId) {
@@ -81,6 +106,14 @@ public class PurchaseOrderController {
      */
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "Approve a purchase order")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase order approved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Purchase order not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Purchase order cannot be approved in its current state")
+    })
     public ResponseEntity<ApiResponse<PurchaseOrderResponse>> approvePurchaseOrder(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") String userId,
@@ -101,6 +134,14 @@ public class PurchaseOrderController {
      */
     @PatchMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "Cancel a purchase order")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase order cancelled successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Purchase order not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Purchase order cannot be cancelled in its current state")
+    })
     public ResponseEntity<ApiResponse<PurchaseOrderResponse>> cancelPurchaseOrder(
             @PathVariable UUID id,
             @RequestHeader("X-User-Id") String userId,
