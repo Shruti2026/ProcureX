@@ -229,6 +229,8 @@ export default function InvoiceDetailPage() {
       {match && (
         <div>
           <h2 className="text-base font-semibold text-gray-800 mb-3">Three-Way Match Result</h2>
+
+          {/* Pass / Fail banner */}
           <div className={`rounded-xl border p-4 mb-4 ${match.passed ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
             <div className="flex items-center gap-2">
               {match.passed
@@ -236,17 +238,79 @@ export default function InvoiceDetailPage() {
                 : <XCircle size={18} className="text-red-600" />
               }
               <span className={`font-semibold text-sm ${match.passed ? 'text-green-700' : 'text-red-700'}`}>
-                {match.passed ? 'All checks passed — invoice matches PO and GRN' : `${match.flags?.length} issue(s) detected`}
+                {match.passed
+                  ? 'All checks passed — invoice matches PO and GRN'
+                  : `${match.flags?.length ?? 'Some'} issue(s) detected — review discrepancies below`}
               </span>
             </div>
+
+            {/* Totals comparison row */}
+            <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
+              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 mb-0.5">Invoice Amount</p>
+                <p className="font-semibold text-gray-900">{formatCurrency(match.invoiceAmount ?? invoice.invoiceAmount)}</p>
+              </div>
+              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 mb-0.5">PO Amount</p>
+                <p className="font-semibold text-gray-900">{formatCurrency(match.poAmount)}</p>
+              </div>
+              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 mb-0.5">GRN Accepted Amount</p>
+                <p className="font-semibold text-gray-900">{formatCurrency(match.grnAcceptedAmount)}</p>
+              </div>
+            </div>
           </div>
-          {match.flags && match.flags.length > 0 && (
-            <div className="space-y-2">
+
+          {/* Side-by-side comparison table */}
+          {(match.lineComparisons ?? match.items)?.length > 0 && (
+            <div className="overflow-x-auto rounded-xl border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-100 text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Invoice Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">PO Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">GRN Accepted Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Invoice Price</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">PO Price</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">Match</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 bg-white">
+                  {(match.lineComparisons ?? match.items).map((line, idx) => {
+                    const qtyMatch  = line.invoiceQty  === line.poQty  && line.invoiceQty  === line.grnQty
+                    const priceMatch = !line.invoicePrice || !line.poPrice || Math.abs(line.invoicePrice - line.poPrice) < 0.01
+                    const rowOk = line.matched ?? (qtyMatch && priceMatch)
+                    return (
+                      <tr key={idx} className={rowOk ? 'bg-white' : 'bg-red-50'}>
+                        <td className="px-4 py-3 font-medium text-gray-900">{line.productName ?? '—'}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{line.invoiceQty ?? '—'}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.poQty ? 'text-red-600 font-semibold' : ''}`}>{line.poQty ?? '—'}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.grnQty ? 'text-red-600 font-semibold' : ''}`}>{line.grnQty ?? '—'}</td>
+                        <td className="px-4 py-3 text-right tabular-nums">{formatCurrency(line.invoicePrice)}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${!priceMatch ? 'text-red-600 font-semibold' : ''}`}>{formatCurrency(line.poPrice)}</td>
+                        <td className="px-4 py-3 text-center">
+                          {rowOk
+                            ? <CheckCircle size={15} className="text-green-500 mx-auto" />
+                            : <XCircle    size={15} className="text-red-500 mx-auto" />
+                          }
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Flag list (when no line comparisons but flags present) */}
+          {!(match.lineComparisons ?? match.items)?.length && match.flags?.length > 0 && (
+            <div className="space-y-2 mt-2">
               {match.flags.map((flag, i) => (
                 <div key={i} className="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-3 text-sm">
                   <XCircle size={15} className="text-orange-500 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-medium text-orange-700">{flag.productName} — {flag.flagType.replace('_', ' ')}</p>
+                    <p className="font-medium text-orange-700">{flag.productName} — {flag.flagType?.replace(/_/g, ' ')}</p>
                     <p className="text-orange-600">{flag.details}</p>
                   </div>
                 </div>

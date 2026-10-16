@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import Table from '../components/ui/Table'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
+import Pagination from '../components/ui/Pagination'
 import { formatDateTime } from '../utils/formatters'
 import { notificationService } from '../services/notificationService'
 
@@ -169,21 +170,11 @@ export default function NotificationsPage() {
       </Table>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">Page {page + 1} of {totalPages}</p>
-          <div className="flex gap-2">
-            <button
-              disabled={page === 0}
-              onClick={() => setPage(p => p - 1)}
-              className="px-3 py-1 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-            >Previous</button>
-            <button
-              disabled={page >= totalPages - 1}
-              onClick={() => setPage(p => p + 1)}
-              className="px-3 py-1 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-            >Next</button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
 
       {showPrefs && <PreferencesModal onClose={() => setShowPrefs(false)} />}
