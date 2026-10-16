@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Table from '../../components/ui/Table'
 import Spinner from '../../components/ui/Spinner'
+import Pagination from '../../components/ui/Pagination'
 import { formatDate } from '../../utils/formatters'
 import { grnService } from '../../services/grnService'
 import { purchaseOrderService } from '../../services/purchaseOrderService'
@@ -421,31 +422,11 @@ export default function GrnsPage() {
 
       {/* Pagination */}
       {!isLoading && grns.length > 0 && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-gray-500">
-            Page {page + 1} of {totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isFirst}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <ChevronLeft size={15} />
-              Prev
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isLast}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-              <ChevronRight size={15} />
-            </Button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
 
       {/* Create GRN Modal */}

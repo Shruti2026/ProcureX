@@ -4,9 +4,9 @@ import toast from 'react-hot-toast'
 import { invoiceService } from '../../services/invoiceService'
 import { formatCurrency, formatDate } from '../../utils/formatters'
 
-import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Spinner from '../../components/ui/Spinner'
+import Pagination from '../../components/ui/Pagination'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -60,8 +60,7 @@ export default function VendorInvoicesPage() {
     if (page < totalPages - 1) setPage((p) => p + 1)
   }
 
-  return (
-    <div className="space-y-6">
+  return (    <div className="space-y-6">
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
@@ -158,29 +157,11 @@ export default function VendorInvoicesPage() {
 
       {/* Pagination */}
       {!loading && totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Page {page + 1} of {totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handlePrev}
-              disabled={page === 0}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleNext}
-              disabled={page >= totalPages - 1}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
     </div>
   )

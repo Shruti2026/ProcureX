@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 
 import { quotationService } from '../../services/quotationService'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Table from '../../components/ui/Table'
+import Pagination from '../../components/ui/Pagination'
 import { formatCurrency, formatDate, shortId } from '../../utils/formatters'
 
 /* ─────────────────────────────────────────
@@ -59,9 +60,6 @@ export default function VendorQuotationsPage() {
       cancelled = true
     }
   }, [page])
-
-  const isFirst = page === 0
-  const isLast = page >= totalPages - 1
 
   return (
     <div className="space-y-6">
@@ -129,31 +127,11 @@ export default function VendorQuotationsPage() {
 
       {/* Pagination */}
       {!loading && quotations.length > 0 && (
-        <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-gray-500">
-            Page {page + 1} of {totalPages}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isFirst}
-              onClick={() => setPage((p) => p - 1)}
-            >
-              <ChevronLeft size={15} />
-              Prev
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              disabled={isLast}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-              <ChevronRight size={15} />
-            </Button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(p) => setPage(p)}
+        />
       )}
     </div>
   )
