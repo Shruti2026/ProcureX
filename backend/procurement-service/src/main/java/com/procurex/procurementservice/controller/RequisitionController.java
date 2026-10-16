@@ -6,6 +6,9 @@ import com.procurex.procurementservice.dto.response.ApiResponse;
 import com.procurex.procurementservice.dto.response.RequisitionResponse;
 import com.procurex.procurementservice.entity.RequisitionStatus;
 import com.procurex.procurementservice.service.RequisitionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/procurement/requisitions")
 @RequiredArgsConstructor
+@Tag(name = "Requisitions", description = "Manage purchase requisitions throughout their lifecycle — create, list, retrieve, and update")
 public class RequisitionController {
 
     private final RequisitionService requisitionService;
@@ -31,6 +35,13 @@ public class RequisitionController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "Create a new purchase requisition")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Requisition created successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request payload"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<RequisitionResponse>> create(
             @Valid @RequestBody CreateRequisitionRequest request,
             @RequestHeader("X-User-Id") String userId,
@@ -51,6 +62,12 @@ public class RequisitionController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "List requisitions for the organization with optional status filter")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Requisitions retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<Page<RequisitionResponse>>> getAll(
             @RequestHeader("X-Organization-Id") String orgId,
             @RequestParam(required = false) RequisitionStatus status,
@@ -69,6 +86,12 @@ public class RequisitionController {
      */
     @GetMapping("/{requisitionId}")
     @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "Get a single requisition by ID")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Requisition retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Requisition not found")
+    })
     public ResponseEntity<ApiResponse<RequisitionResponse>> getById(
             @PathVariable UUID requisitionId) {
 
@@ -81,6 +104,14 @@ public class RequisitionController {
      */
     @PutMapping("/{requisitionId}")
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
+    @Operation(summary = "Update an existing requisition (only while status is CREATED)")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Requisition updated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request payload"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Requisition cannot be updated in its current status")
+    })
     public ResponseEntity<ApiResponse<RequisitionResponse>> update(
             @PathVariable UUID requisitionId,
             @Valid @RequestBody UpdateRequisitionRequest request,

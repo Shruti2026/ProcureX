@@ -5,6 +5,9 @@ import com.procurex.financeservice.dto.response.InvoiceResponse;
 import com.procurex.financeservice.entity.InvoiceStatus;
 import com.procurex.financeservice.service.InvoiceService;
 import com.procurex.financeservice.util.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,12 +30,20 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/finance/invoices")
 @RequiredArgsConstructor
+@Tag(name = "Invoices", description = "Manage vendor invoices — submit, list, retrieve, run three-way match, approve, and reject")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('VENDOR','ADMIN')")
+    @Operation(summary = "Submit a new invoice against a purchase order")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "Invoice submitted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Invalid request payload"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — vendor or admin role required")
+    })
     public ResponseEntity<ApiResponse<InvoiceResponse>> submit(
             @Valid @RequestBody SubmitInvoiceRequest request, Authentication auth) {
         UUID orgId  = extractOrgId(auth);
@@ -44,6 +55,12 @@ public class InvoiceController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN')")
+    @Operation(summary = "List all invoices for the organization with optional status filter")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Invoices retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
     public ResponseEntity<ApiResponse<Page<InvoiceResponse>>> getAll(
             @RequestParam(required = false) InvoiceStatus status,
             @RequestParam(defaultValue = "0") int page,
@@ -56,6 +73,13 @@ public class InvoiceController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN','VENDOR')")
+    @Operation(summary = "Get a single invoice by ID")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Invoice retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invoice not found")
+    })
     public ResponseEntity<ApiResponse<InvoiceResponse>> getById(
             @PathVariable UUID id, Authentication auth) {
         UUID orgId = extractOrgId(auth);
@@ -65,6 +89,14 @@ public class InvoiceController {
 
     @PostMapping("/{id}/match")
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN')")
+    @Operation(summary = "Run three-way match (PO, GRN, and invoice) for an invoice")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Three-way match completed successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invoice not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invoice is not in a matchable state")
+    })
     public ResponseEntity<ApiResponse<InvoiceResponse>> runMatch(
             @PathVariable UUID id, Authentication auth) {
         UUID orgId  = extractOrgId(auth);
@@ -75,6 +107,14 @@ public class InvoiceController {
 
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN')")
+    @Operation(summary = "Approve an invoice for payment")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Invoice approved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invoice not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invoice cannot be approved in its current state")
+    })
     public ResponseEntity<ApiResponse<InvoiceResponse>> approve(
             @PathVariable UUID id,
             @RequestParam(required = false) String remarks,
@@ -87,6 +127,14 @@ public class InvoiceController {
 
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN')")
+    @Operation(summary = "Reject an invoice with optional remarks")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Invoice rejected successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invoice not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invoice cannot be rejected in its current state")
+    })
     public ResponseEntity<ApiResponse<InvoiceResponse>> reject(
             @PathVariable UUID id,
             @RequestParam(required = false) String remarks,
