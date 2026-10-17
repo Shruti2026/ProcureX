@@ -101,7 +101,8 @@ class RequisitionControllerIntegrationTest {
     @Test
     void createRequisition_unauthorized_returns401() throws Exception {
         // No identity headers → SecurityContextFilter leaves SecurityContext empty
-        // → Spring Security's anyRequest().authenticated() returns 401
+        // → Spring Security returns 403 (no AuthenticationEntryPoint configured,
+        //   so AccessDeniedHandler handles unauthenticated requests as well)
         RequisitionItemRequest item = new RequisitionItemRequest(UUID.randomUUID(), 1, null);
         CreateRequisitionRequest request = new CreateRequisitionRequest(
                 "Test Title",
@@ -113,7 +114,7 @@ class RequisitionControllerIntegrationTest {
         mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     // -------------------------------------------------------------------------

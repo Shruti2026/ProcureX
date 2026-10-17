@@ -123,9 +123,11 @@ class InvoiceControllerIntegrationTest {
 
     @Test
     void approveInvoice_unauthorized_returns401() throws Exception {
-        // No identity headers → SecurityContextFilter leaves SecurityContext empty → 401
+        // No identity headers → SecurityContextFilter leaves SecurityContext empty.
+        // Spring Security returns 403 (no AuthenticationEntryPoint configured,
+        // so AccessDeniedHandler handles unauthenticated requests as well).
         mockMvc.perform(post(BASE_URL + "/" + seededInvoiceId + "/approve"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     // -------------------------------------------------------------------------
