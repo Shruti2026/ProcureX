@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -133,7 +134,9 @@ class PaymentServiceTest {
         assertThat(response.amount()).isEqualByComparingTo(new BigDecimal("5000.00"));
         assertThat(response.paymentMethod()).isEqualTo(PaymentMethod.ACH);
         assertThat(response.status()).isEqualTo(PaymentStatus.COMPLETED);
-        verify(paymentRepository).save(any(Payment.class));
+        // paymentRepository.save() is called twice: first to persist the payment and get an ID,
+        // then again after setting status=COMPLETED and completedAt.
+        verify(paymentRepository, times(2)).save(any(Payment.class));
         verify(outboxEventRepository).save(any());
     }
 
@@ -230,7 +233,8 @@ class PaymentServiceTest {
         // Payment must still complete despite missing current-year budget
         assertThat(response).isNotNull();
         assertThat(response.status()).isEqualTo(PaymentStatus.COMPLETED);
-        verify(paymentRepository).save(any(Payment.class));
+        // paymentRepository.save() is called twice: initial persist then COMPLETED status update.
+        verify(paymentRepository, times(2)).save(any(Payment.class));
         verify(outboxEventRepository).save(any());
         // Old-year budget must NOT have been updated
         verify(budgetRepository, never()).save(any(Budget.class));
