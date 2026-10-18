@@ -75,39 +75,47 @@ A full-stack enterprise procurement management system built with a **microservic
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         React Frontend                               │
-│                    (Vite · Tailwind · Axios)                         │
-└──────────────────────────────┬──────────────────────────────────────┘
-                               │ HTTP  (port 8080)
-                               ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                          API Gateway                                 │
-│               JWT filter · Route resolution · CORS                  │
-│                  Spring Cloud Gateway  (port 8080)                   │
-└──────┬──────────┬──────────┬──────────┬──────────┬──────────────────┘
-       │          │          │          │          │
-       ▼          ▼          ▼          ▼          ▼
-  Identity   Vendor      Procu-    Inventory  Finance   Notif.  Analytics
-  Service    Catalog     rement    Service    Service   Service  Service
-  :8081      Service     Service   :8084      :8085     :8086    :8087
-             :8082       :8083
-       │          │          │          │          │        │        │
-       └──────────┴──────────┴──────────┴──────────┴────────┴────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │   Eureka Server      │
-                    │  Service Registry    │
-                    │      :8761           │
-                    └─────────────────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │     RabbitMQ         │
-                    │  procurex.exchange   │
-                    │  (topic exchange)    │
-                    │      :5672           │
-                    └─────────────────────┘
+```mermaid
+graph TD
+    FE["React Frontend\n(Vite · Tailwind · Axios)\nlocalhost:5173"]
+
+    GW["API Gateway\nJWT filter · Routing · CORS\nlocalhost:8080"]
+
+    IS["Identity Service\n:8081"]
+    VS["Vendor Catalog\n:8082"]
+    PS["Procurement Service\n:8083"]
+    INV["Inventory Service\n:8084"]
+    FS["Finance Service\n:8085"]
+    NS["Notification Service\n:8086"]
+    AS["Analytics Service\n:8087"]
+
+    EU["Eureka Server\nService Registry\n:8761"]
+    RMQ["RabbitMQ\nprocurex.exchange\ntopic exchange · :5672"]
+
+    FE -->|HTTP| GW
+    GW --> IS
+    GW --> VS
+    GW --> PS
+    GW --> INV
+    GW --> FS
+    GW --> NS
+    GW --> AS
+
+    IS --- EU
+    VS --- EU
+    PS --- EU
+    INV --- EU
+    FS --- EU
+    NS --- EU
+    AS --- EU
+    GW --- EU
+
+    PS -->|procurement.po.approved| RMQ
+    FS -->|finance.payment.completed| RMQ
+    INV -->|inventory.inspection.completed| RMQ
+    RMQ -->|events| NS
+    RMQ -->|events| AS
+    RMQ -->|events| FS
 ```
 
 All services are backed by independent MySQL databases and communicate asynchronously via RabbitMQ using the **Transactional Outbox Pattern** for guaranteed event delivery.
@@ -350,31 +358,30 @@ Default credentials (development seeded data):
 
 ProcureX uses a **RabbitMQ topic exchange** (`procurex.exchange`) with the Transactional Outbox Pattern. Every event is written to an `outbox_events` table in the same transaction as the business operation, then polled and published to RabbitMQ every 5 seconds.
 
-```
-Procurement Manager approves PO
-        │
-        ▼
-procurement-service writes outbox event ──► RabbitMQ: procurement.po.approved
-        │
-        ├──► finance-service:      reserves budget for the PO amount
-        ├──► notification-service: sends "PO Approved" email to vendor
-        └──► analytics-service:    increments PO count metric
+```mermaid
+sequenceDiagram
+    participant PM as Procurement Manager
+    participant ProcSvc as Procurement Service
+    participant RMQ as RabbitMQ
+    participant FinSvc as Finance Service
+    participant InvSvc as Inventory Service
+    participant NotifSvc as Notification Service
+    participant AnaSvc as Analytics Service
 
-Inventory Manager completes inspection
-        │
-        ▼
-inventory-service writes outbox event ──► RabbitMQ: inventory.inspection.completed
-        │
-        └──► analytics-service: updates vendor quality ratio
+    PM->>ProcSvc: Approve Purchase Order
+    ProcSvc->>RMQ: procurement.po.approved
+    RMQ->>FinSvc: Reserve budget for PO amount
+    RMQ->>NotifSvc: Send "PO Approved" email to vendor
+    RMQ->>AnaSvc: Increment PO count metric
 
-Finance Manager initiates payment
-        │
-        ▼
-finance-service writes outbox event ──► RabbitMQ: finance.payment.completed
-        │
-        ├──► notification-service: sends "Payment Completed" email to vendor
-        │                          creates in-app notification
-        └──► analytics-service:    updates vendor performance score + spend metrics
+    Note over InvSvc: Inventory Manager completes inspection
+    InvSvc->>RMQ: inventory.inspection.completed
+    RMQ->>AnaSvc: Update vendor quality ratio
+
+    Note over FinSvc: Finance Manager initiates payment
+    FinSvc->>RMQ: finance.payment.completed
+    RMQ->>NotifSvc: Send "Payment Completed" email + in-app notification
+    RMQ->>AnaSvc: Update vendor performance score + spend metrics
 ```
 
 Failed messages are routed to `procurex.dlq` (dead letter queue) for inspection and replay.
