@@ -13,6 +13,11 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        type:
+          preferred_uuid_jdbc_type: CHAR
   flyway:
     enabled: true
   rabbitmq:
