@@ -1,20 +1,130 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import toast from 'react-hot-toast'
-import { Plus, X, Lock, Unlock } from 'lucide-react'
+import { Plus, X, Check, Copy, ChevronDown } from 'lucide-react'
 
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
-import Spinner from '../../components/ui/Spinner'
 import Input from '../../components/ui/Input'
 import Table from '../../components/ui/Table'
 import api from '../../services/api'
-import { formatDate } from '../../utils/formatters'
+import { useAuth } from '../../context/AuthContext'
 
 /* ─────────────────────────────────────────
-   Yup schema — Create User form
+   All 6 account statuses from the backend enum
+───────────────────────────────────────── */
+const ALL_STATUSES = [
+  { value: 'ACTIVE',    label: 'Active' },
+  { value: 'INACTIVE',  label: 'Inactive' },
+  { value: 'LOCKED',    label: 'Locked' },
+  { value: 'SUSPENDED', label: 'Suspended' },
+  { value: 'PENDING',   label: 'Pending' },
+  { value: 'REJECTED',  label: 'Rejected' },
+]
+
+/* ─────────────────────────────────────────
+   StatusDropdown — "Change Status" menu rendered with fixed
+   positioning so it escapes table overflow:hidden clipping.
+───────────────────────────────────────── */
+function StatusDropdown({ user, onChangeStatus, loading }) {
+  const [open, setOpen]       = useState(false)
+  const [menuStyle, setMenuStyle] = useState({})
+  const btnRef  = useRef(null)
+  const menuRef = useRef(null)
+
+  // Position the fixed menu under the button
+  const openMenu = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect()
+      // position: fixed uses viewport coords — do NOT add window.scroll*
+      setMenuStyle({
+        top:   rect.bottom + 4,
+        left:  Math.max(4, rect.right - 144), // keep within left edge
+        width: 144,
+      })
+    }
+    setOpen(true)
+  }
+
+  // Close on outside click or scroll
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => {
+      if (
+        menuRef.current && !menuRef.current.contains(e.target) &&
+        btnRef.current  && !btnRef.current.contains(e.target)
+      ) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', close)
+    document.addEventListener('scroll',    () => setOpen(false), true)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      document.removeEventListener('scroll',    () => setOpen(false), true)
+    }
+  }, [open])
+
+  const options = ALL_STATUSES.filter((s) => s.value !== user.status)
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        disabled={loading}
+        onClick={open ? () => setOpen(false) : openMenu}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label="Change account status"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+      >
+        {loading ? (
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
+        )}
+        Change Status
+      </button>
+
+      {open && (
+        <div
+          ref={menuRef}
+          style={{
+            position: 'fixed',
+            top:   menuStyle.top,
+            left:  menuStyle.left,
+            width: menuStyle.width,
+            zIndex: 9999,
+          }}
+          className="rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
+          role="listbox"
+          aria-label="Status options"
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              role="option"
+              onClick={() => {
+                setOpen(false)
+                onChangeStatus(user, opt.value)
+              }}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <Badge status={opt.value} label={opt.label} />
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+/* ─────────────────────────────────────────
+   Yup schema — Create Manager form
 ───────────────────────────────────────── */
 const createUserSchema = yup.object({
   fullName: yup.string().trim().required('Full name is required'),
@@ -43,9 +153,25 @@ const reducedMotion =
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 /* ─────────────────────────────────────────
+   Helper: normalize user object from backend
+───────────────────────────────────────── */
+const normalizeUser = (u) => ({
+  id: u.userId ?? u.id,
+  fullName: u.fullName ?? '—',
+  email: u.email ?? '—',
+  role: u.role,
+  status: u.accountStatus ?? u.status ?? 'ACTIVE',
+  createdAt: u.createdAt ?? null,
+})
+
+/* ─────────────────────────────────────────
    CreateUserModal
 ───────────────────────────────────────── */
 function CreateUserModal({ isOpen, onClose, onCreated }) {
+  const { user: currentUser } = useAuth()
+  const [createdCredentials, setCreatedCredentials] = useState(null)
+  const [copied, setCopied] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -57,19 +183,44 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
   })
 
   useEffect(() => {
-    if (isOpen) reset({ fullName: '', email: '', role: '' })
+    if (isOpen) {
+      reset({ fullName: '', email: '', role: '' })
+      setCreatedCredentials(null)
+      setCopied(false)
+    }
   }, [isOpen, reset])
 
   const onSubmit = async (data) => {
     try {
-      await api.post('/api/v1/admin/users', data)
-      toast.success('User created successfully.')
-      reset()
+      const payload = {
+        ...data,
+        organizationId: currentUser?.organizationId || '20e3006c-86ad-11f1-aa2e-462403e66e86',
+      }
+      const res = await api.post('/api/v1/admin/users', payload)
+      const tempPass = res?.data?.data?.temporaryPassword
+      if (tempPass) {
+        setCreatedCredentials({
+          fullName: data.fullName,
+          email: data.email,
+          tempPass,
+        })
+      } else {
+        toast.success('Manager created successfully.')
+        onClose()
+      }
       onCreated()
-      onClose()
     } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Failed to create user.'
+      const msg = err?.response?.data?.message ?? 'Failed to create manager.'
       toast.error(msg)
+    }
+  }
+
+  const handleCopyPassword = () => {
+    if (createdCredentials?.tempPass) {
+      navigator.clipboard.writeText(createdCredentials.tempPass)
+      setCopied(true)
+      toast.success('Temporary password copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
     }
   }
 
@@ -86,7 +237,7 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 id="create-user-modal-title" className="text-base font-semibold text-gray-900">
-            Create User
+            {createdCredentials ? 'Manager Credentials' : 'Create Manager'}
           </h2>
           <button
             onClick={onClose}
@@ -97,67 +248,119 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <div className="px-6 py-5 space-y-4">
-            <Input
-              label="Full Name"
-              id="user-full-name"
-              placeholder="e.g. Jane Smith"
-              error={errors.fullName?.message}
-              {...register('fullName')}
-            />
-            <Input
-              label="Email"
-              id="user-email"
-              type="email"
-              placeholder="e.g. jane@company.com"
-              error={errors.email?.message}
-              {...register('email')}
-            />
+        {createdCredentials ? (
+          <div className="px-6 py-6 space-y-4">
+            <div className="rounded-lg bg-green-50 border border-green-200 p-4">
+              <p className="text-sm font-medium text-green-900">
+                Manager account created successfully.
+              </p>
+              <p className="mt-1 text-xs text-green-700">
+                Please securely share these login credentials with {createdCredentials.fullName}.
+              </p>
+            </div>
 
-            {/* Role select */}
-            <div className="flex flex-col gap-1">
-              <label htmlFor="user-role" className="text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <select
-                id="user-role"
-                aria-invalid={!!errors.role}
-                aria-describedby={errors.role ? 'user-role-error' : undefined}
-                className={[
-                  'w-full rounded-lg border px-3 py-2 text-sm text-gray-900',
-                  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-                  'disabled:bg-gray-50 disabled:cursor-not-allowed',
-                  errors.role ? 'border-red-300 focus:ring-red-400' : 'border-gray-200',
-                ].join(' ')}
-                {...register('role')}
-              >
-                <option value="">Select a role</option>
-                {ROLE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              {errors.role && (
-                <p id="user-role-error" role="alert" className="text-xs text-red-600">
-                  {errors.role.message}
-                </p>
-              )}
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Email
+              </div>
+              <div className="px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-800 font-mono">
+                {createdCredentials.email}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Temporary Password
+              </div>
+              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg text-sm font-mono text-gray-900 border border-gray-200">
+                <span>{createdCredentials.tempPass}</span>
+                <button
+                  type="button"
+                  onClick={handleCopyPassword}
+                  className="flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 font-sans ml-2 font-medium"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      Copy
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <Button onClick={onClose}>Done</Button>
             </div>
           </div>
+        ) : (
+          /* Form */
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div className="px-6 py-5 space-y-4">
+              <Input
+                label="Full Name"
+                id="user-full-name"
+                placeholder="e.g. Jane Smith"
+                error={errors.fullName?.message}
+                {...register('fullName')}
+              />
+              <Input
+                label="Email"
+                id="user-email"
+                type="email"
+                placeholder="e.g. jane@company.com"
+                error={errors.email?.message}
+                {...register('email')}
+              />
 
-          {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
-            <Button variant="secondary" type="button" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </Button>
-            <Button type="submit" loading={isSubmitting}>
-              Create User
-            </Button>
-          </div>
-        </form>
+              {/* Role select */}
+              <div className="flex flex-col gap-1">
+                <label htmlFor="user-role" className="text-sm font-medium text-gray-700">
+                  Role
+                </label>
+                <select
+                  id="user-role"
+                  aria-invalid={!!errors.role}
+                  aria-describedby={errors.role ? 'user-role-error' : undefined}
+                  className={[
+                    'w-full rounded-lg border px-3 py-2 text-sm text-gray-900',
+                    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+                    'disabled:bg-gray-50 disabled:cursor-not-allowed',
+                    errors.role ? 'border-red-300 focus:ring-red-400' : 'border-gray-200',
+                  ].join(' ')}
+                  {...register('role')}
+                >
+                  <option value="">Select a role</option>
+                  {ROLE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.role && (
+                  <p id="user-role-error" role="alert" className="text-xs text-red-600">
+                    {errors.role.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+              <Button variant="secondary" type="button" onClick={onClose} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={isSubmitting}>
+                Create Manager
+              </Button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   )
@@ -236,96 +439,106 @@ function RejectReasonModal({ isOpen, onClose, onConfirm }) {
    UsersPage
 ───────────────────────────────────────── */
 export default function UsersPage() {
-  /* ── Users state ── */
-  const [users, setUsers]             = useState([])
-  const [usersLoading, setUsersLoading] = useState(true)
-  const [usersError, setUsersError]   = useState(null)
+  /* ── Managers state ── */
+  const [managers, setManagers]               = useState([])
+  const [managersLoading, setManagersLoading] = useState(true)
+  const [managersError, setManagersError]     = useState(null)
 
-  /* ── Vendors state ── */
-  const [vendors, setVendors]               = useState([])
-  const [vendorsLoading, setVendorsLoading] = useState(true)
-  const [vendorsError, setVendorsError]     = useState(null)
+  /* ── All Vendors state ── */
+  const [vendors, setVendors]                 = useState([])
+  const [vendorsLoading, setVendorsLoading]   = useState(true)
+  const [vendorsError, setVendorsError]       = useState(null)
+
+  /* ── Pending Vendors state ── */
+  const [pendingVendors, setPendingVendors]               = useState([])
+  const [pendingVendorsLoading, setPendingVendorsLoading] = useState(true)
+  const [pendingVendorsError, setPendingVendorsError]     = useState(null)
 
   /* ── UI state ── */
   const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [lockingId, setLockingId]             = useState(null)   // user id currently being locked/unlocked
-  const [approvingId, setApprovingId]         = useState(null)   // vendor id being approved
-  const [rejectModal, setRejectModal]         = useState({ open: false, vendorId: null })
+  const [changingStatusId, setChangingStatusId] = useState(null) // user id whose status is being changed
+  const [approvingId, setApprovingId]           = useState(null) // vendor id being approved
+  const [rejectModal, setRejectModal]           = useState({ open: false, vendorId: null, vendorName: '' })
 
   /* ─────────────────────────────────────
-     Load users — try primary, fallback
+     Load managers (/api/v1/admin/users/employees)
   ───────────────────────────────────── */
-  const fetchUsers = async () => {
-    setUsersLoading(true)
-    setUsersError(null)
+  const fetchManagers = async () => {
+    setManagersLoading(true)
+    setManagersError(null)
     try {
-      const res = await api.get('/api/v1/admin/users?page=0&size=20')
+      const res = await api.get('/api/v1/admin/users/employees')
       const payload = res.data?.data
-      setUsers(Array.isArray(payload) ? payload : payload?.content ?? [])
-    } catch {
-      try {
-        const res = await api.get('/api/v1/users?page=0&size=20')
-        const payload = res.data?.data
-        setUsers(Array.isArray(payload) ? payload : payload?.content ?? [])
-      } catch {
-        setUsersError('User management API not available')
-      }
+      const list = Array.isArray(payload) ? payload : (payload?.content ?? [])
+      setManagers(list.map(normalizeUser))
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? 'Failed to load internal managers.'
+      setManagersError(msg)
     } finally {
-      setUsersLoading(false)
+      setManagersLoading(false)
     }
   }
 
   /* ─────────────────────────────────────
-     Load pending vendors
+     Load all registered vendors (/api/v1/admin/vendors)
   ───────────────────────────────────── */
-  const fetchPendingVendors = async () => {
+  const fetchAllVendors = async () => {
     setVendorsLoading(true)
     setVendorsError(null)
     try {
-      const res = await api.get('/api/v1/admin/vendors/pending')
+      const res = await api.get('/api/v1/admin/vendors')
       const payload = res.data?.data
-      setVendors(Array.isArray(payload) ? payload : payload?.content ?? [])
+      const list = Array.isArray(payload) ? payload : (payload?.content ?? [])
+      setVendors(list.map(normalizeUser))
     } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Failed to load pending vendors.'
+      const msg = err?.response?.data?.message ?? 'Failed to load vendors.'
       setVendorsError(msg)
     } finally {
       setVendorsLoading(false)
     }
   }
 
+  /* ─────────────────────────────────────
+     Load pending vendors (/api/v1/admin/vendors/pending)
+  ───────────────────────────────────── */
+  const fetchPendingVendors = async () => {
+    setPendingVendorsLoading(true)
+    setPendingVendorsError(null)
+    try {
+      const res = await api.get('/api/v1/admin/vendors/pending')
+      const payload = res.data?.data
+      const list = Array.isArray(payload) ? payload : (payload?.content ?? [])
+      setPendingVendors(list.map(normalizeUser))
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? 'Failed to load pending vendors.'
+      setPendingVendorsError(msg)
+    } finally {
+      setPendingVendorsLoading(false)
+    }
+  }
+
   useEffect(() => {
-    fetchUsers()
+    fetchManagers()
+    fetchAllVendors()
     fetchPendingVendors()
   }, [])
 
   /* ─────────────────────────────────────
-     Lock / Unlock user
+     Change user status (PUT /api/v1/admin/users/{id}/status)
   ───────────────────────────────────── */
-  const handleLock = async (user) => {
-    setLockingId(user.id)
+  const handleChangeStatus = async (user, newStatus, refreshCallback) => {
+    setChangingStatusId(user.id)
     try {
-      await api.patch(`/api/v1/admin/users/${user.id}/lock`)
-      toast.success(`${user.fullName ?? user.email} has been locked.`)
-      fetchUsers()
+      await api.put(`/api/v1/admin/users/${user.id}/status`, { status: newStatus })
+      const displayName = user.fullName && user.fullName !== '—' ? user.fullName : user.email
+      const label = ALL_STATUSES.find((s) => s.value === newStatus)?.label ?? newStatus
+      toast.success(`${displayName} set to ${label}.`)
+      refreshCallback()
     } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Failed to lock user.'
+      const msg = err?.response?.data?.message ?? 'Failed to update account status.'
       toast.error(msg)
     } finally {
-      setLockingId(null)
-    }
-  }
-
-  const handleUnlock = async (user) => {
-    setLockingId(user.id)
-    try {
-      await api.patch(`/api/v1/admin/users/${user.id}/unlock`)
-      toast.success(`${user.fullName ?? user.email} has been unlocked.`)
-      fetchUsers()
-    } catch (err) {
-      const msg = err?.response?.data?.message ?? 'Failed to unlock user.'
-      toast.error(msg)
-    } finally {
-      setLockingId(null)
+      setChangingStatusId(null)
     }
   }
 
@@ -336,8 +549,10 @@ export default function UsersPage() {
     setApprovingId(vendor.id)
     try {
       await api.put(`/api/v1/admin/vendors/${vendor.id}/approve`)
-      toast.success(`${vendor.companyName ?? vendor.name ?? 'Vendor'} approved.`)
+      const displayName = vendor.fullName && vendor.fullName !== '—' ? vendor.fullName : vendor.email
+      toast.success(`${displayName} approved successfully.`)
       fetchPendingVendors()
+      fetchAllVendors()
     } catch (err) {
       const msg = err?.response?.data?.message ?? 'Failed to approve vendor.'
       toast.error(msg)
@@ -347,15 +562,20 @@ export default function UsersPage() {
   }
 
   const openRejectModal = (vendor) => {
-    setRejectModal({ open: true, vendorId: vendor.id, vendorName: vendor.companyName ?? vendor.name ?? 'Vendor' })
+    setRejectModal({
+      open: true,
+      vendorId: vendor.id,
+      vendorName: vendor.fullName && vendor.fullName !== '—' ? vendor.fullName : (vendor.email ?? 'Vendor'),
+    })
   }
 
   const handleRejectConfirm = async (reason) => {
     try {
       await api.put(`/api/v1/admin/vendors/${rejectModal.vendorId}/reject`, { reason })
       toast.success(`${rejectModal.vendorName} rejected.`)
-      setRejectModal({ open: false, vendorId: null })
+      setRejectModal({ open: false, vendorId: null, vendorName: '' })
       fetchPendingVendors()
+      fetchAllVendors()
     } catch (err) {
       const msg = err?.response?.data?.message ?? 'Failed to reject vendor.'
       toast.error(msg)
@@ -366,92 +586,76 @@ export default function UsersPage() {
      Render
   ───────────────────────────────────── */
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* ── Page header ── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Users & Accounts</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Manage system users, credentials, roles, and account permissions.
+          Manage internal department managers, registered vendor accounts, and review vendor onboarding applications.
         </p>
       </div>
 
       {/* ══════════════════════════════════
-          USER MANAGEMENT SECTION
+          1. MANAGERS SECTION
       ═══════════════════════════════════ */}
-      <section aria-labelledby="users-section-title">
+      <section aria-labelledby="managers-section-title">
         <div className="flex items-center justify-between mb-4">
-          <h2 id="users-section-title" className="text-base font-semibold text-gray-900">
-            All Users
-          </h2>
+          <div>
+            <h2 id="managers-section-title" className="text-base font-semibold text-gray-900">
+              Internal Managers
+            </h2>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Department leads overseeing procurement, inventory, and finance operations.
+            </p>
+          </div>
           <Button onClick={() => setCreateModalOpen(true)}>
             <Plus className="w-4 h-4" />
-            Create User
+            Create Manager
           </Button>
         </div>
 
-        {usersError ? (
+        {managersError ? (
           <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-sm text-gray-500">
-            {usersError}
+            {managersError}
           </div>
         ) : (
           <Table
-            columns={['Name / Email', 'Role', 'Status', 'Created Date', 'Actions']}
-            loading={usersLoading}
-            empty={!usersLoading && users.length === 0}
-            emptyMessage="No users found."
+            columns={['Name / Email', 'Role', 'Status', 'Actions']}
+            loading={managersLoading}
+            empty={!managersLoading && managers.length === 0}
+            emptyMessage="No internal managers found."
           >
-            {users.map((user, i) => (
+            {managers.map((manager, i) => (
               <tr
-                key={user.id}
+                key={manager.id}
                 className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
                 style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               >
                 {/* Name / Email stacked */}
                 <Table.Td className="max-w-xs">
                   <div className="font-medium text-gray-900 truncate">
-                    {user.fullName ?? '—'}
+                    {manager.fullName}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">{user.email}</div>
+                  <div className="text-xs text-gray-500 truncate">{manager.email}</div>
                 </Table.Td>
 
                 {/* Role badge */}
                 <Table.Td>
-                  <Badge status={user.role} label={user.role?.replace(/_/g, ' ')} />
+                  <Badge status={manager.role} label={manager.role?.replace(/_/g, ' ')} />
                 </Table.Td>
 
                 {/* Status badge */}
                 <Table.Td>
-                  <Badge status={user.status} />
+                  <Badge status={manager.status} />
                 </Table.Td>
-
-                {/* Created date */}
-                <Table.Td>{formatDate(user.createdAt)}</Table.Td>
 
                 {/* Actions */}
                 <Table.Td>
-                  {user.status === 'ACTIVE' ? (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      loading={lockingId === user.id}
-                      onClick={() => handleLock(user)}
-                      aria-label={`Lock ${user.fullName ?? user.email}`}
-                    >
-                      <Lock className="w-4 h-4" />
-                      Lock
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      loading={lockingId === user.id}
-                      onClick={() => handleUnlock(user)}
-                      aria-label={`Unlock ${user.fullName ?? user.email}`}
-                    >
-                      <Unlock className="w-4 h-4" />
-                      Unlock
-                    </Button>
-                  )}
+                  <StatusDropdown
+                    user={manager}
+                    loading={changingStatusId === manager.id}
+                    onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchManagers)}
+                  />
                 </Table.Td>
               </tr>
             ))}
@@ -460,15 +664,15 @@ export default function UsersPage() {
       </section>
 
       {/* ══════════════════════════════════
-          PENDING VENDORS SECTION
+          2. VENDORS SECTION
       ═══════════════════════════════════ */}
       <section aria-labelledby="vendors-section-title">
         <div className="mb-4">
           <h2 id="vendors-section-title" className="text-base font-semibold text-gray-900">
-            Pending Vendor Approvals
+            Registered Vendors
           </h2>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Review and approve or reject vendor registration requests.
+          <p className="mt-0.5 text-xs text-gray-500">
+            All vendor partner accounts registered on the platform.
           </p>
         </div>
 
@@ -478,10 +682,10 @@ export default function UsersPage() {
           </div>
         ) : (
           <Table
-            columns={['Vendor Name', 'Contact Email', 'Registration Date', 'Actions']}
+            columns={['Vendor Name / Contact Email', 'Role', 'Status', 'Actions']}
             loading={vendorsLoading}
             empty={!vendorsLoading && vendors.length === 0}
-            emptyMessage="No pending vendor applications."
+            emptyMessage="No registered vendors found."
           >
             {vendors.map((vendor, i) => (
               <tr
@@ -489,11 +693,75 @@ export default function UsersPage() {
                 className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
                 style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               >
-                <Table.Td className="font-medium text-gray-900">
-                  {vendor.companyName ?? vendor.name ?? '—'}
+                {/* Vendor / Email stacked */}
+                <Table.Td className="max-w-xs">
+                  <div className="font-medium text-gray-900 truncate">
+                    {vendor.fullName}
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">{vendor.email}</div>
                 </Table.Td>
-                <Table.Td>{vendor.contactEmail ?? vendor.email ?? '—'}</Table.Td>
-                <Table.Td>{formatDate(vendor.createdAt ?? vendor.registrationDate)}</Table.Td>
+
+                {/* Role badge */}
+                <Table.Td>
+                  <Badge status={vendor.role} label={vendor.role?.replace(/_/g, ' ')} />
+                </Table.Td>
+
+                {/* Status badge */}
+                <Table.Td>
+                  <Badge status={vendor.status} />
+                </Table.Td>
+
+                {/* Actions */}
+                <Table.Td>
+                  <StatusDropdown
+                    user={vendor}
+                    loading={changingStatusId === vendor.id}
+                    onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchAllVendors)}
+                  />
+                </Table.Td>
+              </tr>
+            ))}
+          </Table>
+        )}
+      </section>
+
+      {/* ══════════════════════════════════
+          3. PENDING VENDORS SECTION
+      ═══════════════════════════════════ */}
+      <section aria-labelledby="pending-vendors-section-title">
+        <div className="mb-4">
+          <h2 id="pending-vendors-section-title" className="text-base font-semibold text-gray-900">
+            Pending Vendor Approvals
+          </h2>
+          <p className="mt-0.5 text-xs text-gray-500">
+            Review and approve or reject vendor registration requests.
+          </p>
+        </div>
+
+        {pendingVendorsError ? (
+          <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-sm text-gray-500">
+            {pendingVendorsError}
+          </div>
+        ) : (
+          <Table
+            columns={['Vendor Name', 'Contact Email', 'Status', 'Actions']}
+            loading={pendingVendorsLoading}
+            empty={!pendingVendorsLoading && pendingVendors.length === 0}
+            emptyMessage="No pending vendor applications."
+          >
+            {pendingVendors.map((vendor, i) => (
+              <tr
+                key={vendor.id}
+                className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+                style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
+              >
+                <Table.Td className="font-medium text-gray-900">
+                  {vendor.fullName}
+                </Table.Td>
+                <Table.Td>{vendor.email}</Table.Td>
+                <Table.Td>
+                  <Badge status="PENDING_APPROVAL" label="Pending Approval" />
+                </Table.Td>
                 <Table.Td>
                   <div className="flex items-center gap-2">
                     <Button
@@ -501,7 +769,7 @@ export default function UsersPage() {
                       size="sm"
                       loading={approvingId === vendor.id}
                       onClick={() => handleApprove(vendor)}
-                      aria-label={`Approve ${vendor.companyName ?? vendor.name}`}
+                      aria-label={`Approve ${vendor.fullName}`}
                     >
                       Approve
                     </Button>
@@ -510,7 +778,7 @@ export default function UsersPage() {
                       size="sm"
                       disabled={approvingId === vendor.id}
                       onClick={() => openRejectModal(vendor)}
-                      aria-label={`Reject ${vendor.companyName ?? vendor.name}`}
+                      aria-label={`Reject ${vendor.fullName}`}
                     >
                       Reject
                     </Button>
@@ -526,11 +794,11 @@ export default function UsersPage() {
       <CreateUserModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onCreated={fetchUsers}
+        onCreated={fetchManagers}
       />
       <RejectReasonModal
         isOpen={rejectModal.open}
-        onClose={() => setRejectModal({ open: false, vendorId: null })}
+        onClose={() => setRejectModal({ open: false, vendorId: null, vendorName: '' })}
         onConfirm={handleRejectConfirm}
       />
     </div>
