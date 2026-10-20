@@ -116,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // Write audit log — no external creator, so we use the vendor's own userId
-        writeAuditLog(saved, "VENDOR_REGISTER", "users", saved.getUserId().toString(), null);
+        writeAuditLog(saved, "VENDOR_REGISTER", "users", saved.getUserId(), null, toSnapshot(saved));
 
         log.info("Vendor registered: userId={}, email={}, status=PENDING",
                 saved.getUserId(), saved.getEmail());
@@ -199,8 +199,8 @@ public class AuthServiceImpl implements AuthService {
                         .build());
         refreshTokenRepository.save(tokenEntity);
 
-        // 7. Write audit log
-        writeAuditLog(user, "LOGIN", "users", user.getUserId().toString(), httpRequest);
+        // 7. Write audit log (no old/new value for login events)
+        writeAuditLog(user, "LOGIN", "users", user.getUserId(), null, null);
 
         // 8. Set HttpOnly refresh cookie
         addRefreshCookie(httpResponse, refreshToken);
@@ -256,6 +256,8 @@ public class AuthServiceImpl implements AuthService {
         if (refreshToken != null && !refreshToken.isBlank()) {
             refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
                 if (!token.isRevoked()) {
+                    // Write audit log before revoking so the user reference is still valid
+                    writeAuditLog(token.getUser(), "LOGOUT", "users", token.getUser().getUserId(), null, null);
                     token.setRevoked(true);
                     refreshTokenRepository.save(token);
                 }
@@ -281,7 +283,8 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
-        writeAuditLog(user, "CHANGE_PASSWORD", "users", user.getUserId().toString(), null);
+        // No old/new value for password changes — never log password hashes
+        writeAuditLog(user, "CHANGE_PASSWORD", "users", user.getUserId(), null, null);
         log.info("Password successfully changed for user: {}", email);
     }
 
@@ -305,17 +308,40 @@ public class AuthServiceImpl implements AuthService {
         response.addCookie(cookie);
     }
 
+    /**
+     * Persists an audit log entry. oldValue and newValue may be null for non-mutating events.
+     */
     private void writeAuditLog(User user, String action, String entityName,
-                                String entityId, HttpServletRequest request) {
+                                UUID entityId, String oldValue, String newValue) {
         AuditLog log = AuditLog.builder()
                 .organizationId(user.getOrganizationId())
                 .userId(user.getUserId())
                 .action(action)
                 .entityName(entityName)
-                .entityId(UUID.fromString(entityId))
-                .ipAddress(request != null ? request.getRemoteAddr() : null)
+                .entityId(entityId)
+                .oldValue(oldValue)
+                .newValue(newValue)
                 .build();
         auditLogRepository.save(log);
+    }
+
+    /**
+     * Serializes a user's relevant fields into a JSON snapshot string for audit old/new values.
+     * Returns null on serialization failure — a snapshot failure must never block the main operation.
+     */
+    private String toSnapshot(User user) {
+        try {
+            return objectMapper.writeValueAsString(Map.of(
+                    "userId",        user.getUserId().toString(),
+                    "fullName",      user.getFullName() != null ? user.getFullName() : "",
+                    "email",         user.getEmail() != null ? user.getEmail() : "",
+                    "role",          user.getRole() != null ? user.getRole().getRoleName().name() : "",
+                    "accountStatus", user.getAccountStatus() != null ? user.getAccountStatus().name() : ""
+            ));
+        } catch (Exception e) {
+            log.warn("Failed to serialize audit snapshot for userId={}: {}", user.getUserId(), e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -347,6 +373,8 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Only vendors can deactivate their own account");
         }
 
+        String oldSnapshot = toSnapshot(user);
+
         // Soft delete: set status to INACTIVE
         user.setAccountStatus(AccountStatus.INACTIVE);
         userRepository.save(user);
@@ -357,8 +385,7 @@ public class AuthServiceImpl implements AuthService {
         // Clear refresh cookie
         clearRefreshCookie(response);
 
-        // Audit log
-        writeAuditLog(user, "VENDOR_SELF_DELETE", "users", user.getUserId().toString(), null);
+        writeAuditLog(user, "VENDOR_SELF_DELETE", "users", user.getUserId(), oldSnapshot, toSnapshot(user));
         log.info("Vendor self-deleted (set INACTIVE) and logged out: userId={}", user.getUserId());
     }
 }

@@ -3,25 +3,32 @@ package com.procurex.identityservice.controller;
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
 import com.procurex.identityservice.dto.request.UpdateStatusRequest;
 import com.procurex.identityservice.dto.response.ApiResponse;
+import com.procurex.identityservice.dto.response.AuditLogResponse;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.service.AdminUserService;
+import com.procurex.identityservice.service.AuditLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 /**
  * REST endpoints for administrator-only user management operations,
- * including employee creation and vendor approval workflows.
+ * including employee creation, vendor approval workflows, and audit log retrieval.
  */
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -31,6 +38,7 @@ import java.util.UUID;
 public class AdminController {
 
     private final AdminUserService adminUserService;
+    private final AuditLogService  auditLogService;
 
     // -------------------------------------------------------------------------
     // Create Employee
@@ -182,5 +190,37 @@ public class AdminController {
 
         adminUserService.deleteUser(userId, authentication.getName());
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully", null));
+    }
+
+    // -------------------------------------------------------------------------
+    // Get Audit Logs
+    // -------------------------------------------------------------------------
+    @Operation(
+            summary = "Get audit logs",
+            description = "Returns a paginated, server-side filtered list of audit log entries. "
+                    + "Supports filtering by action, userId, and date range. "
+                    + "Default sort is createdAt descending."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Audit logs retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/audit-logs")
+    public ResponseEntity<ApiResponse<Page<AuditLogResponse>>> getAuditLogs(
+            @RequestParam(required = false) String action,
+            @RequestParam(required = false) UUID   userId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(defaultValue = "0")  int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        // Clamp page size to prevent abuse
+        int safeSize = Math.min(size, 100);
+
+        PageRequest pageable = PageRequest.of(page, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<AuditLogResponse> result = auditLogService.getAuditLogs(action, userId, from, to, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("Audit logs retrieved successfully", result));
     }
 }
