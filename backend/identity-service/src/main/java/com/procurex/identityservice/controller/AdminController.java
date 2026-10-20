@@ -4,9 +4,11 @@ import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
 import com.procurex.identityservice.dto.request.UpdateStatusRequest;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.AuditLogResponse;
+import com.procurex.identityservice.dto.response.SystemHealthResponse;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.service.AdminUserService;
 import com.procurex.identityservice.service.AuditLogService;
+import com.procurex.identityservice.service.SystemHealthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,8 +39,9 @@ import java.util.UUID;
 @Tag(name = "Admin Operations", description = "Admin-only user management and vendor approval endpoints")
 public class AdminController {
 
-    private final AdminUserService adminUserService;
-    private final AuditLogService  auditLogService;
+    private final AdminUserService  adminUserService;
+    private final AuditLogService   auditLogService;
+    private final SystemHealthService systemHealthService;
 
     // -------------------------------------------------------------------------
     // Create Employee
@@ -222,5 +225,23 @@ public class AdminController {
         Page<AuditLogResponse> result = auditLogService.getAuditLogs(action, userId, from, to, pageable);
 
         return ResponseEntity.ok(ApiResponse.success("Audit logs retrieved successfully", result));
+    }
+
+    // -------------------------------------------------------------------------
+    // System Health
+    // -------------------------------------------------------------------------
+    @Operation(
+            summary = "Get system health",
+            description = "Aggregates actuator health data from all microservices and returns a unified system health report."
+    )
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Health data aggregated successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/system-health")
+    public ResponseEntity<ApiResponse<SystemHealthResponse>> getSystemHealth() {
+        SystemHealthResponse health = systemHealthService.fetchSystemHealth();
+        return ResponseEntity.ok(ApiResponse.success("System health retrieved successfully", health));
     }
 }
