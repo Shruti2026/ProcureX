@@ -35,7 +35,7 @@ public class AuditLog {
     private UUID userId;
 
     @Column(nullable = false, length = 50)
-    private String action;       // e.g. LOGIN, CREATE_USER
+    private String action;       // e.g. LOGIN, CREATE_EMPLOYEE, APPROVE_VENDOR
 
     @Column(name = "entity_name", nullable = false, length = 100)
     private String entityName;   // e.g. "users"
@@ -44,13 +44,10 @@ public class AuditLog {
     private UUID entityId;
 
     @Column(name = "old_value", columnDefinition = "TEXT")
-    private String oldValue;     // JSON string
+    private String oldValue;     // JSON snapshot of the entity state before the action
 
     @Column(name = "new_value", columnDefinition = "TEXT")
-    private String newValue;     // JSON string
-
-    @Column(name = "ip_address", length = 45)
-    private String ipAddress;
+    private String newValue;     // JSON snapshot of the entity state after the action
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

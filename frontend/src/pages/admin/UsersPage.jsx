@@ -25,101 +25,55 @@ const ALL_STATUSES = [
 ]
 
 /* ─────────────────────────────────────────
-   StatusDropdown — "Change Status" menu rendered with fixed
-   positioning so it escapes table overflow:hidden clipping.
+   StatusSelect — native <select> that always
+   renders its popup above overflow:hidden containers.
 ───────────────────────────────────────── */
-function StatusDropdown({ user, onChangeStatus, loading }) {
-  const [open, setOpen]       = useState(false)
-  const [menuStyle, setMenuStyle] = useState({})
-  const btnRef  = useRef(null)
-  const menuRef = useRef(null)
-
-  // Position the fixed menu under the button
-  const openMenu = () => {
-    if (btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect()
-      // position: fixed uses viewport coords — do NOT add window.scroll*
-      setMenuStyle({
-        top:   rect.bottom + 4,
-        left:  Math.max(4, rect.right - 144), // keep within left edge
-        width: 144,
-      })
-    }
-    setOpen(true)
+function StatusSelect({ user, onChangeStatus, loading }) {
+  const handleChange = (e) => {
+    const newStatus = e.target.value
+    // reset the select back to placeholder so the same value can re-trigger
+    e.target.value = ''
+    if (newStatus) onChangeStatus(user, newStatus)
   }
 
-  // Close on outside click or scroll
-  useEffect(() => {
-    if (!open) return
-    const close = (e) => {
-      if (
-        menuRef.current && !menuRef.current.contains(e.target) &&
-        btnRef.current  && !btnRef.current.contains(e.target)
-      ) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', close)
-    document.addEventListener('scroll',    () => setOpen(false), true)
-    return () => {
-      document.removeEventListener('mousedown', close)
-      document.removeEventListener('scroll',    () => setOpen(false), true)
-    }
-  }, [open])
-
-  const options = ALL_STATUSES.filter((s) => s.value !== user.status)
-
   return (
-    <>
-      <button
-        ref={btnRef}
-        type="button"
+    <div className="relative inline-block">
+      <select
+        defaultValue=""
+        onChange={handleChange}
         disabled={loading}
-        onClick={open ? () => setOpen(false) : openMenu}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="
+          appearance-none cursor-pointer
+          rounded-lg border border-gray-200 bg-white
+          pl-3 pr-7 py-1.5
+          text-xs font-medium text-gray-700
+          shadow-sm transition-colors
+          hover:bg-gray-50
+          focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
+          disabled:cursor-not-allowed disabled:opacity-50
+        "
         aria-label="Change account status"
-        aria-expanded={open}
-        aria-haspopup="listbox"
       >
-        {loading ? (
-          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
-        ) : (
-          <ChevronDown className="h-3.5 w-3.5 text-gray-500" />
-        )}
-        Change Status
-      </button>
-
-      {open && (
-        <div
-          ref={menuRef}
-          style={{
-            position: 'fixed',
-            top:   menuStyle.top,
-            left:  menuStyle.left,
-            width: menuStyle.width,
-            zIndex: 9999,
-          }}
-          className="rounded-xl border border-gray-100 bg-white py-1 shadow-xl"
-          role="listbox"
-          aria-label="Status options"
-        >
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              role="option"
-              onClick={() => {
-                setOpen(false)
-                onChangeStatus(user, opt.value)
-              }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <Badge status={opt.value} label={opt.label} />
-            </button>
-          ))}
-        </div>
+        <option value="" disabled>Change Status</option>
+        {ALL_STATUSES.filter((s) => s.value !== user.status).map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      {/* custom chevron */}
+      {loading ? (
+        <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+        </span>
+      ) : (
+        <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-400">
+          <svg className="h-3 w-3" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5l3 3 3-3" />
+          </svg>
+        </span>
       )}
-    </>
+    </div>
   )
 }
 
@@ -436,6 +390,93 @@ function RejectReasonModal({ isOpen, onClose, onConfirm }) {
 }
 
 /* ─────────────────────────────────────────
+   CollapsibleSection — animated accordion wrapper
+───────────────────────────────────────── */
+function CollapsibleSection({ id, title, description, count, defaultOpen = true, headerRight, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  const bodyRef = useRef(null)
+
+  /* Animate height on open/close */
+  useEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    if (open) {
+      el.style.height = el.scrollHeight + 'px'
+      const onEnd = () => { el.style.height = 'auto' }
+      el.addEventListener('transitionend', onEnd, { once: true })
+    } else {
+      // pin current height first so the transition has a starting point
+      el.style.height = el.scrollHeight + 'px'
+      // force reflow, then collapse
+      el.getBoundingClientRect()
+      el.style.height = '0px'
+    }
+  }, [open])
+
+  return (
+    <section aria-labelledby={`${id}-title`}>
+      {/* ── Section header (always visible) ── */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-controls={`${id}-body`}
+        className="w-full flex items-center justify-between mb-4 group focus:outline-none"
+      >
+        <div className="flex items-start gap-3">
+          {/* Animated chevron */}
+          <span
+            className="mt-0.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ease-out group-hover:text-gray-600"
+            style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }}
+            aria-hidden="true"
+          >
+            <ChevronDown className="w-4 h-4" />
+          </span>
+          <div className="text-left">
+            <div className="flex items-center gap-2">
+              <h2 id={`${id}-title`} className="text-base font-semibold text-gray-900">
+                {title}
+              </h2>
+              {/* Count pill */}
+              {count != null && (
+                <span className="inline-flex items-center justify-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 leading-none">
+                  {count}
+                </span>
+              )}
+            </div>
+            {description && (
+              <p className="mt-0.5 text-xs text-gray-500">{description}</p>
+            )}
+          </div>
+        </div>
+        {/* Slot for extra controls (e.g. Create Manager button) */}
+        {headerRight && (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex-shrink-0"
+          >
+            {headerRight}
+          </div>
+        )}
+      </button>
+
+      {/* ── Collapsible body ── */}
+      <div
+        id={`${id}-body`}
+        ref={bodyRef}
+        style={{
+          height: defaultOpen ? 'auto' : '0px',
+          overflow: 'hidden',
+          transition: reducedMotion ? 'none' : 'height 220ms cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+        {children}
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────────────────────────────────
    UsersPage
 ───────────────────────────────────────── */
 export default function UsersPage() {
@@ -598,22 +639,19 @@ export default function UsersPage() {
       {/* ══════════════════════════════════
           1. MANAGERS SECTION
       ═══════════════════════════════════ */}
-      <section aria-labelledby="managers-section-title">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 id="managers-section-title" className="text-base font-semibold text-gray-900">
-              Internal Managers
-            </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
-              Department leads overseeing procurement, inventory, and finance operations.
-            </p>
-          </div>
+      <CollapsibleSection
+        id="managers"
+        title="Internal Managers"
+        description="Department leads overseeing procurement, inventory, and finance operations."
+        count={managersLoading ? null : managers.length}
+        defaultOpen={true}
+        headerRight={
           <Button onClick={() => setCreateModalOpen(true)}>
             <Plus className="w-4 h-4" />
             Create Manager
           </Button>
-        </div>
-
+        }
+      >
         {managersError ? (
           <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-sm text-gray-500">
             {managersError}
@@ -651,7 +689,7 @@ export default function UsersPage() {
 
                 {/* Actions */}
                 <Table.Td>
-                  <StatusDropdown
+                  <StatusSelect
                     user={manager}
                     loading={changingStatusId === manager.id}
                     onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchManagers)}
@@ -661,21 +699,18 @@ export default function UsersPage() {
             ))}
           </Table>
         )}
-      </section>
+      </CollapsibleSection>
 
       {/* ══════════════════════════════════
           2. VENDORS SECTION
       ═══════════════════════════════════ */}
-      <section aria-labelledby="vendors-section-title">
-        <div className="mb-4">
-          <h2 id="vendors-section-title" className="text-base font-semibold text-gray-900">
-            Registered Vendors
-          </h2>
-          <p className="mt-0.5 text-xs text-gray-500">
-            All vendor partner accounts registered on the platform.
-          </p>
-        </div>
-
+      <CollapsibleSection
+        id="vendors"
+        title="Registered Vendors"
+        description="All vendor partner accounts registered on the platform."
+        count={vendorsLoading ? null : vendors.length}
+        defaultOpen={true}
+      >
         {vendorsError ? (
           <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-sm text-gray-500">
             {vendorsError}
@@ -713,7 +748,7 @@ export default function UsersPage() {
 
                 {/* Actions */}
                 <Table.Td>
-                  <StatusDropdown
+                  <StatusSelect
                     user={vendor}
                     loading={changingStatusId === vendor.id}
                     onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchAllVendors)}
@@ -723,21 +758,18 @@ export default function UsersPage() {
             ))}
           </Table>
         )}
-      </section>
+      </CollapsibleSection>
 
       {/* ══════════════════════════════════
           3. PENDING VENDORS SECTION
       ═══════════════════════════════════ */}
-      <section aria-labelledby="pending-vendors-section-title">
-        <div className="mb-4">
-          <h2 id="pending-vendors-section-title" className="text-base font-semibold text-gray-900">
-            Pending Vendor Approvals
-          </h2>
-          <p className="mt-0.5 text-xs text-gray-500">
-            Review and approve or reject vendor registration requests.
-          </p>
-        </div>
-
+      <CollapsibleSection
+        id="pending-vendors"
+        title="Pending Vendor Approvals"
+        description="Review and approve or reject vendor registration requests."
+        count={pendingVendorsLoading ? null : pendingVendors.length}
+        defaultOpen={true}
+      >
         {pendingVendorsError ? (
           <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center text-sm text-gray-500">
             {pendingVendorsError}
@@ -788,7 +820,7 @@ export default function UsersPage() {
             ))}
           </Table>
         )}
-      </section>
+      </CollapsibleSection>
 
       {/* ── Modals ── */}
       <CreateUserModal

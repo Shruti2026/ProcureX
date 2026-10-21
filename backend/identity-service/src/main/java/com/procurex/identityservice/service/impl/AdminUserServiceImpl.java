@@ -109,7 +109,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         User saved = userRepository.save(employee);
 
-        writeAuditLog(admin, "CREATE_EMPLOYEE", USERS_ENTITY, saved.getUserId().toString());
+        // newValue snapshot only — no prior state exists for a new account
+        writeAuditLog(admin, "CREATE_EMPLOYEE", USERS_ENTITY, saved.getUserId(), null, toSnapshot(saved));
         log.info("Employee created: userId={}, role={}, by admin={}",
                 saved.getUserId(), request.role(), adminEmail);
 
@@ -152,6 +153,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional
     public UserRegisterResponse approveVendor(UUID vendorUserId, String adminEmail) {
         User vendor = findPendingVendor(vendorUserId);
+        String oldSnapshot = toSnapshot(vendor);
 
         User admin = userRepository.findByEmail(adminEmail)
                 .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
@@ -179,7 +181,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw new RuntimeException("Failed to serialize vendor approved outbox event", e);
         }
 
-        writeAuditLog(admin, "APPROVE_VENDOR", USERS_ENTITY, vendorUserId.toString());
+        writeAuditLog(admin, "APPROVE_VENDOR", USERS_ENTITY, vendorUserId, oldSnapshot, toSnapshot(saved));
         log.info("Vendor approved: userId={}, by admin={}", vendorUserId, adminEmail);
 
         return toResponse(saved);
@@ -192,6 +194,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional
     public UserRegisterResponse rejectVendor(UUID vendorUserId, String adminEmail) {
         User vendor = findPendingVendor(vendorUserId);
+        String oldSnapshot = toSnapshot(vendor);
 
         User admin = userRepository.findByEmail(adminEmail)
                 .orElseThrow(() -> new IllegalStateException(ADMIN_NOT_FOUND));
@@ -200,63 +203,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         vendor.setUpdatedBy(admin.getUserId());
         User saved = userRepository.save(vendor);
 
-        writeAuditLog(admin, "REJECT_VENDOR", USERS_ENTITY, vendorUserId.toString());
+        writeAuditLog(admin, "REJECT_VENDOR", USERS_ENTITY, vendorUserId, oldSnapshot, toSnapshot(saved));
         log.info("Vendor rejected: userId={}, by admin={}", vendorUserId, adminEmail);
 
         return toResponse(saved);
-    }
-
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
-    private User findPendingVendor(UUID vendorUserId) {
-        User user = userRepository.findById(vendorUserId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Vendor not found with id: " + vendorUserId));
-
-        if (user.getRole().getRoleName() != RoleName.VENDOR) {
-            throw new IllegalArgumentException("User is not a vendor");
-        }
-        if (user.getAccountStatus() != AccountStatus.PENDING) {
-            throw new IllegalStateException(
-                    "Vendor is not in PENDING status. Current status: " + user.getAccountStatus());
-        }
-        return user;
-    }
-
-    private UserRegisterResponse toResponse(User user) {
-        return new UserRegisterResponse(
-                user.getUserId(),
-                user.getOrganizationId(),
-                user.getFullName(),
-                user.getEmail(),
-                user.getRole().getRoleName().name(),
-                user.getAccountStatus(),
-                null
-        );
-    }
-
-    private String generateTemporaryPassword() {
-        StringBuilder sb = new StringBuilder(TEMP_PASSWORD_LENGTH);
-
-        for (int i = 0; i < TEMP_PASSWORD_LENGTH; i++) {
-            sb.append(TEMP_PASSWORD_CHARS.charAt(SECURE_RANDOM.nextInt(TEMP_PASSWORD_CHARS.length())));
-        }
-
-        return sb.toString();
-    }
-
-    private void writeAuditLog(User actor, String action, String entityName, String entityId) {
-        AuditLog log = AuditLog.builder()
-                .organizationId(actor.getOrganizationId())
-                .userId(actor.getUserId())
-                .action(action)
-                .entityName(entityName)
-                .entityId(UUID.fromString(entityId))
-                .ipAddress(null)
-                .build();
-        auditLogRepository.save(log);
     }
 
     // -------------------------------------------------------------------------
@@ -275,6 +225,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw new IllegalArgumentException("Admin cannot change their own status");
         }
 
+        String oldSnapshot = toSnapshot(user);
+
         user.setAccountStatus(status);
         if (status == AccountStatus.ACTIVE) {
             user.setFailedLoginAttempts(0);
@@ -282,7 +234,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         user.setUpdatedBy(admin.getUserId());
         User saved = userRepository.save(user);
 
-        writeAuditLog(admin, "UPDATE_USER_STATUS", USERS_ENTITY, userId.toString());
+        writeAuditLog(admin, "UPDATE_USER_STATUS", USERS_ENTITY, userId, oldSnapshot, toSnapshot(saved));
         log.info("User status updated: userId={}, status={}, by admin={}", userId, status, adminEmail);
 
         return toResponse(saved);
@@ -331,6 +283,8 @@ public class AdminUserServiceImpl implements AdminUserService {
             throw new IllegalArgumentException("Admin cannot delete their own account");
         }
 
+        String oldSnapshot = toSnapshot(user);
+
         // Soft delete: mark account as INACTIVE instead of removing the row
         user.setAccountStatus(AccountStatus.INACTIVE);
         userRepository.save(user);
@@ -338,8 +292,84 @@ public class AdminUserServiceImpl implements AdminUserService {
         // Revoke all active refresh tokens so the user is immediately logged out
         refreshTokenRepository.revokeAllActiveByUser(user);
 
-        writeAuditLog(admin, "SOFT_DELETE_USER", USERS_ENTITY, userId.toString());
+        writeAuditLog(admin, "SOFT_DELETE_USER", USERS_ENTITY, userId, oldSnapshot, toSnapshot(user));
         log.info("User soft-deleted (set INACTIVE): userId={}, by admin={}", userId, adminEmail);
     }
-}
 
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    private User findPendingVendor(UUID vendorUserId) {
+        User user = userRepository.findById(vendorUserId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Vendor not found with id: " + vendorUserId));
+
+        if (user.getRole().getRoleName() != RoleName.VENDOR) {
+            throw new IllegalArgumentException("User is not a vendor");
+        }
+        if (user.getAccountStatus() != AccountStatus.PENDING) {
+            throw new IllegalStateException(
+                    "Vendor is not in PENDING status. Current status: " + user.getAccountStatus());
+        }
+        return user;
+    }
+
+    private UserRegisterResponse toResponse(User user) {
+        return new UserRegisterResponse(
+                user.getUserId(),
+                user.getOrganizationId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole().getRoleName().name(),
+                user.getAccountStatus(),
+                null
+        );
+    }
+
+    private String generateTemporaryPassword() {
+        StringBuilder sb = new StringBuilder(TEMP_PASSWORD_LENGTH);
+
+        for (int i = 0; i < TEMP_PASSWORD_LENGTH; i++) {
+            sb.append(TEMP_PASSWORD_CHARS.charAt(SECURE_RANDOM.nextInt(TEMP_PASSWORD_CHARS.length())));
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Persists an audit log entry. oldValue and newValue may be null for non-mutating events.
+     */
+    private void writeAuditLog(User actor, String action, String entityName,
+                                UUID entityId, String oldValue, String newValue) {
+        AuditLog log = AuditLog.builder()
+                .organizationId(actor.getOrganizationId())
+                .userId(actor.getUserId())
+                .action(action)
+                .entityName(entityName)
+                .entityId(entityId)
+                .oldValue(oldValue)
+                .newValue(newValue)
+                .build();
+        auditLogRepository.save(log);
+    }
+
+    /**
+     * Serializes a user's relevant fields into a JSON snapshot string for audit old/new values.
+     * Returns null on serialization failure — a snapshot failure must never block the main operation.
+     */
+    private String toSnapshot(User user) {
+        try {
+            return objectMapper.writeValueAsString(Map.of(
+                    "userId",        user.getUserId().toString(),
+                    "fullName",      user.getFullName() != null ? user.getFullName() : "",
+                    "email",         user.getEmail() != null ? user.getEmail() : "",
+                    "role",          user.getRole() != null ? user.getRole().getRoleName().name() : "",
+                    "accountStatus", user.getAccountStatus() != null ? user.getAccountStatus().name() : ""
+            ));
+        } catch (Exception e) {
+            log.warn("Failed to serialize audit snapshot for userId={}: {}", user.getUserId(), e.getMessage());
+            return null;
+        }
+    }
+}
