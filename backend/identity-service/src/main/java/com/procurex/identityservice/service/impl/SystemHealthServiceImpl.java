@@ -80,40 +80,44 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     // -------------------------------------------------------------------------
 
     /**
-     * Performs a single HTTP GET to {@code http://localhost:{port}/actuator/health}
+     * Performs a single HTTP GET to {@code http://<host>:{port}/actuator/health}
      * and maps the response into a {@link ServiceHealthInfo}.
+     * Tries the service key as host first (Docker network hostname), falling back to localhost.
      * Any exception (connection refused, timeout, etc.) results in a "DOWN" status.
      */
     @SuppressWarnings("unchecked")
     private ServiceHealthInfo checkService(ServiceDefinition svc) {
-        String url       = "http://localhost:" + svc.port() + "/actuator/health";
         String checkedAt = Instant.now().toString();
 
-        try {
-            Map<String, Object> body = restTemplate.getForObject(url, Map.class);
+        // 1. Try Docker container / service hostname first (unless it's self on 8081)
+        List<String> candidateHosts = "identity-service".equals(svc.key())
+                ? List.of("localhost", svc.key())
+                : List.of(svc.key(), "localhost");
 
-            if (body == null) {
-                log.warn("Health check for '{}' returned a null body", svc.name());
-                return buildInfo(svc, "UNKNOWN", "N/A", "N/A", checkedAt);
+        for (String host : candidateHosts) {
+            String url = "http://" + host + ":" + svc.port() + "/actuator/health";
+            try {
+                Map<String, Object> body = restTemplate.getForObject(url, Map.class);
+                if (body != null) {
+                    String status = (String) body.getOrDefault("status", "UNKNOWN");
+                    Map<String, Object> components = (Map<String, Object>) body.get("components");
+
+                    String dbStatus     = extractComponentStatus(components, "db");
+                    String rabbitStatus = extractComponentStatus(components, "rabbit");
+
+                    if (!"UP".equals(status)) {
+                        log.warn("Service '{}' on {}:{} reported status: {}", svc.name(), host, svc.port(), status);
+                    }
+
+                    return buildInfo(svc, status, dbStatus, rabbitStatus, checkedAt);
+                }
+            } catch (Exception ex) {
+                log.debug("Health check failed for '{}' at {}: {}", svc.name(), url, ex.getMessage());
             }
-
-            String status = (String) body.getOrDefault("status", "UNKNOWN");
-
-            Map<String, Object> components = (Map<String, Object>) body.get("components");
-
-            String dbStatus     = extractComponentStatus(components, "db");
-            String rabbitStatus = extractComponentStatus(components, "rabbit");
-
-            if (!"UP".equals(status)) {
-                log.warn("Service '{}' on port {} reported status: {}", svc.name(), svc.port(), status);
-            }
-
-            return buildInfo(svc, status, dbStatus, rabbitStatus, checkedAt);
-
-        } catch (Exception ex) {
-            log.warn("Health check failed for '{}' on port {}: {}", svc.name(), svc.port(), ex.getMessage());
-            return buildInfo(svc, "DOWN", "N/A", "N/A", checkedAt);
         }
+
+        log.warn("Health check failed for '{}' across candidate hosts on port {}", svc.name(), svc.port());
+        return buildInfo(svc, "DOWN", "N/A", "N/A", checkedAt);
     }
 
     /**
