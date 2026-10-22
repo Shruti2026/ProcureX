@@ -232,7 +232,7 @@ public class AdminController {
     // -------------------------------------------------------------------------
     @Operation(
             summary = "Get system health",
-            description = "Aggregates actuator health data from all microservices and returns a unified system health report."
+            description = "Aggregates actuator health data from all microservices and infrastructure and returns a unified system health report."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Health data aggregated successfully"),
@@ -243,5 +243,28 @@ public class AdminController {
     public ResponseEntity<ApiResponse<SystemHealthResponse>> getSystemHealth() {
         SystemHealthResponse health = systemHealthService.fetchSystemHealth();
         return ResponseEntity.ok(ApiResponse.success("System health retrieved successfully", health));
+    }
+
+    @Operation(
+            summary = "Get system health history",
+            description = "Returns historical snapshots of system health across microservices and infrastructure."
+    )
+    @GetMapping("/system-health/history")
+    public ResponseEntity<ApiResponse<List<com.procurex.identityservice.dto.response.SystemHealthPoint>>> getSystemHealthHistory(
+            @RequestParam(defaultValue = "24h") String range) {
+        List<com.procurex.identityservice.dto.response.SystemHealthPoint> history = systemHealthService.getSystemHealthHistory(range);
+        return ResponseEntity.ok(ApiResponse.success("System health history retrieved successfully", history));
+    }
+
+    @Operation(
+            summary = "Get service health history",
+            description = "Returns historical health telemetry and latency points for a specific service or infrastructure key."
+    )
+    @GetMapping("/system-health/services/{serviceKey}/history")
+    public ResponseEntity<ApiResponse<List<com.procurex.identityservice.dto.response.ServiceHistoryPoint>>> getServiceHealthHistory(
+            @PathVariable String serviceKey,
+            @RequestParam(defaultValue = "24h") String range) {
+        List<com.procurex.identityservice.dto.response.ServiceHistoryPoint> history = systemHealthService.getServiceHistory(serviceKey, range);
+        return ResponseEntity.ok(ApiResponse.success("Service health history retrieved successfully", history));
     }
 }
