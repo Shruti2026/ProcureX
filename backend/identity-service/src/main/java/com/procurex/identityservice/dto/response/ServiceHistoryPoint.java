@@ -1,6 +1,6 @@
 package com.procurex.identityservice.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record ServiceHistoryPoint(
         Long id,
@@ -13,5 +13,5 @@ public record ServiceHistoryPoint(
         String dbStatus,
         String rabbitStatus,
         String detailsJson,
-        LocalDateTime recordedAt
+        Instant recordedAt
 ) {}

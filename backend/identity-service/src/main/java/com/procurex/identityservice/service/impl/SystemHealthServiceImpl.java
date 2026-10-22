@@ -142,7 +142,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
                 .stream()
                 .map(s -> new SystemHealthPoint(
                         s.getId(),
-                        s.getRecordedAt(),
+                        s.getRecordedAt().atZone(java.time.ZoneOffset.UTC).toInstant(),
                         s.getServicesOnline(),
                         s.getServicesOffline(),
                         s.getTotalServices(),
@@ -167,7 +167,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
                         r.getDbStatus(),
                         r.getRabbitStatus(),
                         r.getDetailsJson(),
-                        r.getRecordedAt()
+                        r.getRecordedAt().atZone(java.time.ZoneOffset.UTC).toInstant()
                 ))
                 .toList();
     }

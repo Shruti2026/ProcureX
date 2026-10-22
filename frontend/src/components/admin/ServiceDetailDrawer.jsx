@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import {
   X,
   Activity,
@@ -6,9 +7,6 @@ import {
   Database,
   Network,
   Zap,
-  CheckCircle2,
-  AlertCircle,
-  HelpCircle,
 } from 'lucide-react'
 import {
   ResponsiveContainer,
@@ -26,6 +24,44 @@ export default function ServiceDetailDrawer({ service, onClose }) {
   const [range, setRange] = useState('24h')
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isOpen, setIsOpen] = useState(false)
+
+  // Trigger slide-in animation on mount
+  useEffect(() => {
+    // Request animation frame so DOM is mounted with initial translated position before transitioning
+    const frame = requestAnimationFrame(() => {
+      setIsOpen(true)
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  // Smooth slide-out closing handler
+  const handleClose = useCallback(() => {
+    setIsOpen(false)
+    setTimeout(() => {
+      onClose?.()
+    }, 280) // Match transition duration (300ms curve)
+  }, [onClose])
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        handleClose()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleClose])
+
+  // Prevent background body scroll when drawer is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = originalOverflow
+    }
+  }, [])
 
   useEffect(() => {
     if (!service?.serviceKey) return
@@ -89,9 +125,19 @@ export default function ServiceDetailDrawer({ service, onClose }) {
     // raw string
   }
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/40 backdrop-blur-xs flex justify-end transition-opacity">
-      <div className="w-full max-w-xl bg-white shadow-2xl h-full flex flex-col transform transition-transform duration-300 ease-in-out">
+  const drawerContent = (
+    <div
+      className={`fixed inset-0 z-[100] overflow-hidden flex justify-end transition-colors duration-300 ${
+        isOpen ? 'bg-slate-900/50 backdrop-blur-xs' : 'bg-transparent pointer-events-none'
+      }`}
+      onClick={handleClose}
+    >
+      <div
+        className={`w-full max-w-xl bg-white shadow-2xl h-full flex flex-col transform transition-transform duration-300 ease-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Drawer Header */}
         <div className="p-6 border-b border-gray-100 flex items-start justify-between bg-slate-50/50">
           <div>
@@ -116,8 +162,8 @@ export default function ServiceDetailDrawer({ service, onClose }) {
             </p>
           </div>
           <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            onClick={handleClose}
+            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -212,7 +258,7 @@ export default function ServiceDetailDrawer({ service, onClose }) {
                   <button
                     key={r}
                     onClick={() => setRange(r)}
-                    className={`text-xs px-2 py-1 rounded-md font-medium transition-colors ${
+                    className={`text-xs px-2 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                       range === r
                         ? 'bg-white text-gray-900 shadow-xs'
                         : 'text-gray-500 hover:text-gray-900'
@@ -301,4 +347,6 @@ export default function ServiceDetailDrawer({ service, onClose }) {
       </div>
     </div>
   )
+
+  return createPortal(drawerContent, document.body)
 }
