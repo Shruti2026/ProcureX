@@ -2,6 +2,7 @@ package com.procurex.identityservice.controller;
 
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
 import com.procurex.identityservice.dto.request.UpdateStatusRequest;
+import com.procurex.identityservice.dto.response.AdminDashboardSummaryResponse;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.AuditLogResponse;
 import com.procurex.identityservice.dto.response.SystemHealthResponse;
@@ -42,6 +43,21 @@ public class AdminController {
     private final AdminUserService  adminUserService;
     private final AuditLogService   auditLogService;
     private final SystemHealthService systemHealthService;
+
+    // -------------------------------------------------------------------------
+    // Dashboard Summary
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Get admin dashboard summary metrics", description = "Retrieves high-level counts for users, vendors, approvals, and security alerts")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Summary retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/dashboard/summary")
+    public ResponseEntity<ApiResponse<AdminDashboardSummaryResponse>> getDashboardSummary() {
+        AdminDashboardSummaryResponse summary = adminUserService.getDashboardSummary();
+        return ResponseEntity.ok(ApiResponse.success("Dashboard summary retrieved successfully", summary));
+    }
 
     // -------------------------------------------------------------------------
     // Create Employee

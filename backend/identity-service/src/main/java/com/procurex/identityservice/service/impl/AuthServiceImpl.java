@@ -168,6 +168,9 @@ public class AuthServiceImpl implements AuthService {
             if (attempts >= MAX_FAILED_ATTEMPTS) {
                 user.setAccountStatus(AccountStatus.LOCKED);
                 log.warn("Account locked for user {} after {} failed attempts", user.getEmail(), attempts);
+                writeAuditLog(user, "ACCOUNT_LOCKED", "users", user.getUserId(), null, "Account locked after " + attempts + " failed attempts");
+            } else {
+                writeAuditLog(user, "LOGIN_FAILED", "users", user.getUserId(), null, "Failed attempt " + attempts + " of " + MAX_FAILED_ATTEMPTS);
             }
 
             userRepository.save(user);
