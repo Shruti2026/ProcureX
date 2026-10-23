@@ -90,7 +90,6 @@ export default function VendorInvoicesPage() {
                     'Amount',
                     'Status',
                     'Submitted Date',
-                    'Payment Status',
                   ].map((col) => (
                     <th
                       key={col}
@@ -105,7 +104,7 @@ export default function VendorInvoicesPage() {
               <tbody className="divide-y divide-gray-100 bg-white">
                 {invoices.map((invoice) => (
                   <tr
-                    key={invoice.id}
+                    key={invoice.invoiceId}
                     className="hover:bg-gray-50 transition-colors duration-100"
                   >
                     {/* Invoice Number */}
@@ -120,7 +119,7 @@ export default function VendorInvoicesPage() {
 
                     {/* Amount */}
                     <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
-                      {formatCurrency(invoice.totalAmount)}
+                      {formatCurrency(invoice.invoiceAmount)}
                     </td>
 
                     {/* Status */}
@@ -136,17 +135,6 @@ export default function VendorInvoicesPage() {
                       {formatDate(invoice.submittedAt ?? invoice.invoiceDate)}
                     </td>
 
-                    {/* Payment Status */}
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      {invoice.paymentStatus ? (
-                        <Badge
-                          status={invoice.paymentStatus}
-                          label={invoice.paymentStatus.replace(/_/g, ' ')}
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-400">—</span>
-                      )}
-                    </td>
                   </tr>
                 ))}
               </tbody>
