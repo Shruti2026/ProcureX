@@ -1,6 +1,7 @@
 package com.procurex.identityservice.service;
 
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
+import com.procurex.identityservice.dto.response.AdminDashboardSummaryResponse;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 
 import java.util.List;
@@ -77,4 +78,9 @@ public interface AdminUserService {
      * @param adminEmail  Email of the authenticated admin performing the action
      */
     void deleteUser(UUID userId, String adminEmail);
+
+    /**
+     * Returns aggregated count metrics for the Admin Dashboard.
+     */
+    AdminDashboardSummaryResponse getDashboardSummary();
 }

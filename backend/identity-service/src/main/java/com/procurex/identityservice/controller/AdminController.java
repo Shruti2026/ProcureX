@@ -2,6 +2,7 @@ package com.procurex.identityservice.controller;
 
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
 import com.procurex.identityservice.dto.request.UpdateStatusRequest;
+import com.procurex.identityservice.dto.response.AdminDashboardSummaryResponse;
 import com.procurex.identityservice.dto.response.ApiResponse;
 import com.procurex.identityservice.dto.response.AuditLogResponse;
 import com.procurex.identityservice.dto.response.SystemHealthResponse;
@@ -42,6 +43,21 @@ public class AdminController {
     private final AdminUserService  adminUserService;
     private final AuditLogService   auditLogService;
     private final SystemHealthService systemHealthService;
+
+    // -------------------------------------------------------------------------
+    // Dashboard Summary
+    // -------------------------------------------------------------------------
+    @Operation(summary = "Get admin dashboard summary metrics", description = "Retrieves high-level counts for users, vendors, approvals, and security alerts")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Summary retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthenticated"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Admin role required")
+    })
+    @GetMapping("/dashboard/summary")
+    public ResponseEntity<ApiResponse<AdminDashboardSummaryResponse>> getDashboardSummary() {
+        AdminDashboardSummaryResponse summary = adminUserService.getDashboardSummary();
+        return ResponseEntity.ok(ApiResponse.success("Dashboard summary retrieved successfully", summary));
+    }
 
     // -------------------------------------------------------------------------
     // Create Employee
@@ -232,7 +248,7 @@ public class AdminController {
     // -------------------------------------------------------------------------
     @Operation(
             summary = "Get system health",
-            description = "Aggregates actuator health data from all microservices and returns a unified system health report."
+            description = "Aggregates actuator health data from all microservices and infrastructure and returns a unified system health report."
     )
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Health data aggregated successfully"),
@@ -243,5 +259,28 @@ public class AdminController {
     public ResponseEntity<ApiResponse<SystemHealthResponse>> getSystemHealth() {
         SystemHealthResponse health = systemHealthService.fetchSystemHealth();
         return ResponseEntity.ok(ApiResponse.success("System health retrieved successfully", health));
+    }
+
+    @Operation(
+            summary = "Get system health history",
+            description = "Returns historical snapshots of system health across microservices and infrastructure."
+    )
+    @GetMapping("/system-health/history")
+    public ResponseEntity<ApiResponse<List<com.procurex.identityservice.dto.response.SystemHealthPoint>>> getSystemHealthHistory(
+            @RequestParam(defaultValue = "24h") String range) {
+        List<com.procurex.identityservice.dto.response.SystemHealthPoint> history = systemHealthService.getSystemHealthHistory(range);
+        return ResponseEntity.ok(ApiResponse.success("System health history retrieved successfully", history));
+    }
+
+    @Operation(
+            summary = "Get service health history",
+            description = "Returns historical health telemetry and latency points for a specific service or infrastructure key."
+    )
+    @GetMapping("/system-health/services/{serviceKey}/history")
+    public ResponseEntity<ApiResponse<List<com.procurex.identityservice.dto.response.ServiceHistoryPoint>>> getServiceHealthHistory(
+            @PathVariable String serviceKey,
+            @RequestParam(defaultValue = "24h") String range) {
+        List<com.procurex.identityservice.dto.response.ServiceHistoryPoint> history = systemHealthService.getServiceHistory(serviceKey, range);
+        return ResponseEntity.ok(ApiResponse.success("Service health history retrieved successfully", history));
     }
 }

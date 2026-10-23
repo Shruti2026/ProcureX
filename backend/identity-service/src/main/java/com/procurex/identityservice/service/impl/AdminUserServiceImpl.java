@@ -3,6 +3,7 @@ package com.procurex.identityservice.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.procurex.identityservice.dto.request.CreateEmployeeRequest;
+import com.procurex.identityservice.dto.response.AdminDashboardSummaryResponse;
 import com.procurex.identityservice.dto.response.UserRegisterResponse;
 import com.procurex.identityservice.entity.AccountStatus;
 import com.procurex.identityservice.entity.AuditLog;
@@ -294,6 +295,28 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         writeAuditLog(admin, "SOFT_DELETE_USER", USERS_ENTITY, userId, oldSnapshot, toSnapshot(user));
         log.info("User soft-deleted (set INACTIVE): userId={}, by admin={}", userId, adminEmail);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminDashboardSummaryResponse getDashboardSummary() {
+        long totalUsers = userRepository.count();
+        long activeEmployees = userRepository.countByRoleRoleNameIn(
+                List.of(RoleName.PROCUREMENT_MANAGER, RoleName.INVENTORY_MANAGER, RoleName.FINANCE_MANAGER)
+        );
+        long totalVendors = userRepository.countByRoleRoleName(RoleName.VENDOR);
+        long activeVendors = userRepository.countByRoleRoleNameAndAccountStatus(RoleName.VENDOR, AccountStatus.ACTIVE);
+        long pendingVendors = userRepository.countByRoleRoleNameAndAccountStatus(RoleName.VENDOR, AccountStatus.PENDING);
+        long lockedAccounts = userRepository.countByAccountStatus(AccountStatus.LOCKED);
+
+        return new AdminDashboardSummaryResponse(
+                totalUsers,
+                activeEmployees,
+                totalVendors,
+                activeVendors,
+                pendingVendors,
+                lockedAccounts
+        );
     }
 
     // -------------------------------------------------------------------------
