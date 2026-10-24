@@ -71,6 +71,19 @@ public class InvoiceController {
         return ResponseEntity.ok(ApiResponse.success("Invoices retrieved", result));
     }
 
+    @GetMapping("/my-invoices")
+    @PreAuthorize("hasRole('VENDOR')")
+    @Operation(summary = "List invoices submitted by the authenticated vendor")
+    public ResponseEntity<ApiResponse<Page<InvoiceResponse>>> getMyInvoices(
+            @RequestParam(required = false) InvoiceStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication auth) {
+        UUID userId = UUID.fromString(auth.getName());
+        Page<InvoiceResponse> result = invoiceService.getMyInvoices(userId, status, PageRequest.of(page, size));
+        return ResponseEntity.ok(ApiResponse.success("Your invoices retrieved", result));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('FINANCE_MANAGER','ADMIN','VENDOR')")
     @Operation(summary = "Get a single invoice by ID")

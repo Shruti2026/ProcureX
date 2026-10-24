@@ -20,4 +20,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
     boolean existsByPurchaseOrderId(UUID purchaseOrderId);
 
     long countByOrganizationIdAndStatus(UUID orgId, InvoiceStatus status);
+
+    Page<Invoice> findByVendorId(UUID vendorId, Pageable pageable);
+
+    Page<Invoice> findByVendorIdAndStatus(UUID vendorId, InvoiceStatus status, Pageable pageable);
 }

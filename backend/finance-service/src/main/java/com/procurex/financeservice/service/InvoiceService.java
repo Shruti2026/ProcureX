@@ -21,4 +21,6 @@ public interface InvoiceService {
     Page<InvoiceResponse> getAll(UUID orgId, InvoiceStatus status, Pageable pageable);
 
     InvoiceResponse getById(UUID invoiceId, UUID orgId);
+
+    Page<InvoiceResponse> getMyInvoices(UUID vendorUserId, InvoiceStatus status, Pageable pageable);
 }

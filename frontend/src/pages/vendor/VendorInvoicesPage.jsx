@@ -32,7 +32,7 @@ export default function VendorInvoicesPage() {
   const fetchInvoices = useCallback(async (pageIndex) => {
     setLoading(true)
     try {
-      const response = await invoiceService.getInvoices({ page: pageIndex, size: PAGE_SIZE })
+      const response = await invoiceService.getMyInvoices({ page: pageIndex, size: PAGE_SIZE })
       const payload = response.data.data
       if (payload && typeof payload === 'object' && 'content' in payload) {
         setInvoices(payload.content ?? [])
