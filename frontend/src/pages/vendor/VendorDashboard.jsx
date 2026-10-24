@@ -66,11 +66,11 @@ export default function VendorDashboard() {
       try {
         const [rfqRes, quotRes, ordersRes, invoicesRes, recentOrdersRes] =
           await Promise.all([
-            api.get('/api/v1/procurement/rfqs?status=OPEN&page=0&size=1'),
+            api.get('/api/v1/procurement/rfqs/my-invitations?page=0&size=1'),
             api.get('/api/v1/procurement/quotations/my-quotations?page=0&size=1'),
-            api.get('/api/v1/procurement/orders?page=0&size=1'),
-            api.get('/api/v1/finance/invoices?page=0&size=1'),
-            api.get('/api/v1/procurement/orders?page=0&size=6'),
+            api.get('/api/v1/procurement/orders/my-orders?page=0&size=1'),
+            api.get('/api/v1/finance/invoices/my-invoices?page=0&size=1'),
+            api.get('/api/v1/procurement/orders/my-orders?page=0&size=6'),
           ])
 
         if (cancelled) return

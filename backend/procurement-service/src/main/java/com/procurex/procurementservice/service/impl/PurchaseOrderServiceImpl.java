@@ -2,6 +2,8 @@ package com.procurex.procurementservice.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.procurex.procurementservice.client.VendorApiResponse;
+import com.procurex.procurementservice.client.VendorCatalogClient;
 import com.procurex.procurementservice.dto.request.CreatePurchaseOrderRequest;
 import com.procurex.procurementservice.dto.response.PurchaseOrderHistoryResponse;
 import com.procurex.procurementservice.dto.response.PurchaseOrderItemResponse;
@@ -16,6 +18,7 @@ import com.procurex.procurementservice.entity.QuotationStatus;
 import com.procurex.procurementservice.entity.RFQStatus;
 import com.procurex.procurementservice.exception.ResourceNotFoundException;
 import com.procurex.procurementservice.repository.OutboxEventRepository;
+import feign.FeignException;
 import org.springframework.security.access.AccessDeniedException;
 import com.procurex.procurementservice.repository.PurchaseOrderRepository;
 import com.procurex.procurementservice.repository.QuotationRepository;
@@ -49,6 +52,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private final OutboxEventRepository outboxEventRepository;
     private final PONumberGenerator poNumberGenerator;
     private final ObjectMapper objectMapper;
+    private final VendorCatalogClient vendorCatalogClient;
 
     @Override
     @Transactional
@@ -247,8 +251,18 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Purchase order not found with id: " + poId));
 
-        // 2. Verify calling vendor is the assigned vendor
-        if (!po.getVendorId().equals(vendorUserId)) {
+        // 2. Resolve catalog vendor UUID from JWT user UUID
+        VendorApiResponse vendorApiResponse;
+        try {
+            vendorApiResponse = vendorCatalogClient.getVendorByUserId(vendorUserId);
+        } catch (FeignException.NotFound e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No vendor profile found for this user");
+        }
+        UUID catalogVendorId = vendorApiResponse.data().vendorId();
+
+        // 3. Verify calling vendor is the assigned vendor
+        if (!po.getVendorId().equals(catalogVendorId)) {
             throw new AccessDeniedException(
                     "You are not the vendor assigned to this purchase order");
         }
@@ -289,8 +303,18 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Purchase order not found with id: " + poId));
 
-        // 2. Verify calling vendor is the assigned vendor
-        if (!po.getVendorId().equals(vendorUserId)) {
+        // 2. Resolve catalog vendor UUID from JWT user UUID
+        VendorApiResponse vendorApiResponse;
+        try {
+            vendorApiResponse = vendorCatalogClient.getVendorByUserId(vendorUserId);
+        } catch (FeignException.NotFound e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No vendor profile found for this user");
+        }
+        UUID catalogVendorId = vendorApiResponse.data().vendorId();
+
+        // 3. Verify calling vendor is the assigned vendor
+        if (!po.getVendorId().equals(catalogVendorId)) {
             throw new AccessDeniedException(
                     "You are not the vendor assigned to this purchase order");
         }
@@ -321,6 +345,28 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         PurchaseOrder saved = purchaseOrderRepository.save(po);
         log.info("Vendor declined PO {}: {}", saved.getPoNumber(), reason);
         return toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PurchaseOrderResponse> getMyOrders(UUID vendorUserId, POStatus status, Pageable pageable) {
+        // Resolve catalog vendor UUID from JWT user UUID
+        VendorApiResponse vendorApiResponse;
+        try {
+            vendorApiResponse = vendorCatalogClient.getVendorByUserId(vendorUserId);
+        } catch (FeignException.NotFound e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "No vendor profile found for this user");
+        }
+        UUID catalogVendorId = vendorApiResponse.data().vendorId();
+
+        Page<PurchaseOrder> page;
+        if (status != null) {
+            page = purchaseOrderRepository.findByVendorIdAndStatus(catalogVendorId, status, pageable);
+        } else {
+            page = purchaseOrderRepository.findByVendorId(catalogVendorId, pageable);
+        }
+        return page.map(this::toResponse);
     }
 
     // -------------------------------------------------------------------------

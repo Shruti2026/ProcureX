@@ -35,7 +35,7 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
     setFetchError(null)
 
     purchaseOrderService
-      .getPOById(po.id)
+      .getPOById(po.purchaseOrderId)
       .then((res) => {
         if (cancelled) return
         const fullPO = res.data?.data ?? res.data
@@ -62,11 +62,11 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
     return () => {
       cancelled = true
     }
-  }, [po.id, replace])
+  }, [po.purchaseOrderId, replace])
 
   const onSubmit = async () => {
     const payload = {
-      purchaseOrderId: po.id,
+      purchaseOrderId: po.purchaseOrderId,
       items: fields.map((field, i) => ({
         productId: field.productId,
         productName: field.productName,
@@ -237,13 +237,13 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
 export default function VendorOrdersPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-  const [actionLoading, setActionLoading] = useState(null) // tracks po.id under action
+  const [actionLoading, setActionLoading] = useState(null) // tracks po.purchaseOrderId under action
   const [invoiceModalPO, setInvoiceModalPO] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     setLoading(true)
     try {
-      const response = await purchaseOrderService.getPOs({ page: 0, size: 20 })
+      const response = await purchaseOrderService.getMyOrders({ page: 0, size: 20 })
       const payload = response.data.data
       // API may return a Page object or a plain array
       setOrders(Array.isArray(payload) ? payload : (payload?.content ?? []))
@@ -262,9 +262,9 @@ export default function VendorOrdersPage() {
   const handleAccept = async (po) => {
     const confirmed = window.confirm('Accept this PO?')
     if (!confirmed) return
-    setActionLoading(po.id)
+    setActionLoading(po.purchaseOrderId)
     try {
-      await purchaseOrderService.acceptPO(po.id)
+      await purchaseOrderService.acceptPO(po.purchaseOrderId)
       toast.success(`PO ${po.poNumber} accepted`)
       await fetchOrders()
     } catch (err) {
@@ -278,9 +278,9 @@ export default function VendorOrdersPage() {
   const handleDecline = async (po) => {
     const reason = window.prompt('Reason for decline:')
     if (reason === null) return // user cancelled
-    setActionLoading(po.id)
+    setActionLoading(po.purchaseOrderId)
     try {
-      await purchaseOrderService.declinePO(po.id, reason)
+      await purchaseOrderService.declinePO(po.purchaseOrderId, reason)
       toast.success(`PO ${po.poNumber} declined`)
       await fetchOrders()
     } catch (err) {
@@ -336,9 +336,9 @@ export default function VendorOrdersPage() {
               </thead>
               <tbody className="divide-y divide-gray-100 bg-white">
                 {orders.map((po) => {
-                  const isActing = actionLoading === po.id
+                  const isActing = actionLoading === po.purchaseOrderId
                   return (
-                    <tr key={po.id} className="hover:bg-gray-50 transition-colors duration-100">
+                    <tr key={po.purchaseOrderId} className="hover:bg-gray-50 transition-colors duration-100">
                       {/* PO Number */}
                       <td className="px-5 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
                         {po.poNumber ?? '—'}

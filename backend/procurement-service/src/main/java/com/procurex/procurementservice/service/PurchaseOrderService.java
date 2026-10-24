@@ -23,4 +23,6 @@ public interface PurchaseOrderService {
     PurchaseOrderResponse accept(UUID poId, UUID orgId, UUID vendorUserId, String remarks);
 
     PurchaseOrderResponse decline(UUID poId, UUID orgId, UUID vendorUserId, String reason);
+
+    Page<PurchaseOrderResponse> getMyOrders(UUID vendorUserId, POStatus status, Pageable pageable);
 }

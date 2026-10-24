@@ -9,6 +9,8 @@ import com.procurex.financeservice.client.InventoryServiceClient;
 import com.procurex.financeservice.client.POItemData;
 import com.procurex.financeservice.client.ProcurementServiceClient;
 import com.procurex.financeservice.client.PurchaseOrderClientResponse;
+import com.procurex.financeservice.client.VendorCatalogClient;
+import com.procurex.financeservice.client.VendorClientResponse;
 import com.procurex.financeservice.dto.request.InvoiceItemRequest;
 import com.procurex.financeservice.dto.request.SubmitInvoiceRequest;
 import com.procurex.financeservice.dto.response.InvoiceHistoryResponse;
@@ -25,6 +27,7 @@ import com.procurex.financeservice.exception.ResourceNotFoundException;
 import com.procurex.financeservice.repository.InvoiceRepository;
 import com.procurex.financeservice.service.InvoiceService;
 import com.procurex.financeservice.util.InvoiceNumberGenerator;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -54,6 +57,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceRepository         invoiceRepository;
     private final ProcurementServiceClient  procurementServiceClient;
     private final InventoryServiceClient    inventoryServiceClient;
+    private final VendorCatalogClient       vendorCatalogClient;
     private final InvoiceNumberGenerator    invoiceNumberGenerator;
 
     @Override
@@ -314,6 +318,27 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice invoice = invoiceRepository.findByInvoiceIdAndOrganizationId(invoiceId, orgId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found: " + invoiceId));
         return toResponse(invoice, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<InvoiceResponse> getMyInvoices(UUID vendorUserId, InvoiceStatus status, Pageable pageable) {
+        VendorClientResponse vendorResponse;
+        try {
+            vendorResponse = vendorCatalogClient.getVendorByUserId(vendorUserId);
+        } catch (FeignException.NotFound e) {
+            throw new ResourceNotFoundException("Vendor profile not found for user: " + vendorUserId);
+        }
+        if (vendorResponse.data() == null) {
+            throw new ResourceNotFoundException("Vendor profile not found for user: " + vendorUserId);
+        }
+        UUID vendorId = vendorResponse.data().vendorId();
+        if (status != null) {
+            return invoiceRepository.findByVendorIdAndStatus(vendorId, status, pageable)
+                    .map(inv -> toResponse(inv, null));
+        }
+        return invoiceRepository.findByVendorId(vendorId, pageable)
+                .map(inv -> toResponse(inv, null));
     }
 
     // -------------------------------------------------------------------------

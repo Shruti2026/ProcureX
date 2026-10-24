@@ -20,4 +20,8 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, UU
     long countByPoNumberStartingWith(String prefix);
 
     Optional<PurchaseOrder> findByPurchaseOrderIdAndOrganizationId(UUID poId, UUID organizationId);
+
+    Page<PurchaseOrder> findByVendorId(UUID vendorId, Pageable pageable);
+
+    Page<PurchaseOrder> findByVendorIdAndStatus(UUID vendorId, POStatus status, Pageable pageable);
 }

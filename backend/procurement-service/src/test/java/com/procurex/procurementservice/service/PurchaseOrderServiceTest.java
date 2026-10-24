@@ -2,6 +2,9 @@ package com.procurex.procurementservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.procurex.procurementservice.client.VendorApiResponse;
+import com.procurex.procurementservice.client.VendorCatalogClient;
+import com.procurex.procurementservice.client.VendorSummary;
 import com.procurex.procurementservice.dto.response.PurchaseOrderResponse;
 import com.procurex.procurementservice.entity.OutboxEvent;
 import com.procurex.procurementservice.entity.POStatus;
@@ -58,6 +61,9 @@ class PurchaseOrderServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private VendorCatalogClient vendorCatalogClient;
+
     // -------------------------------------------------------------------------
     // Helper: build a minimal PurchaseOrder for testing
     // -------------------------------------------------------------------------
@@ -75,6 +81,16 @@ class PurchaseOrderServiceTest {
                 .items(new ArrayList<>())
                 .history(new ArrayList<>())
                 .build();
+    }
+
+    /**
+     * Stubs vendorCatalogClient.getVendorByUserId() so it returns a
+     * VendorApiResponse whose data().vendorId() equals the given catalogVendorId.
+     */
+    private void stubVendorLookup(UUID vendorUserId, UUID catalogVendorId) {
+        VendorSummary summary = new VendorSummary(catalogVendorId, "Test Vendor Ltd.", "ACTIVE");
+        VendorApiResponse apiResponse = new VendorApiResponse(true, "OK", summary);
+        when(vendorCatalogClient.getVendorByUserId(vendorUserId)).thenReturn(apiResponse);
     }
 
     // -------------------------------------------------------------------------
@@ -200,8 +216,10 @@ class PurchaseOrderServiceTest {
         PurchaseOrder po     = buildPO(POStatus.APPROVED);
         UUID orgId           = po.getOrganizationId();
         UUID poId            = po.getPurchaseOrderId();
-        UUID vendorUserId    = po.getVendorId(); // ownership check must pass
+        UUID vendorUserId    = UUID.randomUUID();
+        UUID catalogVendorId = po.getVendorId(); // ownership check: catalog UUID matches po.vendorId
 
+        stubVendorLookup(vendorUserId, catalogVendorId);
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
         when(purchaseOrderRepository.save(any(PurchaseOrder.class)))
@@ -221,8 +239,10 @@ class PurchaseOrderServiceTest {
         PurchaseOrder po     = buildPO(POStatus.APPROVED);
         UUID orgId           = po.getOrganizationId();
         UUID poId            = po.getPurchaseOrderId();
-        UUID vendorUserId    = po.getVendorId(); // ownership check must pass
+        UUID vendorUserId    = UUID.randomUUID();
+        UUID catalogVendorId = po.getVendorId(); // ownership check: catalog UUID matches po.vendorId
 
+        stubVendorLookup(vendorUserId, catalogVendorId);
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
         when(purchaseOrderRepository.save(any(PurchaseOrder.class)))
@@ -242,8 +262,10 @@ class PurchaseOrderServiceTest {
         PurchaseOrder po = buildPO(POStatus.CREATED);
         UUID orgId        = po.getOrganizationId();
         UUID poId         = po.getPurchaseOrderId();
-        UUID vendorUserId = po.getVendorId(); // must match for ownership to pass
+        UUID vendorUserId    = UUID.randomUUID();
+        UUID catalogVendorId = po.getVendorId(); // ownership passes, status check fails
 
+        stubVendorLookup(vendorUserId, catalogVendorId);
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
 
@@ -261,15 +283,17 @@ class PurchaseOrderServiceTest {
 
     @Test
     void acceptPO_wrongVendor_throwsAccessDeniedException() {
-        PurchaseOrder po   = buildPO(POStatus.APPROVED);
-        UUID orgId         = po.getOrganizationId();
-        UUID poId          = po.getPurchaseOrderId();
-        UUID wrongVendorId = UUID.randomUUID(); // different from po.getVendorId()
+        PurchaseOrder po    = buildPO(POStatus.APPROVED);
+        UUID orgId          = po.getOrganizationId();
+        UUID poId           = po.getPurchaseOrderId();
+        UUID vendorUserId   = UUID.randomUUID();
+        UUID wrongCatalogId = UUID.randomUUID(); // different from po.getVendorId()
 
+        stubVendorLookup(vendorUserId, wrongCatalogId);
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
 
-        assertThatThrownBy(() -> purchaseOrderService.accept(poId, orgId, wrongVendorId, ""))
+        assertThatThrownBy(() -> purchaseOrderService.accept(poId, orgId, vendorUserId, ""))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
@@ -282,8 +306,10 @@ class PurchaseOrderServiceTest {
         PurchaseOrder po = buildPO(POStatus.CREATED);
         UUID orgId        = po.getOrganizationId();
         UUID poId         = po.getPurchaseOrderId();
-        UUID vendorUserId = po.getVendorId(); // must match for ownership to pass
+        UUID vendorUserId    = UUID.randomUUID();
+        UUID catalogVendorId = po.getVendorId(); // ownership passes, status check fails
 
+        stubVendorLookup(vendorUserId, catalogVendorId);
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
 
