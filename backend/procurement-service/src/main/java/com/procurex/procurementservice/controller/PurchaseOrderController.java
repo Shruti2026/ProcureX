@@ -212,4 +212,28 @@ public class PurchaseOrderController {
 
         return ResponseEntity.ok(ApiResponse.success("Purchase order declined", response));
     }
+
+    /**
+     * Vendor-scoped list of purchase orders assigned to the calling vendor.
+     */
+    @GetMapping("/my-orders")
+    @PreAuthorize("hasRole('VENDOR')")
+    @Operation(summary = "List purchase orders assigned to the calling vendor")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Your purchase orders retrieved successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
+    })
+    public ResponseEntity<ApiResponse<Page<PurchaseOrderResponse>>> getMyOrders(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(required = false) POStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<PurchaseOrderResponse> result = purchaseOrderService.getMyOrders(
+                UUID.fromString(userId), status, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("Your purchase orders retrieved successfully", result));
+    }
 }
