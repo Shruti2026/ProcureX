@@ -361,7 +361,7 @@ export default function VendorOrdersPage() {
 
                       {/* Actions */}
                       <td className="px-5 py-4 whitespace-nowrap">
-                        {po.status === 'SENT_TO_VENDOR' && (
+                        {po.status === 'APPROVED' && (
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"

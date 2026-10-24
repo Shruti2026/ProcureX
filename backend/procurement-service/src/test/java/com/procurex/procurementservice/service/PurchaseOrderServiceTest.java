@@ -189,4 +189,46 @@ class PurchaseOrderServiceTest {
                     assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
                 });
     }
+
+    // -------------------------------------------------------------------------
+    // Test 6: acceptPO_approvedStatus_changesStatusToAccepted
+    // -------------------------------------------------------------------------
+
+    @Test
+    void acceptPO_approvedStatus_changesStatusToAccepted() {
+        PurchaseOrder po     = buildPO(POStatus.APPROVED);
+        UUID orgId           = po.getOrganizationId();
+        UUID poId            = po.getPurchaseOrderId();
+        UUID vendorUserId    = UUID.randomUUID();
+
+        when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
+                .thenReturn(Optional.of(po));
+        when(purchaseOrderRepository.save(any(PurchaseOrder.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        PurchaseOrderResponse result = purchaseOrderService.accept(poId, orgId, vendorUserId, "Accepted");
+
+        assertThat(result.status()).isEqualTo(POStatus.ACCEPTED);
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 7: declinePO_approvedStatus_changesStatusToCancelled
+    // -------------------------------------------------------------------------
+
+    @Test
+    void declinePO_approvedStatus_changesStatusToCancelled() {
+        PurchaseOrder po     = buildPO(POStatus.APPROVED);
+        UUID orgId           = po.getOrganizationId();
+        UUID poId            = po.getPurchaseOrderId();
+        UUID vendorUserId    = UUID.randomUUID();
+
+        when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
+                .thenReturn(Optional.of(po));
+        when(purchaseOrderRepository.save(any(PurchaseOrder.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        PurchaseOrderResponse result = purchaseOrderService.decline(poId, orgId, vendorUserId, "Price too high");
+
+        assertThat(result.status()).isEqualTo(POStatus.CANCELLED);
+    }
 }

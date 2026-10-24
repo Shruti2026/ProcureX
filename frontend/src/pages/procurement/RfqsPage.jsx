@@ -18,7 +18,6 @@ import { formatDate, daysUntil } from '../../utils/formatters'
 const STATUS_TABS = [
   { label: 'All', value: '' },
   { label: 'Open', value: 'OPEN' },
-  { label: 'Evaluating', value: 'EVALUATING' },
   { label: 'Awarded', value: 'AWARDED' },
   { label: 'Closed', value: 'CLOSED' },
 ]
@@ -67,12 +66,37 @@ function CreateRfqModal({ isOpen, onClose }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      title: '',
-      description: '',
-      requiredDate: '',
+      requisitionId: '',
       closingDate: '',
+      invitedVendorIds: [],
     },
   })
+
+  // Fetch CREATED requisitions for the dropdown
+  const { data: requisitionData, isLoading: requisitionsLoading } = useQuery({
+    queryKey: ['requisitions-for-rfq'],
+    queryFn: () =>
+      api
+        .get('/api/v1/procurement/requisitions', { params: { status: 'CREATED', size: 100 } })
+        .then((r) => r.data?.data?.content ?? r.data?.data ?? []),
+    staleTime: 30_000,
+    enabled: isOpen,
+  })
+  const requisitions = Array.isArray(requisitionData)
+    ? requisitionData
+    : (requisitionData?.content ?? [])
+
+  // Fetch ACTIVE vendors for the multi-select
+  const { data: vendorData, isLoading: vendorsLoading } = useQuery({
+    queryKey: ['vendors-active'],
+    queryFn: () =>
+      api
+        .get('/api/v1/vendors', { params: { status: 'ACTIVE', size: 100 } })
+        .then((r) => r.data?.data?.content ?? r.data?.data ?? []),
+    staleTime: 60_000,
+    enabled: isOpen,
+  })
+  const vendors = Array.isArray(vendorData) ? vendorData : (vendorData?.content ?? [])
 
   const mutation = useMutation({
     mutationFn: (payload) =>
@@ -89,11 +113,14 @@ function CreateRfqModal({ isOpen, onClose }) {
   })
 
   const onSubmit = (formData) => {
+    // <select multiple> yields a string when only one option is selected in some browsers
+    const ids = Array.isArray(formData.invitedVendorIds)
+      ? formData.invitedVendorIds
+      : [formData.invitedVendorIds]
     mutation.mutate({
-      title: formData.title,
-      description: formData.description || '',
-      requiredDate: formData.requiredDate || null,
+      requisitionId: formData.requisitionId,
       closingDate: formData.closingDate,
+      invitedVendorIds: ids.filter(Boolean),
     })
   }
 
@@ -142,58 +169,42 @@ function CreateRfqModal({ isOpen, onClose }) {
           onSubmit={handleSubmit(onSubmit)}
           className="overflow-y-auto flex-1 px-6 py-6 space-y-5"
         >
-          {/* Title */}
+          {/* Requisition */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
+            <label htmlFor="rfq-requisition" className="block text-sm font-medium text-gray-700 mb-1">
+              Requisition <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              placeholder="e.g. Office Equipment Q4"
+            <select
+              id="rfq-requisition"
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
-                errors.title ? 'border-red-400' : 'border-gray-300'
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
+                errors.requisitionId ? 'border-red-400' : 'border-gray-300'
               )}
-              {...register('title', { required: 'Title is required' })}
-            />
-            {errors.title && (
-              <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>
+              {...register('requisitionId', { required: 'Requisition is required' })}
+              disabled={requisitionsLoading}
+            >
+              <option value="">
+                {requisitionsLoading ? 'Loading...' : 'Select a requisition'}
+              </option>
+              {requisitions.map((req) => (
+                <option key={req.id ?? req.requisitionId} value={req.id ?? req.requisitionId}>
+                  {req.requisitionNumber ?? req.id ?? req.requisitionId}
+                  {req.title ? ` — ${req.title}` : ''}
+                </option>
+              ))}
+            </select>
+            {errors.requisitionId && (
+              <p className="mt-1 text-xs text-red-500">{errors.requisitionId.message}</p>
             )}
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description{' '}
-              <span className="text-gray-400 font-normal">(optional)</span>
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Brief description of the RFQ"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent resize-none"
-              {...register('description')}
-            />
-          </div>
-
-          {/* Required Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Required Date{' '}
-              <span className="text-gray-400 font-normal">(optional)</span>
-            </label>
-            <input
-              type="date"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
-              {...register('requiredDate')}
-            />
           </div>
 
           {/* Closing Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="rfq-closing-date" className="block text-sm font-medium text-gray-700 mb-1">
               Closing Date <span className="text-red-500">*</span>
             </label>
             <input
+              id="rfq-closing-date"
               type="date"
               min={todayStr}
               className={clsx(
@@ -208,6 +219,44 @@ function CreateRfqModal({ isOpen, onClose }) {
             />
             {errors.closingDate && (
               <p className="mt-1 text-xs text-red-500">{errors.closingDate.message}</p>
+            )}
+          </div>
+
+          {/* Invited Vendors */}
+          <div>
+            <label htmlFor="rfq-vendors" className="block text-sm font-medium text-gray-700 mb-1">
+              Invite Vendors <span className="text-red-500">*</span>
+            </label>
+            <p className="mb-1.5 text-xs text-gray-500">Hold Ctrl / Cmd to select multiple vendors.</p>
+            <select
+              id="rfq-vendors"
+              multiple
+              size={Math.min(6, Math.max(3, vendors.length))}
+              className={clsx(
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
+                errors.invitedVendorIds ? 'border-red-400' : 'border-gray-300'
+              )}
+              {...register('invitedVendorIds', {
+                required: 'At least one vendor must be selected',
+                validate: (val) => {
+                  const arr = Array.isArray(val) ? val : [val]
+                  return arr.filter(Boolean).length > 0 || 'At least one vendor must be selected'
+                },
+              })}
+              disabled={vendorsLoading}
+            >
+              {vendorsLoading ? (
+                <option disabled>Loading vendors...</option>
+              ) : (
+                vendors.map((v) => (
+                  <option key={v.vendorId ?? v.id} value={v.vendorId ?? v.id}>
+                    {v.companyName ?? v.name ?? v.vendorId}
+                  </option>
+                ))
+              )}
+            </select>
+            {errors.invitedVendorIds && (
+              <p className="mt-1 text-xs text-red-500">{errors.invitedVendorIds.message}</p>
             )}
           </div>
 
@@ -310,12 +359,12 @@ export default function RfqsPage() {
         emptyMessage="No RFQs found."
       >
         {rfqs.map((row) => (
-          <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-100">
+          <tr key={row.rfqId ?? row.id} className="hover:bg-gray-50 transition-colors duration-100">
             <Table.Td className="font-mono text-xs text-gray-500">
-              {row.rfqNumber ?? row.id?.slice(-8).toUpperCase()}
+              {row.rfqNumber ?? row.rfqId?.slice(-8).toUpperCase()}
             </Table.Td>
             <Table.Td className="font-medium text-gray-900 max-w-[220px] truncate">
-              {row.title}
+              {row.requisitionTitle ?? row.title ?? '—'}
             </Table.Td>
             <Table.Td>
               <ClosingDateCell dateStr={row.closingDate} />
@@ -329,7 +378,7 @@ export default function RfqsPage() {
                 size="sm"
                 onClick={() => {
                   // eslint-disable-next-line no-console
-                  console.log('View RFQ:', row.id)
+                  console.log('View RFQ:', row.rfqId ?? row.id)
                   toast('Detail page coming soon', { icon: null })
                 }}
               >

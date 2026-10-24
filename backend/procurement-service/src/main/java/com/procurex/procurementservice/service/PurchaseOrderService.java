@@ -19,4 +19,8 @@ public interface PurchaseOrderService {
     PurchaseOrderResponse approve(UUID poId, UUID orgId, UUID managerId, String remarks);
 
     PurchaseOrderResponse cancel(UUID poId, UUID orgId, UUID managerId, String remarks);
+
+    PurchaseOrderResponse accept(UUID poId, UUID orgId, UUID vendorUserId, String remarks);
+
+    PurchaseOrderResponse decline(UUID poId, UUID orgId, UUID vendorUserId, String reason);
 }
