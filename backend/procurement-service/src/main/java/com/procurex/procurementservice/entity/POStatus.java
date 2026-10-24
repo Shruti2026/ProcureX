@@ -1,5 +1,5 @@
 package com.procurex.procurementservice.entity;
 
 public enum POStatus {
-    CREATED, APPROVED, ACCEPTED, DELIVERED, COMPLETED, CANCELLED
+    CREATED, APPROVED, ACCEPTED, DELIVERED, COMPLETED, CANCELLED, DECLINED
 }

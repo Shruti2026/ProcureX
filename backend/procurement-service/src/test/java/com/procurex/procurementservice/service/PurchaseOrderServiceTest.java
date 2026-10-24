@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -199,7 +200,7 @@ class PurchaseOrderServiceTest {
         PurchaseOrder po     = buildPO(POStatus.APPROVED);
         UUID orgId           = po.getOrganizationId();
         UUID poId            = po.getPurchaseOrderId();
-        UUID vendorUserId    = UUID.randomUUID();
+        UUID vendorUserId    = po.getVendorId(); // ownership check must pass
 
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
@@ -212,15 +213,15 @@ class PurchaseOrderServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // Test 7: declinePO_approvedStatus_changesStatusToCancelled
+    // Test 7: declinePO_approvedStatus_changesStatusToDeclined
     // -------------------------------------------------------------------------
 
     @Test
-    void declinePO_approvedStatus_changesStatusToCancelled() {
+    void declinePO_approvedStatus_changesStatusToDeclined() {
         PurchaseOrder po     = buildPO(POStatus.APPROVED);
         UUID orgId           = po.getOrganizationId();
         UUID poId            = po.getPurchaseOrderId();
-        UUID vendorUserId    = UUID.randomUUID();
+        UUID vendorUserId    = po.getVendorId(); // ownership check must pass
 
         when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
                 .thenReturn(Optional.of(po));
@@ -229,6 +230,68 @@ class PurchaseOrderServiceTest {
 
         PurchaseOrderResponse result = purchaseOrderService.decline(poId, orgId, vendorUserId, "Price too high");
 
-        assertThat(result.status()).isEqualTo(POStatus.CANCELLED);
+        assertThat(result.status()).isEqualTo(POStatus.DECLINED);
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 8: acceptPO_notApprovedStatus_throwsResponseStatusException
+    // -------------------------------------------------------------------------
+
+    @Test
+    void acceptPO_notApprovedStatus_throwsResponseStatusException() {
+        PurchaseOrder po = buildPO(POStatus.CREATED);
+        UUID orgId        = po.getOrganizationId();
+        UUID poId         = po.getPurchaseOrderId();
+        UUID vendorUserId = po.getVendorId(); // must match for ownership to pass
+
+        when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
+                .thenReturn(Optional.of(po));
+
+        assertThatThrownBy(() -> purchaseOrderService.accept(poId, orgId, vendorUserId, ""))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> {
+                    ResponseStatusException rse = (ResponseStatusException) ex;
+                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+                });
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 9: acceptPO_wrongVendor_throwsAccessDeniedException
+    // -------------------------------------------------------------------------
+
+    @Test
+    void acceptPO_wrongVendor_throwsAccessDeniedException() {
+        PurchaseOrder po   = buildPO(POStatus.APPROVED);
+        UUID orgId         = po.getOrganizationId();
+        UUID poId          = po.getPurchaseOrderId();
+        UUID wrongVendorId = UUID.randomUUID(); // different from po.getVendorId()
+
+        when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
+                .thenReturn(Optional.of(po));
+
+        assertThatThrownBy(() -> purchaseOrderService.accept(poId, orgId, wrongVendorId, ""))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 10: declinePO_notApprovedStatus_throwsResponseStatusException
+    // -------------------------------------------------------------------------
+
+    @Test
+    void declinePO_notApprovedStatus_throwsResponseStatusException() {
+        PurchaseOrder po = buildPO(POStatus.CREATED);
+        UUID orgId        = po.getOrganizationId();
+        UUID poId         = po.getPurchaseOrderId();
+        UUID vendorUserId = po.getVendorId(); // must match for ownership to pass
+
+        when(purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId))
+                .thenReturn(Optional.of(po));
+
+        assertThatThrownBy(() -> purchaseOrderService.decline(poId, orgId, vendorUserId, ""))
+                .isInstanceOf(ResponseStatusException.class)
+                .satisfies(ex -> {
+                    ResponseStatusException rse = (ResponseStatusException) ex;
+                    assertThat(rse.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+                });
     }
 }

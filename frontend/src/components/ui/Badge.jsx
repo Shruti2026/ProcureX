@@ -21,6 +21,7 @@ const STATUS_COLORS = {
   DELIVERED:            'bg-cyan-100 text-cyan-800 ring-cyan-200',
   COMPLETED:            'bg-green-100 text-green-800 ring-green-200',
   CANCELLED:            'bg-red-100 text-red-800 ring-red-200',
+  DECLINED:             'bg-red-100 text-red-800 ring-red-200',
 
   // Quotation
   SUBMITTED:            'bg-blue-100 text-blue-800 ring-blue-200',
