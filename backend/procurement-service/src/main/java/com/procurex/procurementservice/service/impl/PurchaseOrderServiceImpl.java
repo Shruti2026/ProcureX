@@ -16,6 +16,7 @@ import com.procurex.procurementservice.entity.QuotationStatus;
 import com.procurex.procurementservice.entity.RFQStatus;
 import com.procurex.procurementservice.exception.ResourceNotFoundException;
 import com.procurex.procurementservice.repository.OutboxEventRepository;
+import org.springframework.security.access.AccessDeniedException;
 import com.procurex.procurementservice.repository.PurchaseOrderRepository;
 import com.procurex.procurementservice.repository.QuotationRepository;
 import com.procurex.procurementservice.repository.RFQRepository;
@@ -246,7 +247,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Purchase order not found with id: " + poId));
 
-        // 2. Must be APPROVED
+        // 2. Verify calling vendor is the assigned vendor
+        if (!po.getVendorId().equals(vendorUserId)) {
+            throw new AccessDeniedException(
+                    "You are not the vendor assigned to this purchase order");
+        }
+
+        // 3. Must be APPROVED
         if (po.getStatus() != POStatus.APPROVED) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
                     "Purchase order is not in APPROVED status");
@@ -254,11 +261,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         POStatus previousStatus = po.getStatus();
 
-        // 3. Update PO
+        // 4. Update PO
         po.setStatus(POStatus.ACCEPTED);
         po.setUpdatedBy(vendorUserId);
 
-        // 4. Add history entry
+        // 5. Add history entry
         PurchaseOrderHistory historyEntry = PurchaseOrderHistory.builder()
                 .organizationId(orgId)
                 .purchaseOrder(po)
@@ -282,7 +289,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Purchase order not found with id: " + poId));
 
-        // 2. Must be APPROVED
+        // 2. Verify calling vendor is the assigned vendor
+        if (!po.getVendorId().equals(vendorUserId)) {
+            throw new AccessDeniedException(
+                    "You are not the vendor assigned to this purchase order");
+        }
+
+        // 3. Must be APPROVED
         if (po.getStatus() != POStatus.APPROVED) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
                     "Purchase order is not in APPROVED status");
@@ -290,16 +303,16 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         POStatus previousStatus = po.getStatus();
 
-        // 3. Update PO
-        po.setStatus(POStatus.CANCELLED);
+        // 4. Update PO
+        po.setStatus(POStatus.DECLINED);
         po.setUpdatedBy(vendorUserId);
 
-        // 4. Add history entry (reason stored in remarks)
+        // 5. Add history entry (reason stored in remarks)
         PurchaseOrderHistory historyEntry = PurchaseOrderHistory.builder()
                 .organizationId(orgId)
                 .purchaseOrder(po)
                 .fromStatus(previousStatus)
-                .toStatus(POStatus.CANCELLED)
+                .toStatus(POStatus.DECLINED)
                 .remarks(reason)
                 .changedBy(vendorUserId)
                 .build();
