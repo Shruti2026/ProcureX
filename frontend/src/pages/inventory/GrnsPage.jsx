@@ -96,11 +96,11 @@ function CreateGRNModal({ isOpen, onClose }) {
     const items = (selectedPO?.items ?? selectedPO?.lineItems ?? []).map((item) => ({
       purchaseOrderItemId: item.id,
       productId: item.productId ?? item.product?.id,
-      receivedQuantity: Number(receivedQtys[item.id] ?? item.quantity),
+      quantityReceived: Number(receivedQtys[item.id] ?? item.quantity),
     }))
     mutation.mutate({
       purchaseOrderId: selectedPO.id,
-      warehouseId: selectedWarehouse.id,
+      warehouseId: selectedWarehouse.warehouseId,
       items,
     })
   }
@@ -214,12 +214,12 @@ function CreateGRNModal({ isOpen, onClose }) {
               ) : (
                 warehouses.map((wh) => (
                   <button
-                    key={wh.id}
+                    key={wh.warehouseId}
                     type="button"
                     onClick={() => handleSelectWarehouse(wh)}
                     className="w-full text-left rounded-xl border border-gray-200 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-primary-400"
                   >
-                    <p className="text-sm font-semibold text-gray-800">{wh.name ?? wh.warehouseName}</p>
+                    <p className="text-sm font-semibold text-gray-800">{wh.warehouseName}</p>
                     {wh.location && (
                       <p className="text-xs text-gray-500 mt-0.5">{wh.location}</p>
                     )}
@@ -245,7 +245,7 @@ function CreateGRNModal({ isOpen, onClose }) {
                 </p>
                 <p className="text-gray-700 mt-1">
                   <span className="font-medium">Warehouse:</span>{' '}
-                  {selectedWarehouse?.name ?? selectedWarehouse?.warehouseName}
+                  {selectedWarehouse?.warehouseName}
                 </p>
               </div>
 
@@ -390,9 +390,9 @@ export default function GrnsPage() {
       >
         {grns.map((grn) => (
           <tr
-            key={grn.id}
+            key={grn.grnId}
             className="hover:bg-gray-50 transition-colors duration-100 cursor-pointer"
-            onClick={() => navigate(`/inventory/grns/${grn.id}`)}
+            onClick={() => navigate(`/inventory/grns/${grn.grnId}`)}
           >
             <Table.Td className="font-mono text-xs text-gray-600">
               {grn.grnNumber ?? grn.id?.slice(-8).toUpperCase()}
@@ -409,7 +409,7 @@ export default function GrnsPage() {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation()
-                  navigate(`/inventory/grns/${grn.id}`)
+                  navigate(`/inventory/grns/${grn.grnId}`)
                 }}
               >
                 <Eye size={14} />

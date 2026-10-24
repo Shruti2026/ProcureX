@@ -15,9 +15,9 @@ import { warehouseService } from '../../services/warehouseService'
    Yup schema
 ───────────────────────────────────────── */
 const warehouseSchema = yup.object({
-  name:     yup.string().trim().required('Name is required'),
-  location: yup.string().trim().required('Location is required'),
-  capacity: yup
+  warehouseName: yup.string().trim().required('Name is required'),
+  location:      yup.string().trim().required('Location is required'),
+  capacity:      yup
     .number()
     .typeError('Capacity must be a number')
     .required('Capacity is required')
@@ -39,9 +39,9 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
   } = useForm({
     resolver: yupResolver(warehouseSchema),
     defaultValues: {
-      name:     warehouse?.name     ?? '',
-      location: warehouse?.location ?? '',
-      capacity: warehouse?.capacity ?? '',
+      warehouseName: warehouse?.warehouseName ?? '',
+      location:      warehouse?.location      ?? '',
+      capacity:      warehouse?.capacity      ?? '',
     },
   })
 
@@ -49,9 +49,9 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
   useEffect(() => {
     if (isOpen) {
       reset({
-        name:     warehouse?.name     ?? '',
-        location: warehouse?.location ?? '',
-        capacity: warehouse?.capacity ?? '',
+        warehouseName: warehouse?.warehouseName ?? '',
+        location:      warehouse?.location      ?? '',
+        capacity:      warehouse?.capacity      ?? '',
       })
     }
   }, [isOpen, warehouse, reset])
@@ -59,7 +59,7 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
   const mutation = useMutation({
     mutationFn: (data) =>
       isEditing
-        ? warehouseService.updateWarehouse(warehouse.id, data)
+        ? warehouseService.updateWarehouse(warehouse.warehouseId, data)
         : warehouseService.createWarehouse(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['warehouses'] })
@@ -106,8 +106,8 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
               label="Name"
               id="warehouse-name"
               placeholder="e.g. Main Distribution Center"
-              error={errors.name?.message}
-              {...register('name')}
+              error={errors.warehouseName?.message}
+              {...register('warehouseName')}
             />
             <Input
               label="Location"
@@ -206,11 +206,11 @@ export default function WarehousesPage() {
       >
         {warehouses.map((wh, i) => (
           <tr
-            key={wh.id}
+            key={wh.warehouseId}
             className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
           >
-            <Table.Td className="font-medium text-gray-900">{wh.name}</Table.Td>
+            <Table.Td className="font-medium text-gray-900">{wh.warehouseName}</Table.Td>
             <Table.Td>{wh.location}</Table.Td>
             <Table.Td>{wh.capacity?.toLocaleString()}</Table.Td>
             <Table.Td>
@@ -218,7 +218,7 @@ export default function WarehousesPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => openEdit(wh)}
-                aria-label={`Edit ${wh.name}`}
+                aria-label={`Edit ${wh.warehouseName}`}
               >
                 <Pencil className="w-4 h-4" />
                 Edit

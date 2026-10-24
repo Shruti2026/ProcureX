@@ -115,7 +115,7 @@ export default function GrnDetailPage() {
             productId: item.productId ?? item.product?.id,
             acceptedQuantity: Number(state.acceptedQty ?? 0),
             rejectedQuantity: Number(state.rejectedQty ?? 0),
-            rejectionReason: state.reason || null,
+            reasonForRejection: state.reason || null,
           }
         }),
       })
