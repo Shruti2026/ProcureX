@@ -3,13 +3,14 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import toast from 'react-hot-toast'
-import { Plus, X, Check, Copy, ChevronDown } from 'lucide-react'
+import { Plus, X, Check, Copy, ChevronDown, Trash2 } from 'lucide-react'
 
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Input from '../../components/ui/Input'
 import Table from '../../components/ui/Table'
 import api from '../../services/api'
+import adminService from '../../services/adminService'
 import { useAuth } from '../../context/AuthContext'
 
 /* ─────────────────────────────────────────
@@ -390,6 +391,51 @@ function RejectReasonModal({ isOpen, onClose, onConfirm }) {
 }
 
 /* ─────────────────────────────────────────
+   ConfirmDeleteModal — confirm before deleting a user
+───────────────────────────────────────── */
+function ConfirmDeleteModal({ isOpen, onClose, onConfirm, userName, loading }) {
+  if (!isOpen) return null
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-modal-title"
+    >
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h2 id="delete-modal-title" className="text-base font-semibold text-gray-900">
+            Delete User
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="px-6 py-5">
+          <p className="text-sm text-gray-700">
+            Are you sure you want to delete{' '}
+            <span className="font-medium text-gray-900">{userName}</span>? This will deactivate
+            their account and revoke all active sessions. This action cannot be undone.
+          </p>
+        </div>
+        <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <Button variant="secondary" type="button" onClick={onClose} disabled={loading}>
+            Cancel
+          </Button>
+          <Button variant="danger" type="button" loading={loading} onClick={onConfirm}>
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─────────────────────────────────────────
    CollapsibleSection — animated accordion wrapper
 ───────────────────────────────────────── */
 function CollapsibleSection({ id, title, description, count, defaultOpen = true, headerRight, children }) {
@@ -500,6 +546,8 @@ export default function UsersPage() {
   const [changingStatusId, setChangingStatusId] = useState(null) // user id whose status is being changed
   const [approvingId, setApprovingId]           = useState(null) // vendor id being approved
   const [rejectModal, setRejectModal]           = useState({ open: false, vendorId: null, vendorName: '' })
+  const [deleteModal, setDeleteModal]           = useState({ open: false, userId: null, userName: '' })
+  const [deletingId, setDeletingId]             = useState(null)
 
   /* ─────────────────────────────────────
      Load managers (/api/v1/admin/users/employees)
@@ -623,6 +671,30 @@ export default function UsersPage() {
     }
   }
 
+  const handleDeleteConfirm = async () => {
+    setDeletingId(deleteModal.userId)
+    try {
+      await adminService.deleteUser(deleteModal.userId)
+      toast.success(`${deleteModal.userName} has been deleted.`)
+      setDeleteModal({ open: false, userId: null, userName: '' })
+      // Refetch all three lists — the user may appear in any of them
+      fetchManagers()
+      fetchAllVendors()
+      fetchPendingVendors()
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? 'Failed to delete user.'
+      toast.error(msg)
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  const openDeleteModal = (user) => {
+    const name = user.fullName && user.fullName !== '—' ? user.fullName : (user.email ?? 'User')
+    setDeleteModal({ open: false, userId: null, userName: '' }) // reset first
+    setDeleteModal({ open: true, userId: user.id, userName: name })
+  }
+
   /* ─────────────────────────────────────
      Render
   ───────────────────────────────────── */
@@ -689,11 +761,22 @@ export default function UsersPage() {
 
                 {/* Actions */}
                 <Table.Td>
-                  <StatusSelect
-                    user={manager}
-                    loading={changingStatusId === manager.id}
-                    onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchManagers)}
-                  />
+                  <div className="flex items-center gap-2">
+                    <StatusSelect
+                      user={manager}
+                      loading={changingStatusId === manager.id}
+                      onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchManagers)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(manager)}
+                      disabled={deletingId === manager.id}
+                      aria-label={`Delete ${manager.fullName}`}
+                      className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </Table.Td>
               </tr>
             ))}
@@ -748,11 +831,22 @@ export default function UsersPage() {
 
                 {/* Actions */}
                 <Table.Td>
-                  <StatusSelect
-                    user={vendor}
-                    loading={changingStatusId === vendor.id}
-                    onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchAllVendors)}
-                  />
+                  <div className="flex items-center gap-2">
+                    <StatusSelect
+                      user={vendor}
+                      loading={changingStatusId === vendor.id}
+                      onChangeStatus={(u, s) => handleChangeStatus(u, s, fetchAllVendors)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(vendor)}
+                      disabled={deletingId === vendor.id}
+                      aria-label={`Delete ${vendor.fullName}`}
+                      className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </Table.Td>
               </tr>
             ))}
@@ -814,6 +908,15 @@ export default function UsersPage() {
                     >
                       Reject
                     </Button>
+                    <button
+                      type="button"
+                      onClick={() => openDeleteModal(vendor)}
+                      disabled={deletingId === vendor.id}
+                      aria-label={`Delete ${vendor.fullName}`}
+                      className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </Table.Td>
               </tr>
@@ -832,6 +935,13 @@ export default function UsersPage() {
         isOpen={rejectModal.open}
         onClose={() => setRejectModal({ open: false, vendorId: null, vendorName: '' })}
         onConfirm={handleRejectConfirm}
+      />
+      <ConfirmDeleteModal
+        isOpen={deleteModal.open}
+        onClose={() => setDeleteModal({ open: false, userId: null, userName: '' })}
+        onConfirm={handleDeleteConfirm}
+        userName={deleteModal.userName}
+        loading={!!deletingId}
       />
     </div>
   )
