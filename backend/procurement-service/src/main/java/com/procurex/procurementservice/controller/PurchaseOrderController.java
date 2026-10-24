@@ -156,4 +156,60 @@ public class PurchaseOrderController {
 
         return ResponseEntity.ok(ApiResponse.success("Purchase order cancelled successfully", response));
     }
+
+    /**
+     * Vendor accepts a purchase order.
+     */
+    @PatchMapping("/{id}/accept")
+    @PreAuthorize("hasRole('VENDOR')")
+    @Operation(summary = "Vendor accepts a purchase order")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase order accepted successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Purchase order not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Purchase order is not in APPROVED status")
+    })
+    public ResponseEntity<ApiResponse<PurchaseOrderResponse>> acceptPurchaseOrder(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Organization-Id") String orgId,
+            @RequestParam(required = false) String remarks) {
+
+        PurchaseOrderResponse response = purchaseOrderService.accept(
+                id,
+                UUID.fromString(orgId),
+                UUID.fromString(userId),
+                remarks);
+
+        return ResponseEntity.ok(ApiResponse.success("Purchase order accepted", response));
+    }
+
+    /**
+     * Vendor declines a purchase order.
+     */
+    @PatchMapping("/{id}/decline")
+    @PreAuthorize("hasRole('VENDOR')")
+    @Operation(summary = "Vendor declines a purchase order")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Purchase order declined successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Purchase order not found"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Purchase order is not in APPROVED status")
+    })
+    public ResponseEntity<ApiResponse<PurchaseOrderResponse>> declinePurchaseOrder(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-Organization-Id") String orgId,
+            @RequestParam(required = false) String reason) {
+
+        PurchaseOrderResponse response = purchaseOrderService.decline(
+                id,
+                UUID.fromString(orgId),
+                UUID.fromString(userId),
+                reason);
+
+        return ResponseEntity.ok(ApiResponse.success("Purchase order declined", response));
+    }
 }

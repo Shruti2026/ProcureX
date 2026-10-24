@@ -7,5 +7,5 @@ export const purchaseOrderService = {
   approvePO: (id, remarks) => api.post(`/api/v1/procurement/orders/${id}/approve`, null, { params: { remarks } }),
   cancelPO:  (id, remarks) => api.patch(`/api/v1/procurement/orders/${id}/cancel`, null, { params: { remarks } }),
   acceptPO:  (id)          => api.patch('/api/v1/procurement/orders/' + id + '/accept'),
-  declinePO: (id, reason)  => api.patch('/api/v1/procurement/orders/' + id + '/decline', { reason }),
+  declinePO: (id, reason)  => api.patch('/api/v1/procurement/orders/' + id + '/decline', null, { params: { reason } }),
 };

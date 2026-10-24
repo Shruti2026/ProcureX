@@ -238,6 +238,78 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         return toResponse(saved);
     }
 
+    @Override
+    @Transactional
+    public PurchaseOrderResponse accept(UUID poId, UUID orgId, UUID vendorUserId, String remarks) {
+        // 1. Load PO
+        PurchaseOrder po = purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Purchase order not found with id: " + poId));
+
+        // 2. Must be APPROVED
+        if (po.getStatus() != POStatus.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Purchase order is not in APPROVED status");
+        }
+
+        POStatus previousStatus = po.getStatus();
+
+        // 3. Update PO
+        po.setStatus(POStatus.ACCEPTED);
+        po.setUpdatedBy(vendorUserId);
+
+        // 4. Add history entry
+        PurchaseOrderHistory historyEntry = PurchaseOrderHistory.builder()
+                .organizationId(orgId)
+                .purchaseOrder(po)
+                .fromStatus(previousStatus)
+                .toStatus(POStatus.ACCEPTED)
+                .remarks(remarks)
+                .changedBy(vendorUserId)
+                .build();
+        po.getHistory().add(historyEntry);
+
+        PurchaseOrder saved = purchaseOrderRepository.save(po);
+        log.info("Vendor accepted PO {}", saved.getPoNumber());
+        return toResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public PurchaseOrderResponse decline(UUID poId, UUID orgId, UUID vendorUserId, String reason) {
+        // 1. Load PO
+        PurchaseOrder po = purchaseOrderRepository.findByPurchaseOrderIdAndOrganizationId(poId, orgId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Purchase order not found with id: " + poId));
+
+        // 2. Must be APPROVED
+        if (po.getStatus() != POStatus.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Purchase order is not in APPROVED status");
+        }
+
+        POStatus previousStatus = po.getStatus();
+
+        // 3. Update PO
+        po.setStatus(POStatus.CANCELLED);
+        po.setUpdatedBy(vendorUserId);
+
+        // 4. Add history entry (reason stored in remarks)
+        PurchaseOrderHistory historyEntry = PurchaseOrderHistory.builder()
+                .organizationId(orgId)
+                .purchaseOrder(po)
+                .fromStatus(previousStatus)
+                .toStatus(POStatus.CANCELLED)
+                .remarks(reason)
+                .changedBy(vendorUserId)
+                .build();
+        po.getHistory().add(historyEntry);
+
+        PurchaseOrder saved = purchaseOrderRepository.save(po);
+        log.info("Vendor declined PO {}: {}", saved.getPoNumber(), reason);
+        return toResponse(saved);
+    }
+
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
