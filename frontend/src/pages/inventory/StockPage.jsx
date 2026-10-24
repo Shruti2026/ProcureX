@@ -1,25 +1,163 @@
-import { Boxes } from 'lucide-react'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { inventoryService } from '../../services/inventoryService'
+import { formatDate } from '../../utils/formatters'
+import Button from '../../components/ui/Button'
+import Spinner from '../../components/ui/Spinner'
+
+// ─── Column definitions ───────────────────────────────────────────────────────
+const COLUMNS = [
+  { label: 'Product ID',      key: 'productId' },
+  { label: 'Warehouse',       key: 'warehouse' },
+  { label: 'Qty On Hand',     key: 'quantityOnHand' },
+  { label: 'Reserved Qty',    key: 'reservedQuantity' },
+  { label: 'Unit of Measure', key: 'unitOfMeasure' },
+  { label: 'Last Updated',    key: 'lastUpdated' },
+]
+
+const PAGE_SIZE = 20
 
 export default function StockPage() {
+  const [page, setPage] = useState(0)
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['stock', page],
+    queryFn: async () => {
+      const res = await inventoryService.getStock({ page, size: PAGE_SIZE })
+      return res.data.data          // { content: [], totalPages: n, totalElements: n, ... }
+    },
+    keepPreviousData: true,
+    staleTime: 30_000,
+  })
+
+  const rows       = data?.content    ?? []
+  const totalPages = data?.totalPages ?? 1
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function handlePrev() {
+    setPage((p) => Math.max(0, p - 1))
+  }
+
+  function handleNext() {
+    setPage((p) => Math.min(totalPages - 1, p + 1))
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Stock Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Stock Levels</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Monitor product inventory levels, batches, reorder points, and SKUs.
+          Current inventory levels by product and warehouse.
         </p>
       </div>
 
-      {/* Content container */}
-      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] p-12 text-center shadow-xs">
-        <div className="mx-auto w-12 h-12 rounded-full bg-primary-50 flex items-center justify-center text-primary-600 mb-4">
-          <Boxes className="w-6 h-6 text-primary-600" />
-        </div>
-        <h3 className="text-base font-semibold text-gray-900">Stock Inventory</h3>
-        <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
-          Stock level monitoring and SKU catalog interface is ready for integration.
-        </p>
+      {/* Table card */}
+      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs overflow-hidden">
+
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-20">
+            <Spinner size="lg" />
+          </div>
+        )}
+
+        {/* Error state */}
+        {isError && !isLoading && (
+          <div className="py-16 text-center">
+            <p className="text-sm text-red-600 font-medium">Failed to load stock records</p>
+            <p className="mt-1 text-xs text-gray-400">{error?.message ?? 'Unknown error'}</p>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!isLoading && !isError && rows.length === 0 && (
+          <div className="py-16 text-center">
+            <p className="text-sm text-gray-500">No stock records found.</p>
+          </div>
+        )}
+
+        {/* Data table */}
+        {!isLoading && !isError && rows.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-100">
+              <thead className="bg-gray-50">
+                <tr>
+                  {COLUMNS.map((col) => (
+                    <th
+                      key={col.key}
+                      scope="col"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap"
+                    >
+                      {col.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {rows.map((row, idx) => (
+                  <tr
+                    key={row.id ?? idx}
+                    className="hover:bg-gray-50 transition-colors duration-75"
+                  >
+                    <td className="px-4 py-3 text-sm text-gray-900 font-mono whitespace-nowrap">
+                      {row.productId ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                      {row.warehouseName ?? row.warehouse ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 tabular-nums whitespace-nowrap">
+                      {row.quantityOnHand != null ? row.quantityOnHand : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 tabular-nums whitespace-nowrap">
+                      {row.reservedQuantity ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+                      {row.unitOfMeasure ?? '—'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700 whitespace-nowrap">
+                      {formatDate(row.updatedAt ?? row.createdAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination footer — always visible once data arrives */}
+        {!isLoading && !isError && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50">
+            <p className="text-xs text-gray-500">
+              Page <span className="font-semibold text-gray-700">{page + 1}</span> of{' '}
+              <span className="font-semibold text-gray-700">{Math.max(totalPages, 1)}</span>
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handlePrev}
+                disabled={page === 0}
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Prev
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleNext}
+                disabled={page >= totalPages - 1}
+                aria-label="Next page"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
