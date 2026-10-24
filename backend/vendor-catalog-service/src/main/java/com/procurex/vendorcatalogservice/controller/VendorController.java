@@ -60,6 +60,14 @@ public class VendorController {
         return ResponseEntity.ok(ApiResponse.success("Vendor retrieved successfully", response));
     }
 
+    @GetMapping("/by-user/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<VendorResponse>> getVendorByUserId(
+            @PathVariable UUID userId) {
+        VendorResponse response = vendorService.getVendorByUserId(userId);
+        return ResponseEntity.ok(ApiResponse.success("Vendor retrieved successfully", response));
+    }
+
     @PutMapping("/{vendorId}")
     @PreAuthorize("hasAnyRole('PROCUREMENT_MANAGER', 'ADMIN')")
     public ResponseEntity<ApiResponse<VendorResponse>> updateVendor(
