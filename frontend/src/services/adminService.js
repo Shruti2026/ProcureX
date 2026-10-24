@@ -26,6 +26,12 @@ export const adminService = {
    * Fetches all employees.
    */
   getAllEmployees: () => api.get('/api/v1/admin/users/employees'),
+
+  /**
+   * Soft-deletes a user by ID. Revokes all active refresh tokens.
+   * @param {string} userId
+   */
+  deleteUser: (userId) => api.delete(`/api/v1/admin/users/${userId}`),
 }
 
 export default adminService
