@@ -9,7 +9,7 @@ import Spinner from './Spinner'
  *     {data.map((row, i) => (
  *       <tr
  *         key={row.id}
- *         className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+ *         className="hover:bg-primary-50/50 transition-colors duration-150 animate-fade-slide-up"
  *         style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
  *       >
  *         <Table.Td>{row.name}</Table.Td>
@@ -33,27 +33,27 @@ export default function Table({
   className,
 }) {
   return (
-    <div className={clsx('overflow-x-auto rounded-xl border border-gray-200', className)}>
-      <table className="min-w-full divide-y divide-gray-200 text-sm">
-        <thead className="bg-gray-50">
+    <div className={clsx('overflow-x-auto rounded-xl border border-primary-100', className)}>
+      <table className="min-w-full divide-y divide-primary-100 text-sm">
+        <thead className="bg-primary-50">
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
                 scope="col"
-                className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                className="px-4 py-3 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider"
               >
                 {col}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-100">
+        <tbody className="bg-white divide-y divide-primary-50">
           {loading ? (
             <tr>
               <td colSpan={columns.length} className="px-4 py-10 text-center">
                 <div className="flex justify-center">
-                  <Spinner size="lg" className="text-primary-500" />
+                  <Spinner size="lg" />
                 </div>
               </td>
             </tr>
@@ -75,7 +75,6 @@ export default function Table({
   )
 }
 
-/** Convenience sub-component for table cells */
 Table.Td = function Td({ children, className }) {
   return (
     <td className={clsx('px-4 py-3 text-gray-700 whitespace-nowrap', className)}>

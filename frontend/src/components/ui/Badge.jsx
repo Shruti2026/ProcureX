@@ -46,7 +46,7 @@ const STATUS_COLORS = {
   PARTIAL:              'bg-orange-100 text-orange-800 ring-orange-200',
 
   // Roles
-  ADMIN:                'bg-purple-100 text-purple-800 ring-purple-200',
+  ADMIN:                'bg-primary-100 text-primary-800 ring-primary-200',
   PROCUREMENT_MANAGER:  'bg-blue-100 text-blue-800 ring-blue-200',
   INVENTORY_MANAGER:    'bg-teal-100 text-teal-800 ring-teal-200',
   FINANCE_MANAGER:      'bg-indigo-100 text-indigo-800 ring-indigo-200',

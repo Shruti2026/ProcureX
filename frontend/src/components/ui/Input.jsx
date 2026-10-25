@@ -33,11 +33,12 @@ const Input = forwardRef(function Input(
           aria-describedby={error ? `${inputId}-error` : undefined}
           className={clsx(
             'w-full rounded-lg border px-3 py-2 text-sm text-gray-900 placeholder-gray-400',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+            'transition-colors duration-150',
+            'focus:outline-none focus:ring-2 focus:border-primary-400',
             'disabled:bg-gray-50 disabled:cursor-not-allowed',
             error
-              ? 'border-red-300 focus:ring-red-400'
-              : 'border-gray-200',
+              ? 'border-red-300 focus:ring-red-400/20'
+              : 'border-gray-200 focus:ring-primary-500/20',
             className
           )}
           {...props}

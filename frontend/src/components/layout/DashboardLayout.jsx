@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Sidebar from './Sidebar'
+import PageTransition from './PageTransition'
 import { useAuth } from '../../context/AuthContext'
 
 /**
@@ -12,6 +14,7 @@ import { useAuth } from '../../context/AuthContext'
 export default function DashboardLayout({ onLogout }) {
   const { user } = useAuth()
   const userRole = user?.role
+  const location = useLocation()
 
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
@@ -34,7 +37,7 @@ export default function DashboardLayout({ onLogout }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-surface-subtle)]">
+    <div className="flex h-screen overflow-hidden bg-primary-50">
       <Sidebar
         userRole={userRole}
         collapsed={sidebarCollapsed}
@@ -47,8 +50,10 @@ export default function DashboardLayout({ onLogout }) {
           onLogout={onLogout}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 bg-[var(--color-surface-subtle)]">
-          <Outlet />
+        <main className="flex-1 overflow-y-auto p-6 bg-primary-50">
+          <PageTransition locationKey={location.pathname}>
+            <Outlet />
+          </PageTransition>
         </main>
       </div>
     </div>
