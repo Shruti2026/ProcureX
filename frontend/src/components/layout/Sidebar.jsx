@@ -173,7 +173,7 @@ export default function Sidebar({ userRole, collapsed = false, onToggle }) {
 
       {/* Footer */}
       {!collapsed && (
-        <div className="px-5 py-4 border-t border-white/10 text-xs text-white/40 shrink-0">
+        <div className="px-5 py-4 border-t border-white/10 text-xs text-white/40 dark:text-white/30 shrink-0">
           ProcureX v1.0
         </div>
       )}

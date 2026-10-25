@@ -37,7 +37,7 @@ export default function DashboardLayout({ onLogout }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-primary-50">
+    <div className="flex h-screen overflow-hidden bg-primary-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1E1B4B] dark:to-[#2D1B69]">
       <Sidebar
         userRole={userRole}
         collapsed={sidebarCollapsed}
@@ -50,7 +50,7 @@ export default function DashboardLayout({ onLogout }) {
           onLogout={onLogout}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 bg-primary-50">
+        <main className="flex-1 overflow-y-auto p-6 bg-primary-50 dark:bg-transparent">
           <PageTransition locationKey={location.pathname}>
             <Outlet />
           </PageTransition>
