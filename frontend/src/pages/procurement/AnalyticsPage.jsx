@@ -9,6 +9,7 @@ import Spinner from '../../components/ui/Spinner'
 import Button from '../../components/ui/Button'
 import { formatCurrency } from '../../utils/formatters'
 import { analyticsService } from '../../services/analyticsService'
+import { useTheme } from '../../context/ThemeContext'
 
 const reducedMotion =
   typeof window !== 'undefined' &&
@@ -28,10 +29,10 @@ function ScoreBadge({ score }) {
   const numScore = Number(score)
   const colorClasses =
     numScore >= 4.0
-      ? 'bg-green-100 text-green-800'
+      ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400'
       : numScore >= 2.5
-      ? 'bg-amber-100 text-amber-800'
-      : 'bg-red-100 text-red-800'
+      ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-400'
+      : 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400'
 
   return (
     <span
@@ -46,6 +47,8 @@ function ScoreBadge({ score }) {
 }
 
 export default function AnalyticsPage() {
+  const { isDark } = useTheme()
+
   const [summaryLoading, setSummaryLoading] = useState(true)
   const [vendorLoading, setVendorLoading]   = useState(true)
   const [error, setError]                   = useState(false)
@@ -127,8 +130,8 @@ export default function AnalyticsPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Procurement Analytics</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Procurement Analytics</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Spend patterns, supplier performance, and procurement KPIs.
           </p>
         </div>
@@ -140,7 +143,7 @@ export default function AnalyticsPage() {
 
       {/* Error banner */}
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           Failed to load analytics data. Check your connection and try refreshing.
         </div>
       )}
@@ -160,12 +163,21 @@ export default function AnalyticsPage() {
 
       {/* Spend by Department chart */}
       {spendData.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-base font-semibold text-gray-900 mb-4">Spend by Department</h2>
+        <div className="bg-white dark:bg-white/5 dark:backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Spend by Department</h2>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart layout="vertical" data={spendData} margin={{ left: 20 }}>
-              <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} />
-              <YAxis type="category" dataKey="department" width={140} />
+              <XAxis
+                type="number"
+                tickFormatter={(v) => formatCurrency(v)}
+                tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
+              />
+              <YAxis
+                type="category"
+                dataKey="department"
+                width={140}
+                tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
+              />
               <Tooltip formatter={(value) => [formatCurrency(value), 'Total Spend']} />
               <Bar dataKey="totalSpend" fill="#6366f1" radius={[0, 4, 4, 0]} />
             </BarChart>
@@ -175,13 +187,13 @@ export default function AnalyticsPage() {
 
       {/* Vendor Performance table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Vendor Performance</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Vendor Performance</h2>
         {vendorLoading ? (
           <div className="flex justify-center py-10">
             <Spinner size="lg" className="text-primary-500" />
           </div>
         ) : error && vendorData.length === 0 ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-10 text-center text-sm text-gray-400">
+          <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-10 text-center text-sm text-gray-400 dark:text-white/40">
             Unable to load vendor performance data.
           </div>
         ) : (
@@ -205,10 +217,10 @@ export default function AnalyticsPage() {
               return (
                 <tr
                   key={vendor.vendorId ?? i}
-                  className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+                  className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
                   style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
                 >
-                  <Table.Td className="font-mono text-xs text-gray-600">
+                  <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
                     {vendorIdShort}
                   </Table.Td>
                   <Table.Td>{vendor.totalDeliveries ?? 0}</Table.Td>

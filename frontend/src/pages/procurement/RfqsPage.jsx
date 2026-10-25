@@ -32,7 +32,7 @@ function ClosingDateCell({ dateStr }) {
 
   let countdown = null
   if (days === null) {
-    countdown = <span className="text-gray-400">—</span>
+    countdown = <span className="text-gray-400 dark:text-white/40">—</span>
   } else if (days < 0) {
     countdown = <span className="text-red-600 text-xs font-medium">Expired</span>
   } else if (days <= 3) {
@@ -41,13 +41,13 @@ function ClosingDateCell({ dateStr }) {
     )
   } else {
     countdown = (
-      <span className="text-gray-500 text-xs">{days} days left</span>
+      <span className="text-gray-500 dark:text-white/60 text-xs">{days} days left</span>
     )
   }
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-gray-700">{formatDate(dateStr)}</span>
+      <span className="text-gray-700 dark:text-white/80">{formatDate(dateStr)}</span>
       {countdown}
     </div>
   )
@@ -139,10 +139,10 @@ function CreateRfqModal({ isOpen, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-lg mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0 border-b border-transparent dark:border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
@@ -171,13 +171,13 @@ function CreateRfqModal({ isOpen, onClose }) {
         >
           {/* Requisition */}
           <div>
-            <label htmlFor="rfq-requisition" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="rfq-requisition" className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Requisition <span className="text-red-500">*</span>
             </label>
             <select
               id="rfq-requisition"
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-[#1A1035] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
                 errors.requisitionId ? 'border-red-400' : 'border-gray-300'
               )}
               {...register('requisitionId', { required: 'Requisition is required' })}
@@ -200,7 +200,7 @@ function CreateRfqModal({ isOpen, onClose }) {
 
           {/* Closing Date */}
           <div>
-            <label htmlFor="rfq-closing-date" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="rfq-closing-date" className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Closing Date <span className="text-red-500">*</span>
             </label>
             <input
@@ -208,7 +208,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               type="date"
               min={todayStr}
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
                 errors.closingDate ? 'border-red-400' : 'border-gray-300'
               )}
               {...register('closingDate', {
@@ -224,16 +224,16 @@ function CreateRfqModal({ isOpen, onClose }) {
 
           {/* Invited Vendors */}
           <div>
-            <label htmlFor="rfq-vendors" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="rfq-vendors" className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Invite Vendors <span className="text-red-500">*</span>
             </label>
-            <p className="mb-1.5 text-xs text-gray-500">Hold Ctrl / Cmd to select multiple vendors.</p>
+            <p className="mb-1.5 text-xs text-gray-500 dark:text-white/60">Hold Ctrl / Cmd to select multiple vendors.</p>
             <select
               id="rfq-vendors"
               multiple
               size={Math.min(6, Math.max(3, vendors.length))}
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-[#1A1035] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
                 errors.invitedVendorIds ? 'border-red-400' : 'border-gray-300'
               )}
               {...register('invitedVendorIds', {
@@ -321,8 +321,8 @@ export default function RfqsPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Requests for Quotation</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Requests for Quotation</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Create quotation requests, invite suppliers, and compare bids.
           </p>
         </div>
@@ -333,7 +333,7 @@ export default function RfqsPage() {
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-gray-200 dark:border-white/10">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -342,8 +342,8 @@ export default function RfqsPage() {
             className={clsx(
               'px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none',
               statusFilter === tab.value
-                ? 'border-b-2 border-primary-600 text-primary-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
+                ? 'border-b-2 border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400'
+                : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 hover:border-b-2 hover:border-gray-300 dark:hover:border-white/30'
             )}
           >
             {tab.label}
@@ -359,11 +359,11 @@ export default function RfqsPage() {
         emptyMessage="No RFQs found."
       >
         {rfqs.map((row) => (
-          <tr key={row.rfqId ?? row.id} className="hover:bg-gray-50 transition-colors duration-100">
-            <Table.Td className="font-mono text-xs text-gray-500">
+          <tr key={row.rfqId ?? row.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {row.rfqNumber ?? row.rfqId?.slice(-8).toUpperCase()}
             </Table.Td>
-            <Table.Td className="font-medium text-gray-900 max-w-[220px] truncate">
+            <Table.Td className="font-medium text-gray-900 dark:text-white max-w-[220px] truncate">
               {row.requisitionTitle ?? row.title ?? '—'}
             </Table.Td>
             <Table.Td>

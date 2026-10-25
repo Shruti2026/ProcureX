@@ -130,10 +130,10 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0 border-b border-transparent dark:border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
@@ -180,13 +180,13 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+              Description <span className="text-gray-400 dark:text-white/40 font-normal">(optional)</span>
             </label>
             <textarea
               rows={2}
               placeholder="Brief description of the requisition"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent resize-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent resize-none"
               {...register('description')}
             />
           </div>
@@ -194,7 +194,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
           {/* Items */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-700">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
                 Items
                 {errors.items?.message && (
                   <span className="ml-2 text-xs font-normal text-red-500">
@@ -217,18 +217,18 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+                  className="rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {/* Product selector */}
                       <div className="sm:col-span-1">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                        <label className="block text-xs font-medium text-gray-600 dark:text-white/60 mb-1">
                           Product
                         </label>
                         <select
                           className={clsx(
-                            'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
+                            'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white bg-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
                             errors.items?.[index]?.productId
                               ? 'border-red-400'
                               : 'border-gray-300'
@@ -279,7 +279,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 size={15} />
@@ -355,8 +355,8 @@ export default function RequisitionDetailPage() {
           <ArrowLeft size={15} />
           Back to Requisitions
         </Button>
-        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-          <p className="text-gray-500">Requisition not found.</p>
+        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
+          <p className="text-gray-500 dark:text-white/60">Requisition not found.</p>
         </div>
       </div>
     )
@@ -378,64 +378,64 @@ export default function RequisitionDetailPage() {
       </Button>
 
       {/* Header card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 dark:backdrop-blur-sm p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="font-mono text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-gray-400 dark:text-white/40 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded">
                 {requisition.requisitionNumber ?? requisition.id?.slice(-8).toUpperCase()}
               </span>
               <Badge status={requisition.status} />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">{requisition.title}</h1>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{requisition.title}</h1>
             {requisition.description && (
-              <p className="text-sm text-gray-500 max-w-2xl">{requisition.description}</p>
+              <p className="text-sm text-gray-500 dark:text-white/60 max-w-2xl">{requisition.description}</p>
             )}
           </div>
         </div>
 
-        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 pt-5">
+        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 dark:border-white/10 pt-5">
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Required By</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Required By</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDate(requisition.requiredDate)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Created</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Created</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDateTime(requisition.createdAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Last Updated</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Last Updated</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDateTime(requisition.updatedAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Items</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">{items.length}</dd>
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Items</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">{items.length}</dd>
           </div>
         </dl>
       </div>
 
       {/* Items table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Requisition Items</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Requisition Items</h2>
         <Table
           columns={ITEMS_COLUMNS}
           empty={items.length === 0}
           emptyMessage="No items on this requisition."
         >
           {items.map((item, i) => (
-            <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
-              <Table.Td className="font-medium text-gray-900">
+            <tr key={item.id ?? i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+              <Table.Td className="font-medium text-gray-900 dark:text-white">
                 {item.productName ?? item.product?.name ?? '—'}
               </Table.Td>
               <Table.Td>{item.unitOfMeasure ?? item.product?.unitOfMeasure ?? '—'}</Table.Td>
               <Table.Td>{item.quantity}</Table.Td>
-              <Table.Td className="text-gray-500">{item.remarks || '—'}</Table.Td>
+              <Table.Td className="text-gray-500 dark:text-white/60">{item.remarks || '—'}</Table.Td>
             </tr>
           ))}
         </Table>
@@ -443,7 +443,7 @@ export default function RequisitionDetailPage() {
 
       {/* Action bar — only visible when CREATED */}
       {requisition.status === 'CREATED' && (
-        <div className="flex justify-end border-t border-gray-100 pt-4">
+        <div className="flex justify-end border-t border-gray-100 dark:border-white/10 pt-4">
           <Button
             variant="secondary"
             onClick={() => setIsEditOpen(true)}

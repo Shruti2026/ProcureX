@@ -132,10 +132,10 @@ function CreateRequisitionModal({ isOpen, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0 border-b border-transparent dark:border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
@@ -180,13 +180,13 @@ function CreateRequisitionModal({ isOpen, onClose }) {
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
+              Description <span className="text-gray-400 dark:text-white/40 font-normal">(optional)</span>
             </label>
             <textarea
               rows={2}
               placeholder="Brief description of the requisition"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent resize-none"
+              className="w-full rounded-lg border border-gray-300 dark:border-white/10 px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 placeholder-gray-400 dark:placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent resize-none"
               {...register('description')}
             />
           </div>
@@ -194,7 +194,7 @@ function CreateRequisitionModal({ isOpen, onClose }) {
           {/* Items */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-700">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
                 Items
                 {errors.items?.message && (
                   <span className="ml-2 text-xs font-normal text-red-500">
@@ -217,18 +217,18 @@ function CreateRequisitionModal({ isOpen, onClose }) {
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+                  className="rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4"
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {/* Product selector */}
                       <div className="sm:col-span-1">
-                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                        <label className="block text-xs font-medium text-gray-600 dark:text-white/60 mb-1">
                           Product
                         </label>
                         <select
                           className={clsx(
-                            'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
+                            'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white bg-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
                             errors.items?.[index]?.productId
                               ? 'border-red-400'
                               : 'border-gray-300'
@@ -279,7 +279,7 @@ function CreateRequisitionModal({ isOpen, onClose }) {
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 size={15} />
@@ -352,8 +352,8 @@ export default function RequisitionsPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Purchase Requisitions</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Purchase Requisitions</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Create, track, and manage internal purchase requisitions.
           </p>
         </div>
@@ -367,7 +367,7 @@ export default function RequisitionsPage() {
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-1 border-b border-gray-200">
+      <div className="flex gap-1 border-b border-gray-200 dark:border-white/10">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -376,8 +376,8 @@ export default function RequisitionsPage() {
             className={clsx(
               'px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none',
               activeStatus === tab.value
-                ? 'border-b-2 border-primary-600 text-primary-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
+                ? 'border-b-2 border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400'
+                : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 hover:border-b-2 hover:border-gray-300 dark:hover:border-white/30'
             )}
           >
             {tab.label}
@@ -395,12 +395,12 @@ export default function RequisitionsPage() {
         {requisitions.map((row, i) => (
           <tr
             key={row.id}
-            className="hover:bg-gray-50 transition-colors duration-100"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100"
           >
-            <Table.Td className="font-mono text-xs text-gray-500">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {row.requisitionNumber ?? row.id?.slice(-8).toUpperCase()}
             </Table.Td>
-            <Table.Td className="font-medium text-gray-900 max-w-[220px] truncate">
+            <Table.Td className="font-medium text-gray-900 dark:text-white max-w-[220px] truncate">
               {row.title}
             </Table.Td>
             <Table.Td>

@@ -60,8 +60,8 @@ export default function PurchaseOrdersPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Purchase Orders</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Purchase Orders</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Track and manage all purchase orders with suppliers.
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function PurchaseOrdersPage() {
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-1 border-b border-gray-200 overflow-x-auto">
+      <div className="flex gap-1 border-b border-gray-200 dark:border-white/10 overflow-x-auto">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -81,8 +81,8 @@ export default function PurchaseOrdersPage() {
             className={clsx(
               'px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none whitespace-nowrap',
               activeStatus === tab.value
-                ? 'border-b-2 border-primary-600 text-primary-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
+                ? 'border-b-2 border-primary-600 text-primary-600 dark:text-primary-400 dark:border-primary-400'
+                : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 hover:border-b-2 hover:border-gray-300 dark:hover:border-white/30'
             )}
           >
             {tab.label}
@@ -100,13 +100,13 @@ export default function PurchaseOrdersPage() {
         {orders.map((po) => (
           <tr
             key={po.id}
-            className="hover:bg-gray-50 transition-colors duration-100 cursor-pointer"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 cursor-pointer"
             onClick={() => navigate(`/procurement/orders/${po.id}`)}
           >
-            <Table.Td className="font-mono text-xs text-gray-600">
+            <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
               {po.poNumber ?? po.id?.slice(-8).toUpperCase()}
             </Table.Td>
-            <Table.Td className="font-medium text-gray-900">
+            <Table.Td className="font-medium text-gray-900 dark:text-white">
               {po.vendorName ?? po.vendor?.companyName ?? '—'}
             </Table.Td>
             <Table.Td>{formatCurrency(po.totalAmount)}</Table.Td>
