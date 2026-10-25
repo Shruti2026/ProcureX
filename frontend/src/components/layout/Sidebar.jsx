@@ -64,42 +64,42 @@ export default function Sidebar({ userRole, collapsed = false, onToggle }) {
   return (
     <aside
       className={clsx(
-        'bg-white border-r border-[var(--color-surface-border)] flex flex-col shrink-0 transition-all duration-200 ease-in-out',
+        'flex flex-col shrink-0 overflow-hidden',
         collapsed ? 'w-16' : 'w-60'
       )}
+      style={{
+        background: 'linear-gradient(180deg, #1E1B4B 0%, #2D1B69 50%, #4C1D95 100%)',
+        transition: 'width 200ms cubic-bezier(0.23, 1, 0.32, 1)',
+      }}
     >
       {/* Brand & Toggle */}
       <div
         className={clsx(
-          'h-16 flex items-center border-b border-[var(--color-surface-border)] shrink-0',
+          'h-16 flex items-center shrink-0 border-b border-white/10',
           collapsed ? 'justify-center px-2' : 'justify-between px-5'
         )}
       >
         {collapsed ? (
-          /* When collapsed: show PX abbreviation centered */
           <span
-            className="text-base font-bold text-primary-600 tracking-tight select-none"
+            className="text-base font-bold text-white tracking-tight select-none"
             title="ProcureX"
           >
             PX
           </span>
         ) : (
-          /* When expanded: brand on left, collapse button on right */
           <>
             <span
-              className="text-lg font-bold text-primary-600 tracking-tight"
+              className="text-lg font-bold text-white tracking-tight select-none"
               title="ProcureX"
             >
               ProcureX
             </span>
-
             {onToggle && (
               <button
                 type="button"
                 onClick={onToggle}
                 aria-label="Collapse sidebar"
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                title="Collapse sidebar"
+                className="p-1.5 rounded-lg text-white/50 hover:text-white/80 hover:bg-white/10 transition-colors duration-150"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -109,15 +109,15 @@ export default function Sidebar({ userRole, collapsed = false, onToggle }) {
       </div>
 
       {/* Nav */}
-      <nav className={clsx('flex-1 overflow-y-auto py-4 space-y-1', collapsed ? 'px-2' : 'px-3')}>
-        {/* Hamburger expand button at top of nav — visible only when collapsed */}
+      <nav className={clsx('flex-1 overflow-y-auto py-4 space-y-0.5', collapsed ? 'px-2' : 'px-3')}>
+        {/* Hamburger expand button — visible only when collapsed */}
         {collapsed && onToggle && (
           <button
             type="button"
             onClick={onToggle}
             aria-label="Expand sidebar"
             title="Expand sidebar"
-            className="flex w-full justify-center p-2.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors mb-1"
+            className="flex w-full justify-center p-2.5 rounded-lg text-white/50 hover:text-white/80 hover:bg-white/10 transition-colors duration-150 mb-1"
           >
             <Menu size={18} />
           </button>
@@ -130,21 +130,41 @@ export default function Sidebar({ userRole, collapsed = false, onToggle }) {
             title={collapsed ? label : undefined}
             className={({ isActive }) =>
               clsx(
-                'flex items-center rounded-lg text-sm font-medium transition-colors duration-150',
-                collapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2',
+                'relative flex items-center rounded-lg text-sm font-medium transition-colors duration-150 overflow-hidden',
+                collapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5',
                 isActive
-                  ? 'bg-primary-50 text-primary-700'
-                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:bg-white/5 hover:text-white'
               )
             }
           >
             {({ isActive }) => (
               <>
+                {/* Left accent bar for active link */}
+                {isActive && !collapsed && (
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-[#A78BFA]"
+                    aria-hidden="true"
+                  />
+                )}
                 <Icon
                   size={18}
-                  className={clsx('shrink-0', isActive ? 'text-primary-600' : 'text-gray-400')}
+                  className={clsx(
+                    'shrink-0 transition-colors duration-150',
+                    isActive ? 'text-white' : 'text-white/60'
+                  )}
                 />
-                {!collapsed && <span className="truncate">{label}</span>}
+                {!collapsed && (
+                  <span
+                    className="truncate"
+                    style={{
+                      opacity: collapsed ? 0 : 1,
+                      transition: 'opacity 100ms ease',
+                    }}
+                  >
+                    {label}
+                  </span>
+                )}
               </>
             )}
           </NavLink>
@@ -153,7 +173,7 @@ export default function Sidebar({ userRole, collapsed = false, onToggle }) {
 
       {/* Footer */}
       {!collapsed && (
-        <div className="px-5 py-4 border-t border-[var(--color-surface-border)] text-xs text-gray-400 shrink-0">
+        <div className="px-5 py-4 border-t border-white/10 text-xs text-white/40 shrink-0">
           ProcureX v1.0
         </div>
       )}

@@ -1,15 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, ChevronDown, KeyRound, LogOut, User } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import Badge from '../ui/Badge'
 import { ROLE_LABELS } from '../../constants/roles'
 import ChangePasswordModal from '../auth/ChangePasswordModal'
 import { notificationService } from '../../services/notificationService'
 
-/**
- * Top navigation bar with user profile dropdown.
- * Displays user role, notification bell, Change Password modal, and Logout.
- */
 export default function Navbar({ user, onLogout }) {
   const navigate = useNavigate()
   const [dropdownOpen, setDropdownOpen]   = useState(false)
@@ -17,7 +14,6 @@ export default function Navbar({ user, onLogout }) {
   const [unreadCount, setUnreadCount] = useState(0)
   const dropdownRef = useRef(null)
 
-  // Fetch unread notification count on mount and poll every 30 seconds
   useEffect(() => {
     const fetchUnreadCount = () => {
       notificationService.getUnreadCount()
@@ -29,7 +25,6 @@ export default function Navbar({ user, onLogout }) {
     return () => clearInterval(intervalId)
   }, [])
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -44,26 +39,25 @@ export default function Navbar({ user, onLogout }) {
 
   return (
     <>
-      <nav className="h-16 bg-white border-b border-[var(--color-surface-border)] px-6 flex items-center justify-end shrink-0 z-30">
-        {/* Right side */}
+      <nav className="h-16 bg-white border-b border-primary-100 px-6 flex items-center justify-end shrink-0 z-30">
         <div className="flex items-center gap-4">
           {/* Notification bell */}
           <button
             id="navbar-notifications-btn"
             aria-label="Notifications"
             onClick={() => navigate('/notifications')}
-            className="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors duration-150"
+            className="relative p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors duration-150"
           >
             <Bell size={20} />
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white ring-2 ring-white">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}
           </button>
 
           {/* Divider */}
-          <div className="h-6 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-primary-100" />
 
           {/* Profile dropdown */}
           <div className="relative" ref={dropdownRef}>
@@ -71,73 +65,70 @@ export default function Navbar({ user, onLogout }) {
               id="navbar-profile-btn"
               type="button"
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-primary-50 transition-colors duration-150"
             >
-              {/* Avatar circle */}
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-primary-600 font-semibold text-sm shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-semibold text-sm shrink-0">
                 {user?.email?.charAt(0)?.toUpperCase() ?? <User size={16} />}
               </div>
-
               <div className="hidden sm:flex flex-col items-start leading-tight">
                 <span className="text-gray-800 font-medium">{user?.email ?? 'User'}</span>
                 {userRole && (
                   <span className="text-xs text-gray-500">{ROLE_LABELS[userRole] ?? userRole}</span>
                 )}
               </div>
-
               <ChevronDown
                 size={16}
                 className={`text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
-            {/* Dropdown panel */}
-            {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[var(--color-surface-border)] bg-white shadow-lg ring-1 ring-black/5 py-1 z-50 animate-fade-slide-up [animation-duration:150ms]">
-                {/* Role badge row */}
-                {userRole && (
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <Badge status={userRole} label={ROLE_LABELS[userRole] ?? userRole} />
-                  </div>
-                )}
-
-                {/* Change Password */}
-                <button
-                  id="navbar-change-password-btn"
-                  type="button"
-                  onClick={() => {
-                    setDropdownOpen(false)
-                    setChangePasswordOpen(true)
-                  }}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+            {/* Animated dropdown panel */}
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, transform: 'translateY(-8px) scale(0.97)' }}
+                  animate={{ opacity: 1, transform: 'translateY(0px) scale(1)' }}
+                  exit={{ opacity: 0, transform: 'translateY(-8px) scale(0.97)' }}
+                  transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
+                  className="absolute right-0 mt-2 w-52 rounded-xl border border-primary-100 bg-white shadow-lg shadow-primary-900/10 ring-1 ring-black/5 py-1 z-50"
                 >
-                  <KeyRound size={16} className="text-gray-500" />
-                  Change Password
-                </button>
-
-                {/* Divider */}
-                <div className="my-1 border-t border-gray-100" />
-
-                {/* Logout */}
-                <button
-                  id="navbar-logout-btn"
-                  type="button"
-                  onClick={() => {
-                    setDropdownOpen(false)
-                    onLogout()
-                  }}
-                  className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
-                >
-                  <LogOut size={16} className="text-red-500" />
-                  Logout
-                </button>
-              </div>
-            )}
+                  {userRole && (
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <Badge status={userRole} label={ROLE_LABELS[userRole] ?? userRole} />
+                    </div>
+                  )}
+                  <button
+                    id="navbar-change-password-btn"
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      setChangePasswordOpen(true)
+                    }}
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 transition-colors duration-150"
+                  >
+                    <KeyRound size={16} className="text-gray-500" />
+                    Change Password
+                  </button>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button
+                    id="navbar-logout-btn"
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      onLogout()
+                    }}
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                  >
+                    <LogOut size={16} className="text-red-500" />
+                    Logout
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </nav>
 
-      {/* Change Password Modal */}
       <ChangePasswordModal
         isOpen={changePasswordOpen}
         onClose={() => setChangePasswordOpen(false)}

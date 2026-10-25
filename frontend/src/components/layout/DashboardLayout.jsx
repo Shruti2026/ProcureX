@@ -34,7 +34,7 @@ export default function DashboardLayout({ onLogout }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-surface-subtle)]">
+    <div className="flex h-screen overflow-hidden bg-primary-50">
       <Sidebar
         userRole={userRole}
         collapsed={sidebarCollapsed}
@@ -47,7 +47,7 @@ export default function DashboardLayout({ onLogout }) {
           onLogout={onLogout}
         />
 
-        <main className="flex-1 overflow-y-auto p-6 bg-[var(--color-surface-subtle)]">
+        <main className="flex-1 overflow-y-auto p-6 bg-primary-50">
           <Outlet />
         </main>
       </div>
