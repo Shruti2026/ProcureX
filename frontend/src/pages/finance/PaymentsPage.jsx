@@ -53,13 +53,13 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5">
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Initiate Payment</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Initiate Payment</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none"
+            className="text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/60 transition-colors text-xl leading-none"
             aria-label="Close modal"
           >
             &times;
@@ -69,12 +69,12 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Invoice */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Invoice
             </label>
             <select
               {...register('invoiceId', { required: 'Invoice is required' })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-[#1A1035] dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Select an invoice</option>
               {approvedInvoices.map((inv) => (
@@ -92,12 +92,12 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
 
           {/* Payment Method */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Payment Method
             </label>
             <select
               {...register('paymentMethod', { required: 'Payment method is required' })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-[#1A1035] dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               {PAYMENT_METHODS.map((m) => (
                 <option key={m} value={m}>{m}</option>
@@ -110,13 +110,13 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
 
           {/* Payment Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">
               Payment Date
             </label>
             <input
               type="date"
               {...register('paymentDate', { required: 'Payment date is required' })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.paymentDate && (
               <p className="mt-1 text-xs text-red-500">{errors.paymentDate.message}</p>
@@ -128,7 +128,7 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-sm border border-gray-200 dark:border-white/10 dark:text-white/70 rounded-lg hover:bg-gray-50 dark:hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>
@@ -188,8 +188,8 @@ export default function PaymentsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Payments</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             View all vendor disbursements and payment history.
           </p>
         </div>
@@ -210,11 +210,11 @@ export default function PaymentsPage() {
         {payments.map((p, i) => (
           <tr
             key={p.paymentId}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
           >
             <Table.Td className="font-mono text-xs">{p.transactionReference}</Table.Td>
-            <Table.Td className="font-mono text-xs text-gray-400">{p.invoiceId?.slice(-12).toUpperCase()}</Table.Td>
+            <Table.Td className="font-mono text-xs text-gray-400 dark:text-white/40">{p.invoiceId?.slice(-12).toUpperCase()}</Table.Td>
             <Table.Td className="font-medium">{formatCurrency(p.amount)}</Table.Td>
             <Table.Td>{p.paymentMethod}</Table.Td>
             <Table.Td><Badge status={p.status} /></Table.Td>

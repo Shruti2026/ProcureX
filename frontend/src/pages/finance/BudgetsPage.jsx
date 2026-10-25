@@ -52,38 +52,38 @@ function CreateBudgetModal({ onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Create Budget</h2>
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-md p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create Budget</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Department Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Department Name</label>
             <input
               type="text"
               value={form.departmentName}
               onChange={e => setForm(f => ({ ...f, departmentName: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="e.g. Engineering"
             />
             {errors.departmentName && <p className="text-xs text-red-500 mt-1">{errors.departmentName}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fiscal Year</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Fiscal Year</label>
             <input
               type="number"
               value={form.fiscalYear}
               onChange={e => setForm(f => ({ ...f, fiscalYear: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               min="2020"
             />
             {errors.fiscalYear && <p className="text-xs text-red-500 mt-1">{errors.fiscalYear}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Allocated Amount</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Allocated Amount</label>
             <input
               type="number"
               value={form.allocatedAmount}
               onChange={e => setForm(f => ({ ...f, allocatedAmount: e.target.value }))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="0.00"
               min="0.01"
               step="0.01"
@@ -108,10 +108,10 @@ function UtilizationBar({ used, allocated }) {
   const color = pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-green-500'
   return (
     <div className="flex items-center gap-2">
-      <div className="w-24 h-2 rounded-full bg-gray-100 overflow-hidden">
+      <div className="w-24 h-2 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-gray-500">{pct.toFixed(1)}%</span>
+      <span className="text-xs text-gray-500 dark:text-white/60">{pct.toFixed(1)}%</span>
     </div>
   )
 }
@@ -146,8 +146,8 @@ export default function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Budgets</h1>
-          <p className="mt-1 text-sm text-gray-500">Track departmental budgets and spend limits.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budgets</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">Track departmental budgets and spend limits.</p>
         </div>
         <Button variant="primary" onClick={() => setShowModal(true)}>
           <Plus size={15} /> Create Budget
@@ -163,15 +163,15 @@ export default function BudgetsPage() {
         {budgets.map((b, i) => (
           <tr
             key={b.budgetId}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
           >
-            <Table.Td className="font-medium text-gray-900">{b.departmentName}</Table.Td>
+            <Table.Td className="font-medium text-gray-900 dark:text-white">{b.departmentName}</Table.Td>
             <Table.Td>{b.fiscalYear}</Table.Td>
             <Table.Td>{formatCurrency(b.allocatedAmount)}</Table.Td>
             <Table.Td>{formatCurrency(b.usedAmount)}</Table.Td>
             <Table.Td>{formatCurrency(b.committedAmount)}</Table.Td>
-            <Table.Td className="font-medium text-gray-900">{formatCurrency(b.availableAmount)}</Table.Td>
+            <Table.Td className="font-medium text-gray-900 dark:text-white">{formatCurrency(b.availableAmount)}</Table.Td>
             <Table.Td>
               <UtilizationBar
                 used={parseFloat(b.usedAmount) || 0}

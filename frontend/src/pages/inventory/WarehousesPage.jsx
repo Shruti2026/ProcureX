@@ -84,15 +84,15 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
       aria-modal="true"
       aria-labelledby="warehouse-modal-title"
     >
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-md mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 id="warehouse-modal-title" className="text-base font-semibold text-gray-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
+          <h2 id="warehouse-modal-title" className="text-base font-semibold text-gray-900 dark:text-white">
             {isEditing ? 'Edit Warehouse' : 'Create Warehouse'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/60 transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -127,7 +127,7 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-white/10">
             <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
               Cancel
             </Button>
@@ -186,8 +186,8 @@ export default function WarehousesPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Warehouses</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Warehouses</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Manage warehouse facilities, storage locations, and capacity.
           </p>
         </div>
@@ -207,10 +207,10 @@ export default function WarehousesPage() {
         {warehouses.map((wh, i) => (
           <tr
             key={wh.warehouseId}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
           >
-            <Table.Td className="font-medium text-gray-900">{wh.warehouseName}</Table.Td>
+            <Table.Td className="font-medium text-gray-900 dark:text-white">{wh.warehouseName}</Table.Td>
             <Table.Td>{wh.location}</Table.Td>
             <Table.Td>{wh.capacity?.toLocaleString()}</Table.Td>
             <Table.Td>
