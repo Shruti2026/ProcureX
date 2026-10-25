@@ -79,18 +79,18 @@ export default function RegisterPage() {
 
   if (isRegistered) {
     return (
-      <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-2xl bg-white shadow-sm border border-primary-100 p-8 text-center animate-fade-slide-up">
+      <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 dark:bg-[#0F0A1E]">
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-sm border border-primary-100 p-8 text-center animate-fade-slide-up dark:bg-white/5 dark:border-white/10">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
             <CheckCircle2 size={32} className="text-green-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Registration Successful
           </h1>
-          <p className="mt-4 text-sm text-gray-600">
+          <p className="mt-4 text-sm text-gray-600 dark:text-white/70">
             Your account is pending administrator approval.
           </p>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-white/70">
             You will receive an email once your account has been approved.
           </p>
           <Button onClick={() => navigate('/login')} className="mt-6 w-full">
@@ -102,7 +102,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:to-[#1E1B4B]">
       {/* Left hero panel — hidden on mobile */}
       <div
         className="hidden lg:flex lg:w-1/2 xl:w-[45%] flex-col items-center justify-center relative overflow-hidden p-12"
@@ -125,16 +125,16 @@ export default function RegisterPage() {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12">
+      <div className="flex-1 flex flex-col items-center justify-center bg-white px-6 py-12 dark:bg-[#1A1035]/80 dark:border-l dark:border-white/10">
         <div className="w-full max-w-md animate-fade-slide-up">
           <div className="text-center mb-8">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 dark:bg-white/10">
               <UserPlus size={28} className="text-primary-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Vendor Registration
             </h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-white/60">
               Register to start using ProcureX
             </p>
           </div>
@@ -226,13 +226,13 @@ export default function RegisterPage() {
             </Button>
           </form>
 
-          <div className="mt-8 border-t border-gray-100 pt-5 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-8 border-t border-gray-100 pt-5 text-center dark:border-white/10">
+            <p className="text-sm text-gray-600 dark:text-white/60">
               Already have an account?{' '}
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+                className="font-semibold text-primary-600 hover:text-primary-700 transition-colors dark:text-primary-400 dark:hover:text-primary-300"
               >
                 Sign In
               </button>
