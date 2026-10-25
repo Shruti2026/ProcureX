@@ -24,6 +24,7 @@ import StatCard from '../../components/ui/StatCard'
 import Spinner from '../../components/ui/Spinner'
 import ServiceDetailDrawer from '../../components/admin/ServiceDetailDrawer'
 import { healthService } from '../../services/healthService'
+import { useTheme } from '../../context/ThemeContext'
 
 const reducedMotion =
   typeof window !== 'undefined' &&
@@ -34,7 +35,7 @@ const STAGGER_DELAYS = [0, 75, 150, 225]
 function StatusBadge({ status }) {
   if (!status || status === 'N/A') {
     return (
-      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200">
+      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200 dark:bg-white/10 dark:text-white/40 dark:border-white/10">
         N/A
       </span>
     )
@@ -42,10 +43,10 @@ function StatusBadge({ status }) {
 
   const styles =
     status === 'UP'
-      ? 'bg-green-50 text-green-700 border border-green-200'
+      ? 'bg-green-50 text-green-700 border border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-500/30'
       : status === 'DOWN'
-      ? 'bg-red-50 text-red-700 border border-red-200'
-      : 'bg-gray-100 text-gray-500 border border-gray-200'
+      ? 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-500/30'
+      : 'bg-gray-100 text-gray-500 border border-gray-200 dark:bg-white/10 dark:text-white/60 dark:border-white/10'
 
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${styles}`}>
@@ -73,16 +74,16 @@ function ServiceCard({ service, style, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer rounded-xl p-4 shadow-xs flex flex-col gap-3 group"
+      className="bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer rounded-xl p-4 shadow-xs flex flex-col gap-3 group dark:bg-white/5 dark:border-white/10 dark:hover:border-blue-400/50"
       style={style}
     >
       {/* Top row: name + status */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-col">
-          <span className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">
+          <span className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
             {serviceName}
           </span>
-          <span className="text-[11px] text-gray-400">
+          <span className="text-[11px] text-gray-400 dark:text-white/40">
             Port {port} {responseTimeMs ? `• ${responseTimeMs}ms` : ''}
           </span>
         </div>
@@ -93,7 +94,7 @@ function ServiceCard({ service, style, onClick }) {
       {category !== 'INFRASTRUCTURE' ? (
         <div className="flex flex-col gap-1.5 pt-1">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-white/60">
               <Database className="w-3.5 h-3.5 shrink-0" />
               <span>Database</span>
             </div>
@@ -101,7 +102,7 @@ function ServiceCard({ service, style, onClick }) {
           </div>
 
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-white/60">
               <Network className="w-3.5 h-3.5 shrink-0" />
               <span>Message Broker</span>
             </div>
@@ -109,7 +110,7 @@ function ServiceCard({ service, style, onClick }) {
           </div>
         </div>
       ) : (
-        <div className="py-2 text-xs text-slate-500 flex items-center gap-2">
+        <div className="py-2 text-xs text-slate-500 dark:text-white/60 flex items-center gap-2">
           {service.serviceKey === 'mysql' ? (
             <HardDrive className="w-4 h-4 text-amber-500" />
           ) : (
@@ -120,9 +121,9 @@ function ServiceCard({ service, style, onClick }) {
       )}
 
       {/* Footer: last checked */}
-      <div className="flex items-center justify-between text-xs text-gray-400 pt-2 border-t border-gray-100 mt-auto">
+      <div className="flex items-center justify-between text-xs text-gray-400 dark:text-white/40 pt-2 border-t border-gray-100 dark:border-white/10 mt-auto">
         <span>Checked: {checkedAtFormatted}</span>
-        <span className="text-[11px] text-blue-500 group-hover:underline font-medium">
+        <span className="text-[11px] text-blue-500 dark:text-blue-400 group-hover:underline font-medium">
           View details &rarr;
         </span>
       </div>
@@ -131,6 +132,8 @@ function ServiceCard({ service, style, onClick }) {
 }
 
 export default function HealthPage() {
+  const { isDark } = useTheme()
+
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -240,8 +243,8 @@ export default function HealthPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">System Health</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">System Health</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Monitor microservices status, Eureka service registry, and infrastructure telemetry.
         </p>
       </div>
@@ -255,13 +258,13 @@ export default function HealthPage() {
 
       {/* Error state */}
       {error && !data && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-start gap-3">
-          <p className="text-sm font-medium text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 flex flex-col items-start gap-3 dark:bg-red-900/20 dark:border-red-500/30">
+          <p className="text-sm font-medium text-red-700 dark:text-red-400">
             Failed to load system health data. Check that all services are running.
           </p>
           <button
             onClick={fetchHealth}
-            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-300 text-red-700 bg-white hover:bg-red-50 transition-colors"
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-300 text-red-700 bg-white hover:bg-red-50 transition-colors dark:bg-white/5 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-900/20"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry
@@ -286,28 +289,28 @@ export default function HealthPage() {
           </div>
 
           {/* System Uptime History Graph Card */}
-          <div className="p-5 bg-white border border-gray-200 rounded-xl shadow-xs space-y-4">
+          <div className="p-5 bg-white border border-gray-200 rounded-xl shadow-xs space-y-4 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-violet-600" />
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                   System Availability & Uptime Trend
                 </h2>
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-gray-400 dark:text-white/40 mt-0.5">
                   Aggregated telemetry recorded every 60 seconds
                 </p>
               </div>
 
               {/* Range Filters */}
-              <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-white/10 p-1 rounded-lg">
                 {['1h', '24h', '7d'].map((r) => (
                   <button
                     key={r}
                     onClick={() => setHistoryRange(r)}
                     className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
                       historyRange === r
-                        ? 'bg-white text-gray-900 shadow-xs'
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-white dark:bg-white/20 text-gray-900 dark:text-white shadow-xs'
+                        : 'text-gray-500 dark:text-white/60 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     {r}
@@ -320,7 +323,7 @@ export default function HealthPage() {
               {historyLoading && formattedChartData.length === 0 ? (
                 <Spinner size="md" />
               ) : formattedChartData.length === 0 ? (
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-gray-400 dark:text-white/40">
                   Telemetry snapshot gathering in progress. First snapshot will appear shortly.
                 </div>
               ) : (
@@ -335,16 +338,20 @@ export default function HealthPage() {
                         <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke={isDark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'}
+                    />
                     <XAxis
                       dataKey="time"
-                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                      tick={{ fontSize: 10, fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
                       tickLine={false}
-                      axisLine={{ stroke: '#e2e8f0' }}
+                      axisLine={{ stroke: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0' }}
                     />
                     <YAxis
                       domain={[0, 100]}
-                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                      tick={{ fontSize: 10, fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
                       tickLine={false}
                       axisLine={false}
                       unit="%"
@@ -380,7 +387,7 @@ export default function HealthPage() {
 
           {/* Toolbar: last updated + controls */}
           <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-white/40">
               {lastUpdated
                 ? `Last updated: ${lastUpdated.toLocaleTimeString()}`
                 : 'Not yet refreshed'}
@@ -390,8 +397,8 @@ export default function HealthPage() {
                 onClick={() => setAutoRefresh((v) => !v)}
                 className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
                   autoRefresh
-                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-500/30 dark:hover:bg-green-900/30'
+                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-white/5 dark:text-white/70 dark:border-white/10 dark:hover:bg-white/10'
                 }`}
               >
                 Auto-refresh {autoRefresh ? 'On' : 'Off'}
@@ -402,7 +409,7 @@ export default function HealthPage() {
                   fetchHistory()
                 }}
                 disabled={loading}
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors dark:bg-white/5 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
@@ -413,7 +420,7 @@ export default function HealthPage() {
           {/* Shared Infrastructure Section */}
           {infrastructure.length > 0 && (
             <div className="space-y-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-white/60">
                 Core Shared Infrastructure
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -433,7 +440,7 @@ export default function HealthPage() {
 
           {/* Microservices Section */}
           <div className="space-y-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-white/60">
               ProcureX Microservices
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

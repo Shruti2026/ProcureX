@@ -109,7 +109,7 @@ function SkeletonRow({ index }) {
       {[120, 180, 100, 140, 100].map((w, i) => (
         <td key={i} className="px-4 py-3">
           <div
-            className="h-3 rounded bg-gray-200"
+            className="h-3 rounded bg-gray-200 dark:bg-white/10"
             style={{ width: `${w}px` }}
           />
         </td>
@@ -150,29 +150,29 @@ function DiffPanel({ oldValue, newValue, open }) {
       }}
     >
       <div className="px-4 pb-4 pt-2">
-        <div className="grid grid-cols-2 gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+        <div className="grid grid-cols-2 gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-white/10 dark:bg-white/5">
           <div>
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40">
               Before
             </p>
             {old ? (
-              <pre className="overflow-x-auto rounded bg-white p-2 text-[11px] leading-relaxed text-gray-700 ring-1 ring-gray-200">
+              <pre className="overflow-x-auto rounded bg-white p-2 text-[11px] leading-relaxed text-gray-700 ring-1 ring-gray-200 dark:bg-white/5 dark:text-white/80 dark:ring-white/10">
                 {old}
               </pre>
             ) : (
-              <p className="text-xs text-gray-400 italic">No snapshot</p>
+              <p className="text-xs text-gray-400 dark:text-white/40 italic">No snapshot</p>
             )}
           </div>
           <div>
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-white/40">
               After
             </p>
             {next ? (
-              <pre className="overflow-x-auto rounded bg-white p-2 text-[11px] leading-relaxed text-gray-700 ring-1 ring-gray-200">
+              <pre className="overflow-x-auto rounded bg-white p-2 text-[11px] leading-relaxed text-gray-700 ring-1 ring-gray-200 dark:bg-white/5 dark:text-white/80 dark:ring-white/10">
                 {next}
               </pre>
             ) : (
-              <p className="text-xs text-gray-400 italic">No snapshot</p>
+              <p className="text-xs text-gray-400 dark:text-white/40 italic">No snapshot</p>
             )}
           </div>
         </div>
@@ -191,26 +191,26 @@ function AuditRow({ log, index, expandedId, onToggle }) {
   return (
     <>
       <tr
-        className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up cursor-default"
+        className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up cursor-default"
         style={{ animationDelay: reducedMotion ? '0ms' : `${index * 30}ms` }}
       >
         {/* Timestamp */}
         <Table.Td>
           <span
             title={formatTimestamp(log.createdAt)}
-            className="font-mono text-xs text-gray-700"
+            className="font-mono text-xs text-gray-700 dark:text-white/60"
           >
             {formatTimestamp(log.createdAt)}
           </span>
-          <div className="text-[10px] text-gray-400">{relativeTime(log.createdAt)}</div>
+          <div className="text-[10px] text-gray-400 dark:text-white/40">{relativeTime(log.createdAt)}</div>
         </Table.Td>
 
         {/* Actor */}
         <Table.Td className="max-w-[200px]">
-          <div className="truncate font-medium text-gray-900 text-sm">
+          <div className="truncate font-medium text-gray-900 dark:text-white text-sm">
             {log.actorName ?? '—'}
           </div>
-          <div className="truncate text-xs text-gray-400">{log.actorEmail ?? log.userId}</div>
+          <div className="truncate text-xs text-gray-400 dark:text-white/40">{log.actorEmail ?? log.userId}</div>
         </Table.Td>
 
         {/* Action badge */}
@@ -220,11 +220,11 @@ function AuditRow({ log, index, expandedId, onToggle }) {
 
         {/* Target entity */}
         <Table.Td>
-          <span className="text-xs text-gray-500 font-mono">
+          <span className="text-xs text-gray-500 dark:text-white/60 font-mono">
             {log.entityName}
           </span>
           {log.entityId && (
-            <div className="text-[10px] text-gray-400 font-mono truncate max-w-[160px]">
+            <div className="text-[10px] text-gray-400 dark:text-white/40 font-mono truncate max-w-[160px]">
               {log.entityId}
             </div>
           )}
@@ -237,7 +237,8 @@ function AuditRow({ log, index, expandedId, onToggle }) {
               type="button"
               onClick={() => onToggle(log.auditLogId)}
               className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium
-                         text-primary-600 hover:bg-primary-50 transition-colors duration-150
+                         text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-white/10
+                         transition-colors duration-150
                          active:scale-95 active:transition-none focus:outline-none focus-visible:ring-2
                          focus-visible:ring-primary-400"
               aria-expanded={isOpen}
@@ -255,7 +256,7 @@ function AuditRow({ log, index, expandedId, onToggle }) {
               )}
             </button>
           ) : (
-            <span className="text-xs text-gray-300">—</span>
+            <span className="text-xs text-gray-300 dark:text-white/20">—</span>
           )}
         </Table.Td>
       </tr>
@@ -290,8 +291,8 @@ function Pagination({ page, totalPages, totalElements, pageSize, onPageChange })
   }
 
   return (
-    <div className="flex items-center justify-between border-t border-gray-100 pt-4">
-      <p className="text-xs text-gray-500">
+    <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/10 pt-4">
+      <p className="text-xs text-gray-500 dark:text-white/60">
         {totalElements === 0
           ? 'No results'
           : `Showing ${from}–${to} of ${totalElements.toLocaleString()} entries`}
@@ -303,7 +304,8 @@ function Pagination({ page, totalPages, totalElements, pageSize, onPageChange })
           disabled={page === 0}
           onClick={() => onPageChange(page - 1)}
           className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500
-                     hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed
+                     hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/10
+                     disabled:opacity-40 disabled:cursor-not-allowed
                      transition-colors duration-150 active:scale-95 active:transition-none"
           aria-label="Previous page"
         >
@@ -313,7 +315,7 @@ function Pagination({ page, totalPages, totalElements, pageSize, onPageChange })
         {pageNumbers[0] > 0 && (
           <>
             <PillButton active={false} onClick={() => onPageChange(0)}>1</PillButton>
-            {pageNumbers[0] > 1 && <span className="px-1 text-xs text-gray-400">…</span>}
+            {pageNumbers[0] > 1 && <span className="px-1 text-xs text-gray-400 dark:text-white/40">…</span>}
           </>
         )}
 
@@ -326,7 +328,7 @@ function Pagination({ page, totalPages, totalElements, pageSize, onPageChange })
         {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
           <>
             {pageNumbers[pageNumbers.length - 1] < totalPages - 2 && (
-              <span className="px-1 text-xs text-gray-400">…</span>
+              <span className="px-1 text-xs text-gray-400 dark:text-white/40">…</span>
             )}
             <PillButton active={false} onClick={() => onPageChange(totalPages - 1)}>
               {totalPages}
@@ -339,7 +341,8 @@ function Pagination({ page, totalPages, totalElements, pageSize, onPageChange })
           disabled={page >= totalPages - 1}
           onClick={() => onPageChange(page + 1)}
           className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500
-                     hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed
+                     hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/10
+                     disabled:opacity-40 disabled:cursor-not-allowed
                      transition-colors duration-150 active:scale-95 active:transition-none"
           aria-label="Next page"
         >
@@ -359,7 +362,7 @@ function PillButton({ active, onClick, children }) {
                   transition-colors duration-150 active:scale-95 active:transition-none
                   ${active
                     ? 'bg-primary-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:bg-gray-100'}`}
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/10'}`}
     >
       {children}
     </button>
@@ -461,19 +464,19 @@ export default function AuditLogsPage() {
     <div className="space-y-6">
       {/* ── Page header ── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Audit Logs</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Audit Logs</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Track system events, security logs, and compliance audit trails.
         </p>
       </div>
 
       {/* ── Filter bar ── */}
-      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs p-4">
+      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs p-4 dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10">
         <div className="flex flex-wrap items-end gap-3">
 
           {/* Action select */}
           <div className="flex flex-col gap-1 min-w-[180px]">
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <label className="text-xs font-medium text-gray-500 dark:text-white/80 uppercase tracking-wider">
               Action
             </label>
             <div className="relative">
@@ -483,20 +486,21 @@ export default function AuditLogsPage() {
                 className="w-full appearance-none rounded-lg border border-gray-200 bg-white
                            pl-3 pr-8 py-2 text-sm text-gray-700 shadow-sm
                            focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
-                           transition-colors"
+                           transition-colors
+                           dark:bg-[#1A1035] dark:border-white/10 dark:text-white"
               >
                 <option value="">All actions</option>
                 {ALL_ACTIONS.map(a => (
                   <option key={a.value} value={a.value}>{a.label}</option>
                 ))}
               </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 dark:text-white/40" />
             </div>
           </div>
 
           {/* From date */}
           <div className="flex flex-col gap-1 min-w-[180px]">
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <label className="text-xs font-medium text-gray-500 dark:text-white/80 uppercase tracking-wider">
               From
             </label>
             <input
@@ -505,13 +509,14 @@ export default function AuditLogsPage() {
               onChange={e => setFromFilter(e.target.value)}
               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
                          shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400
-                         focus:border-transparent transition-colors"
+                         focus:border-transparent transition-colors
+                         dark:bg-white/5 dark:border-white/10 dark:text-white"
             />
           </div>
 
           {/* To date */}
           <div className="flex flex-col gap-1 min-w-[180px]">
-            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <label className="text-xs font-medium text-gray-500 dark:text-white/80 uppercase tracking-wider">
               To
             </label>
             <input
@@ -520,7 +525,8 @@ export default function AuditLogsPage() {
               onChange={e => setToFilter(e.target.value)}
               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
                          shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400
-                         focus:border-transparent transition-colors"
+                         focus:border-transparent transition-colors
+                         dark:bg-white/5 dark:border-white/10 dark:text-white"
             />
           </div>
 
@@ -543,7 +549,8 @@ export default function AuditLogsPage() {
                 className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white
                            px-3 py-2 text-sm font-medium text-gray-600
                            hover:bg-gray-50 transition-colors duration-150
-                           active:scale-95 active:transition-none"
+                           active:scale-95 active:transition-none
+                           dark:bg-white/5 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Reset
@@ -554,8 +561,8 @@ export default function AuditLogsPage() {
 
         {/* Active filter chips */}
         {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-gray-100">
-            <span className="text-xs text-gray-400 font-medium">Active filters:</span>
+          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-white/10">
+            <span className="text-xs text-gray-400 dark:text-white/40 font-medium">Active filters:</span>
             {appliedFilters.action && (
               <FilterChip
                 label={`Action: ${actionLabel(appliedFilters.action)}`}
@@ -591,14 +598,14 @@ export default function AuditLogsPage() {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs overflow-hidden dark:bg-white/5 dark:backdrop-blur-sm dark:border-white/10">
         {error ? (
           <div className="px-6 py-12 text-center">
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             <button
               type="button"
               onClick={() => fetchLogs(page, appliedFilters)}
-              className="mt-3 text-sm text-primary-600 hover:underline"
+              className="mt-3 text-sm text-primary-600 dark:text-primary-400 hover:underline"
             >
               Try again
             </button>
@@ -606,31 +613,31 @@ export default function AuditLogsPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 text-sm">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10 text-sm">
+                <thead className="bg-gray-50 dark:bg-white/5">
                   <tr>
                     {['Timestamp', 'Actor', 'Action', 'Target', 'Changes'].map(col => (
                       <th
                         key={col}
                         scope="col"
-                        className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                        className="px-4 py-3 text-left text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider"
                       >
                         {col}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
+                <tbody className="bg-white dark:bg-transparent divide-y divide-gray-100 dark:divide-white/10">
                   {loading ? (
                     Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} index={i} />)
                   ) : logs.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="px-4 py-16 text-center">
                         <div className="flex flex-col items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                            <ClipboardList className="w-5 h-5 text-gray-400" />
+                          <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center">
+                            <ClipboardList className="w-5 h-5 text-gray-400 dark:text-white/40" />
                           </div>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 dark:text-white/60">
                             {hasActiveFilters
                               ? 'No audit log entries match the current filters.'
                               : 'No audit log entries yet.'}
@@ -639,7 +646,7 @@ export default function AuditLogsPage() {
                             <button
                               type="button"
                               onClick={handleReset}
-                              className="text-xs text-primary-600 hover:underline"
+                              className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
                             >
                               Clear filters
                             </button>
@@ -664,7 +671,7 @@ export default function AuditLogsPage() {
 
             {/* Pagination */}
             {!loading && totalElements > 0 && (
-              <div className="px-4 py-3 border-t border-gray-100">
+              <div className="px-4 py-3 border-t border-gray-100 dark:border-white/10">
                 <Pagination
                   page={page}
                   totalPages={totalPages}
@@ -687,13 +694,14 @@ export default function AuditLogsPage() {
 function FilterChip({ label, onRemove }) {
   return (
     <span className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full
-                     bg-primary-50 text-primary-700 ring-1 ring-primary-200 text-xs font-medium">
+                     bg-primary-50 text-primary-700 ring-1 ring-primary-200 text-xs font-medium
+                     dark:bg-primary-900/30 dark:text-primary-400 dark:ring-primary-500/30">
       {label}
       <button
         type="button"
         onClick={onRemove}
         aria-label={`Remove filter: ${label}`}
-        className="rounded-full p-0.5 hover:bg-primary-100 transition-colors duration-100
+        className="rounded-full p-0.5 hover:bg-primary-100 dark:hover:bg-primary-500/20 transition-colors duration-100
                    active:scale-90 active:transition-none"
       >
         <X className="w-3 h-3" />
