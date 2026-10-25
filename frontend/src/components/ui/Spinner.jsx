@@ -17,7 +17,7 @@ export default function Spinner({ size = 'md', className }) {
       className={clsx(
         'inline-block animate-spin rounded-full border-current border-t-transparent',
         sizeClasses[size],
-        className ?? 'text-primary-600'
+        className ?? 'text-primary-600 dark:text-primary-400'
       )}
     />
   )

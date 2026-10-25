@@ -38,7 +38,7 @@ export default function Pagination({
 
   return (
     <div className={clsx('flex items-center justify-between px-1', className)}>
-      <p className="text-sm text-gray-500">{rangeLabel}</p>
+      <p className="text-sm text-gray-500 dark:text-white/50">{rangeLabel}</p>
 
       <div className="flex items-center gap-1">
         <button
@@ -46,7 +46,7 @@ export default function Pagination({
           onClick={() => onPageChange(currentPage - 1)}
           disabled={isFirst}
           aria-label="Previous page"
-          className="flex items-center gap-1 px-3 py-1.5 text-sm border border-primary-200 rounded-lg text-gray-600 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+          className="flex items-center gap-1 px-3 py-1.5 text-sm border border-primary-200 rounded-lg text-gray-600 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white dark:disabled:text-white/20"
         >
           <ChevronLeft size={14} />
           Prev
@@ -63,7 +63,7 @@ export default function Pagination({
               'w-8 h-8 text-sm rounded-lg border transition-colors duration-150',
               p === currentPage
                 ? 'border-transparent text-white font-semibold'
-                : 'border-primary-200 text-gray-600 hover:bg-primary-50 hover:text-primary-700'
+                : 'border-primary-200 text-gray-600 hover:bg-primary-50 hover:text-primary-700 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white'
             )}
             style={
               p === currentPage
@@ -80,7 +80,7 @@ export default function Pagination({
           onClick={() => onPageChange(currentPage + 1)}
           disabled={isLast}
           aria-label="Next page"
-          className="flex items-center gap-1 px-3 py-1.5 text-sm border border-primary-200 rounded-lg text-gray-600 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+          className="flex items-center gap-1 px-3 py-1.5 text-sm border border-primary-200 rounded-lg text-gray-600 hover:bg-primary-50 hover:text-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 dark:border-white/10 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white dark:disabled:text-white/20"
         >
           Next
           <ChevronRight size={14} />
