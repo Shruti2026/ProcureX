@@ -23,11 +23,11 @@ export default function Button({
     primary:
       'text-white hover:brightness-110 focus:ring-primary-500 active:scale-[0.97] transition-all duration-100',
     secondary:
-      'bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 focus:ring-primary-400 active:scale-[0.97] transition-all duration-100',
+      'bg-white text-primary-700 border border-primary-200 hover:bg-primary-50 focus:ring-primary-400 active:scale-[0.97] transition-all duration-100 dark:bg-transparent dark:border-white/20 dark:text-white dark:hover:bg-white/10',
     danger:
       'bg-red-600 text-white hover:bg-red-700 focus:ring-red-400 active:scale-[0.97] transition-all duration-100',
     ghost:
-      'text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:ring-gray-300 transition-colors duration-150',
+      'text-gray-600 hover:bg-gray-100 hover:text-gray-800 focus:ring-gray-300 transition-colors duration-150 dark:text-white/70 dark:hover:bg-white/10 dark:hover:text-white',
   }
 
   const sizes = {
