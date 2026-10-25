@@ -33,22 +33,22 @@ export default function Table({
   className,
 }) {
   return (
-    <div className={clsx('overflow-x-auto rounded-xl border border-primary-100', className)}>
-      <table className="min-w-full divide-y divide-primary-100 text-sm">
-        <thead className="bg-primary-50">
+    <div className={clsx('overflow-x-auto rounded-xl border border-primary-100 dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-sm', className)}>
+      <table className="min-w-full divide-y divide-primary-100 dark:divide-white/10 text-sm">
+        <thead className="bg-primary-50 dark:bg-white/5">
           <tr>
             {columns.map((col) => (
               <th
                 key={col}
                 scope="col"
-                className="px-4 py-3 text-left text-xs font-semibold text-primary-700 uppercase tracking-wider"
+                className="px-4 py-3 text-left text-xs font-semibold text-primary-700 dark:text-white/60 uppercase tracking-wider"
               >
                 {col}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-primary-50">
+        <tbody className="bg-white divide-y divide-primary-50 dark:bg-transparent dark:divide-white/10">
           {loading ? (
             <tr>
               <td colSpan={columns.length} className="px-4 py-10 text-center">
@@ -61,7 +61,7 @@ export default function Table({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-4 py-10 text-center text-gray-400"
+                className="px-4 py-10 text-center text-gray-400 dark:text-white/40"
               >
                 {emptyMessage}
               </td>
@@ -77,7 +77,7 @@ export default function Table({
 
 Table.Td = function Td({ children, className }) {
   return (
-    <td className={clsx('px-4 py-3 text-gray-700 whitespace-nowrap', className)}>
+    <td className={clsx('px-4 py-3 text-gray-700 whitespace-nowrap dark:text-white', className)}>
       {children}
     </td>
   )
