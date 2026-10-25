@@ -60,8 +60,8 @@ export default function GrnDetailPage() {
           <ArrowLeft size={15} />
           Back to GRNs
         </Button>
-        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-          <p className="text-gray-500">GRN not found.</p>
+        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
+          <p className="text-gray-500 dark:text-white/60">GRN not found.</p>
         </div>
       </div>
     )
@@ -141,58 +141,58 @@ export default function GrnDetailPage() {
       </Button>
 
       {/* GRN Header card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 dark:backdrop-blur-sm p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="font-mono text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-gray-400 dark:text-white/40 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded">
                 {grn.grnNumber ?? grn.id?.slice(-8).toUpperCase()}
               </span>
               <Badge status={grn.status} />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
               Goods Received Note
             </h1>
           </div>
         </div>
 
-        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 pt-5">
+        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 dark:border-white/10 pt-5">
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">PO ID</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800 font-mono">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">PO ID</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white font-mono">
               {grn.purchaseOrderId?.slice(-8).toUpperCase() ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Warehouse</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Warehouse</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {grn.warehouseName ?? grn.warehouse?.name ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Received At</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Received At</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDateTime(grn.receivedAt ?? grn.createdAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Items</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">{grnItems.length}</dd>
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Items</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">{grnItems.length}</dd>
           </div>
         </dl>
       </div>
 
       {/* GRN Items table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">GRN Items</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">GRN Items</h2>
         <Table
           columns={GRN_ITEMS_COLUMNS}
           empty={grnItems.length === 0}
           emptyMessage="No items on this GRN."
         >
           {grnItems.map((item, i) => (
-            <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
-              <Table.Td className="font-medium text-gray-900">
+            <tr key={item.id ?? i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+              <Table.Td className="font-medium text-gray-900 dark:text-white">
                 {item.productName ?? item.product?.name ?? '—'}
               </Table.Td>
               <Table.Td>{item.orderedQuantity ?? item.quantityOrdered ?? '—'}</Table.Td>
@@ -205,33 +205,33 @@ export default function GrnDetailPage() {
       {/* Conditional inspection section */}
       {grn.status === 'PENDING_INSPECTION' && (
         <div>
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Inspection Form</h2>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Inspection Form</h2>
 
           {formError && (
-            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700">
               {formError}
             </div>
           )}
 
-          <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-50">
+          <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-white/10 text-sm">
+              <thead className="bg-gray-50 dark:bg-white/5">
                 <tr>
                   {INSPECTION_IN_COLUMNS.map((col) => (
                     <th
                       key={col}
                       scope="col"
-                      className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider"
+                      className="px-4 py-3 text-left text-xs font-semibold text-gray-400 dark:text-white/40 uppercase tracking-wider"
                     >
                       {col}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
+              <tbody className="bg-white dark:bg-transparent divide-y divide-gray-100 dark:divide-white/10">
                 {grnItems.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-10 text-center text-gray-400">
+                    <td colSpan={4} className="px-4 py-10 text-center text-gray-400 dark:text-white/40">
                       No items to inspect.
                     </td>
                   </tr>
@@ -240,8 +240,8 @@ export default function GrnDetailPage() {
                     const state = getInspectionForItem(item)
                     const received = Number(item.receivedQuantity ?? item.quantityReceived ?? 0)
                     return (
-                      <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
-                        <td className="px-4 py-3 text-gray-700 font-medium whitespace-nowrap">
+                      <tr key={item.id ?? i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+                        <td className="px-4 py-3 text-gray-700 dark:text-white/60 font-medium whitespace-nowrap">
                           {item.productName ?? item.product?.name ?? '—'}
                         </td>
                         <td className="px-4 py-3">
@@ -251,7 +251,7 @@ export default function GrnDetailPage() {
                             max={received}
                             value={state.acceptedQty}
                             onChange={(e) => setItemInspection(item.id, 'acceptedQty', e.target.value)}
-                            className="w-20 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                            className="w-20 rounded-lg border border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-white px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                           />
                         </td>
                         <td className="px-4 py-3">
@@ -261,7 +261,7 @@ export default function GrnDetailPage() {
                             max={received}
                             value={state.rejectedQty}
                             onChange={(e) => setItemInspection(item.id, 'rejectedQty', e.target.value)}
-                            className="w-20 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                            className="w-20 rounded-lg border border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-white px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                           />
                         </td>
                         <td className="px-4 py-3">
@@ -270,7 +270,7 @@ export default function GrnDetailPage() {
                             placeholder="Reason (optional)"
                             value={state.reason}
                             onChange={(e) => setItemInspection(item.id, 'reason', e.target.value)}
-                            className="w-48 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                            className="w-48 rounded-lg border border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-white/30 px-3 py-1.5 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                           />
                         </td>
                       </tr>
@@ -296,7 +296,7 @@ export default function GrnDetailPage() {
 
       {(grn.status === 'INSPECTED' || grn.status === 'CLOSED') && (
         <div>
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Inspection Summary</h2>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Inspection Summary</h2>
           {inspectionLoading ? (
             <div className="flex justify-center py-10">
               <Spinner size="lg" className="text-primary-500" />
@@ -308,13 +308,13 @@ export default function GrnDetailPage() {
               emptyMessage="No inspection data available."
             >
               {inspectionItems.map((item, i) => (
-                <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
-                  <Table.Td className="font-medium text-gray-900">
+                <tr key={item.id ?? i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+                  <Table.Td className="font-medium text-gray-900 dark:text-white">
                     {item.productName ?? item.product?.name ?? '—'}
                   </Table.Td>
                   <Table.Td>{item.acceptedQuantity ?? '—'}</Table.Td>
                   <Table.Td>{item.rejectedQuantity ?? '—'}</Table.Td>
-                  <Table.Td className="text-gray-500">{item.rejectionReason || '—'}</Table.Td>
+                  <Table.Td className="text-gray-500 dark:text-white/60">{item.rejectionReason || '—'}</Table.Td>
                 </tr>
               ))}
             </Table>

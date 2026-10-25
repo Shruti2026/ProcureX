@@ -177,8 +177,8 @@ export default function ProcurementDashboard() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Procurement Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">{today}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Procurement Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">{today}</p>
         </div>
         <Button variant="secondary" size="sm" onClick={() => { loadKpis(); loadPos() }}>
           <RefreshCw size={14} />
@@ -188,7 +188,7 @@ export default function ProcurementDashboard() {
 
       {/* KPI error banner */}
       {kpiError && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           Failed to load KPI data. Check your connection and try refreshing.
         </div>
       )}
@@ -208,7 +208,7 @@ export default function ProcurementDashboard() {
 
       {/* Recent Purchase Orders table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Recent Purchase Orders</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Recent Purchase Orders</h2>
         <Table
           columns={PO_COLUMNS}
           loading={posLoading}
@@ -218,14 +218,14 @@ export default function ProcurementDashboard() {
           {pos.map((po, i) => (
             <tr
               key={po.id}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
+              className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               onClick={() => navigate(`/procurement/orders/${po.id}`)}
             >
-              <Table.Td className="font-mono text-xs text-gray-600">
+              <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
                 {po.poNumber ?? po.id?.slice(-8).toUpperCase()}
               </Table.Td>
-              <Table.Td className="font-medium text-gray-900">
+              <Table.Td className="font-medium text-gray-900 dark:text-white">
                 {po.vendorName ?? po.vendor?.companyName ?? '—'}
               </Table.Td>
               <Table.Td>{formatCurrency(po.totalAmount)}</Table.Td>

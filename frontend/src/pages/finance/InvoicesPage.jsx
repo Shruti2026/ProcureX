@@ -58,14 +58,14 @@ export default function InvoicesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invoices</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Process vendor invoices, run three-way matching, and approve for payment.
         </p>
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex flex-wrap gap-1 border-b border-gray-200">
+      <div className="flex flex-wrap gap-1 border-b border-gray-200 dark:border-white/10">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.label}
@@ -73,7 +73,7 @@ export default function InvoicesPage() {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-100 ${
               activeStatus === tab.value
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80'
             }`}
           >
             {tab.label}
@@ -90,12 +90,12 @@ export default function InvoicesPage() {
         {invoices.map((inv, i) => (
           <tr
             key={inv.invoiceId}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
             onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
           >
-            <Table.Td className="font-medium text-gray-900">{inv.invoiceNumber}</Table.Td>
-            <Table.Td className="text-gray-400 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
+            <Table.Td className="font-medium text-gray-900 dark:text-white">{inv.invoiceNumber}</Table.Td>
+            <Table.Td className="text-gray-400 dark:text-white/40 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
             <Table.Td className="font-medium">{formatCurrency(inv.invoiceAmount)}</Table.Td>
             <Table.Td><Badge status={inv.status} /></Table.Td>
             <Table.Td>{formatDate(inv.submittedAt)}</Table.Td>

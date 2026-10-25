@@ -40,15 +40,15 @@ function InitiatePaymentModal({ invoiceId, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Initiate Payment</h2>
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-md p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Initiate Payment</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Payment Method</label>
             <select
               value={method}
               onChange={(e) => setMethod(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-[#1A1035] dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="ACH">ACH</option>
               <option value="WIRE">WIRE</option>
@@ -106,8 +106,8 @@ export default function InvoiceDetailPage() {
         <Button variant="ghost" size="sm" onClick={() => navigate('/finance/invoices')}>
           <ArrowLeft size={15} /> Back to Invoices
         </Button>
-        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-          <p className="text-gray-500">Invoice not found.</p>
+        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
+          <p className="text-gray-500 dark:text-white/60">Invoice not found.</p>
         </div>
       </div>
     )
@@ -172,11 +172,11 @@ export default function InvoiceDetailPage() {
       </Button>
 
       {/* Section 1 — Invoice Header */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white dark:bg-white/5 dark:backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{invoice.invoiceNumber}</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{invoice.invoiceNumber}</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
               Submitted {formatDateTime(invoice.submittedAt)}
             </p>
           </div>
@@ -184,27 +184,27 @@ export default function InvoiceDetailPage() {
         </div>
         <dl className="mt-6 grid grid-cols-2 gap-x-8 gap-y-4 sm:grid-cols-3 text-sm">
           <div>
-            <dt className="text-gray-400">PO Reference</dt>
-            <dd className="font-mono text-gray-700">{invoice.purchaseOrderId?.slice(-12).toUpperCase()}</dd>
+            <dt className="text-gray-400 dark:text-white/40">PO Reference</dt>
+            <dd className="font-mono text-gray-700 dark:text-white/60">{invoice.purchaseOrderId?.slice(-12).toUpperCase()}</dd>
           </div>
           <div>
-            <dt className="text-gray-400">Vendor ID</dt>
-            <dd className="font-mono text-gray-700">{invoice.vendorId?.slice(-12).toUpperCase()}</dd>
+            <dt className="text-gray-400 dark:text-white/40">Vendor ID</dt>
+            <dd className="font-mono text-gray-700 dark:text-white/60">{invoice.vendorId?.slice(-12).toUpperCase()}</dd>
           </div>
           <div>
-            <dt className="text-gray-400">Invoice Amount</dt>
-            <dd className="font-semibold text-gray-900">{formatCurrency(invoice.invoiceAmount)}</dd>
+            <dt className="text-gray-400 dark:text-white/40">Invoice Amount</dt>
+            <dd className="font-semibold text-gray-900 dark:text-white">{formatCurrency(invoice.invoiceAmount)}</dd>
           </div>
           {invoice.verifiedAt && (
             <div>
-              <dt className="text-gray-400">Verified</dt>
-              <dd className="text-gray-700">{formatDate(invoice.verifiedAt)}</dd>
+              <dt className="text-gray-400 dark:text-white/40">Verified</dt>
+              <dd className="text-gray-700 dark:text-white/60">{formatDate(invoice.verifiedAt)}</dd>
             </div>
           )}
           {invoice.approvedAt && (
             <div>
-              <dt className="text-gray-400">Approved</dt>
-              <dd className="text-gray-700">{formatDate(invoice.approvedAt)}</dd>
+              <dt className="text-gray-400 dark:text-white/40">Approved</dt>
+              <dd className="text-gray-700 dark:text-white/60">{formatDate(invoice.approvedAt)}</dd>
             </div>
           )}
         </dl>
@@ -212,10 +212,10 @@ export default function InvoiceDetailPage() {
 
       {/* Section 2 — Line Items */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Line Items</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Line Items</h2>
         <Table columns={LINE_ITEMS_COLS} empty={items.length === 0} emptyMessage="No items.">
           {items.map((item) => (
-            <tr key={item.invoiceItemId} className="hover:bg-gray-50">
+            <tr key={item.invoiceItemId} className="hover:bg-gray-50 dark:hover:bg-white/5">
               <Table.Td className="font-medium">{item.productName}</Table.Td>
               <Table.Td>{item.quantity}</Table.Td>
               <Table.Td>{formatCurrency(item.unitPrice)}</Table.Td>
@@ -228,10 +228,10 @@ export default function InvoiceDetailPage() {
       {/* Section 3 — Three-Way Match Result */}
       {match && (
         <div>
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Three-Way Match Result</h2>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Three-Way Match Result</h2>
 
           {/* Pass / Fail banner */}
-          <div className={`rounded-xl border p-4 mb-4 ${match.passed ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+          <div className={`rounded-xl border p-4 mb-4 ${match.passed ? 'border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-900/20' : 'border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-900/20'}`}>
             <div className="flex items-center gap-2">
               {match.passed
                 ? <CheckCircle size={18} className="text-green-600" />
@@ -246,44 +246,44 @@ export default function InvoiceDetailPage() {
 
             {/* Totals comparison row */}
             <div className="mt-3 grid grid-cols-3 gap-4 text-xs">
-              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
-                <p className="text-gray-500 mb-0.5">Invoice Amount</p>
-                <p className="font-semibold text-gray-900">{formatCurrency(match.invoiceAmount ?? invoice.invoiceAmount)}</p>
+              <div className="rounded-lg bg-white/70 dark:bg-white/5 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 dark:text-white/60 mb-0.5">Invoice Amount</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(match.invoiceAmount ?? invoice.invoiceAmount)}</p>
               </div>
-              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
-                <p className="text-gray-500 mb-0.5">PO Amount</p>
-                <p className="font-semibold text-gray-900">{formatCurrency(match.poAmount)}</p>
+              <div className="rounded-lg bg-white/70 dark:bg-white/5 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 dark:text-white/60 mb-0.5">PO Amount</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(match.poAmount)}</p>
               </div>
-              <div className="rounded-lg bg-white/70 border border-current/10 px-3 py-2">
-                <p className="text-gray-500 mb-0.5">GRN Accepted Amount</p>
-                <p className="font-semibold text-gray-900">{formatCurrency(match.grnAcceptedAmount)}</p>
+              <div className="rounded-lg bg-white/70 dark:bg-white/5 border border-current/10 px-3 py-2">
+                <p className="text-gray-500 dark:text-white/60 mb-0.5">GRN Accepted Amount</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{formatCurrency(match.grnAcceptedAmount)}</p>
               </div>
             </div>
           </div>
 
           {/* Side-by-side comparison table */}
           {(match.lineComparisons ?? match.items)?.length > 0 && (
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
-              <table className="min-w-full divide-y divide-gray-100 text-sm">
-                <thead className="bg-gray-50">
+            <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-white/10">
+              <table className="min-w-full divide-y divide-gray-100 dark:divide-white/10 text-sm">
+                <thead className="bg-gray-50 dark:bg-white/5">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Product</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Invoice Qty</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">PO Qty</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">GRN Accepted Qty</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Invoice Price</th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">PO Price</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">Match</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">Product</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">Invoice Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">PO Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">GRN Accepted Qty</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">Invoice Price</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">PO Price</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">Match</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 bg-white">
+                <tbody className="divide-y divide-gray-100 dark:divide-white/10 bg-white dark:bg-transparent">
                   {(match.lineComparisons ?? match.items).map((line, idx) => {
                     const qtyMatch  = line.invoiceQty  === line.poQty  && line.invoiceQty  === line.grnQty
                     const priceMatch = !line.invoicePrice || !line.poPrice || Math.abs(line.invoicePrice - line.poPrice) < 0.01
                     const rowOk = line.matched ?? (qtyMatch && priceMatch)
                     return (
-                      <tr key={idx} className={rowOk ? 'bg-white' : 'bg-red-50'}>
-                        <td className="px-4 py-3 font-medium text-gray-900">{line.productName ?? '—'}</td>
+                      <tr key={idx} className={rowOk ? 'bg-white dark:bg-transparent' : 'bg-red-50 dark:bg-red-900/20'}>
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{line.productName ?? '—'}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{line.invoiceQty ?? '—'}</td>
                         <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.poQty ? 'text-red-600 font-semibold' : ''}`}>{line.poQty ?? '—'}</td>
                         <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.grnQty ? 'text-red-600 font-semibold' : ''}`}>{line.grnQty ?? '—'}</td>
@@ -322,15 +322,15 @@ export default function InvoiceDetailPage() {
 
       {/* Section 4 — Status History */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Status History</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Status History</h2>
         <Table columns={HISTORY_COLS} empty={history.length === 0} emptyMessage="No history.">
           {history.map((h, i) => (
-            <tr key={i} className="hover:bg-gray-50">
-              <Table.Td>{h.fromStatus ? <Badge status={h.fromStatus} /> : <span className="text-gray-300">—</span>}</Table.Td>
+            <tr key={i} className="hover:bg-gray-50 dark:hover:bg-white/5">
+              <Table.Td>{h.fromStatus ? <Badge status={h.fromStatus} /> : <span className="text-gray-300 dark:text-white/20">—</span>}</Table.Td>
               <Table.Td><Badge status={h.toStatus} /></Table.Td>
-              <Table.Td className="font-mono text-xs text-gray-400">{h.changedBy?.slice(-8).toUpperCase()}</Table.Td>
+              <Table.Td className="font-mono text-xs text-gray-400 dark:text-white/40">{h.changedBy?.slice(-8).toUpperCase()}</Table.Td>
               <Table.Td>{formatDateTime(h.changedAt)}</Table.Td>
-              <Table.Td className="text-gray-500">{h.remarks || '—'}</Table.Td>
+              <Table.Td className="text-gray-500 dark:text-white/60">{h.remarks || '—'}</Table.Td>
             </tr>
           ))}
         </Table>

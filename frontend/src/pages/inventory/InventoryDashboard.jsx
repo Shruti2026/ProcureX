@@ -127,8 +127,8 @@ export default function InventoryDashboard() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">{today}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Inventory Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">{today}</p>
         </div>
         <Button variant="secondary" size="sm" onClick={loadAll}>
           <RefreshCw size={14} />
@@ -137,7 +137,7 @@ export default function InventoryDashboard() {
       </div>
 
       {kpiError && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700">
           Failed to load KPI data. Check your connection and try refreshing.
         </div>
       )}
@@ -157,7 +157,7 @@ export default function InventoryDashboard() {
 
       {/* Stock overview table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Stock Overview</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Stock Overview</h2>
         <Table
           columns={STOCK_COLUMNS}
           loading={stockLoading}
@@ -167,16 +167,16 @@ export default function InventoryDashboard() {
           {stockItems.map((item, i) => (
             <tr
               key={item.id ?? i}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+              className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
             >
-              <Table.Td className="font-mono text-xs text-gray-500">
+              <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
                 {shortId(item.productId ?? item.id)}
               </Table.Td>
               <Table.Td>{item.warehouseName ?? item.warehouse?.name ?? '—'}</Table.Td>
               <Table.Td
                 className={clsx(
-                  (item.quantityOnHand ?? 0) < 10 && 'bg-amber-50 text-amber-800 font-semibold'
+                  (item.quantityOnHand ?? 0) < 10 && 'bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 font-semibold'
                 )}
               >
                 {item.quantityOnHand ?? '—'}
@@ -190,7 +190,7 @@ export default function InventoryDashboard() {
       {/* Pending GRNs section */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-gray-800">Pending Inspections</h2>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-white">Pending Inspections</h2>
           <Button
             variant="primary"
             size="sm"
@@ -209,10 +209,10 @@ export default function InventoryDashboard() {
           {pendingGrns.map((grn, i) => (
             <tr
               key={grn.id ?? i}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+              className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
             >
-              <Table.Td className="font-mono text-xs text-gray-600">
+              <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
                 {grn.grnNumber ?? grn.id?.slice(-8).toUpperCase()}
               </Table.Td>
               <Table.Td>{formatDate(grn.receivedAt ?? grn.createdAt)}</Table.Td>

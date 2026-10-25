@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { useNavigate } from 'react-router-dom'
 import { Receipt, CheckCircle2, Tag, CreditCard, Eye, Play, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -14,6 +14,7 @@ import { invoiceService } from '../../services/invoiceService'
 import { budgetService } from '../../services/budgetService'
 import { paymentService } from '../../services/paymentService'
 import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import { ROLES } from '../../constants/roles'
 
 const reducedMotion =
@@ -26,6 +27,7 @@ const RECENT_COLUMNS = ['Invoice Number', 'Vendor ID', 'Amount', 'Status', 'Subm
 export default function FinanceDashboard() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { isDark } = useTheme()
 
   const [kpi, setKpi] = useState({ pending: 0, flagged: 0, budgets: 0, paymentsTotal: 0 })
   const [kpiLoading, setKpiLoading] = useState(true)
@@ -166,8 +168,8 @@ export default function FinanceDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Finance Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">{today}</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Finance Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">{today}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -181,12 +183,22 @@ export default function FinanceDashboard() {
       </div>
 
       {budgets.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-base font-semibold text-gray-900 mb-4">Budget Utilization</h2>
+        <div className="bg-white dark:bg-white/5 dark:backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Budget Utilization</h2>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart layout="vertical" data={budgets} margin={{ left: 20 }}>
-              <XAxis type="number" tickFormatter={(v) => `${v}%`} />
-              <YAxis type="category" dataKey="department" width={120} />
+              <CartesianGrid stroke={isDark ? 'rgba(255,255,255,0.05)' : '#f1f5f9'} />
+              <XAxis
+                type="number"
+                tickFormatter={(v) => `${v}%`}
+                tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
+              />
+              <YAxis
+                type="category"
+                dataKey="department"
+                width={120}
+                tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
+              />
               <Tooltip formatter={(value, name, props) => [
                 `${((props.payload.used / props.payload.allocated) * 100).toFixed(1)}%`,
                 'Utilization'
@@ -198,7 +210,7 @@ export default function FinanceDashboard() {
       )}
 
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Recent Invoices</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Recent Invoices</h2>
         <Table
           columns={RECENT_COLUMNS}
           loading={invoicesLoading}
@@ -208,15 +220,15 @@ export default function FinanceDashboard() {
           {invoices.map((inv, i) => (
             <tr
               key={inv.invoiceId}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
+              className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up cursor-pointer"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
             >
-              <Table.Td className="font-medium text-gray-900">{inv.invoiceNumber}</Table.Td>
-              <Table.Td className="text-gray-400 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
+              <Table.Td className="font-medium text-gray-900 dark:text-white">{inv.invoiceNumber}</Table.Td>
+              <Table.Td className="text-gray-400 dark:text-white/40 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
               <Table.Td className="font-medium">{formatCurrency(inv.invoiceAmount)}</Table.Td>
               <Table.Td><Badge status={inv.status} /></Table.Td>
-              <Table.Td className="text-gray-400">{formatDate(inv.submittedAt)}</Table.Td>
+              <Table.Td className="text-gray-400 dark:text-white/40">{formatDate(inv.submittedAt)}</Table.Td>
               <Table.Td onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-1">
                   {inv.status === 'PENDING_VERIFICATION' && (

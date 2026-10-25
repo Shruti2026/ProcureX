@@ -54,8 +54,8 @@ export default function PurchaseOrderDetailPage() {
           <ArrowLeft size={15} />
           Back to Purchase Orders
         </Button>
-        <div className="rounded-xl border border-gray-200 bg-white p-12 text-center">
-          <p className="text-gray-500">Purchase order not found.</p>
+        <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 p-12 text-center">
+          <p className="text-gray-500 dark:text-white/60">Purchase order not found.</p>
         </div>
       </div>
     )
@@ -113,58 +113,58 @@ export default function PurchaseOrderDetailPage() {
       </Button>
 
       {/* PO Header card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 dark:backdrop-blur-sm p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="font-mono text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-gray-400 dark:text-white/40 bg-gray-100 dark:bg-white/10 px-2 py-0.5 rounded">
                 {po.poNumber ?? po.id?.slice(-8).toUpperCase()}
               </span>
               <Badge status={po.status} />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
               {po.vendorName ?? po.vendor?.companyName ?? 'Purchase Order'}
             </h1>
           </div>
         </div>
 
-        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 pt-5">
+        <dl className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-gray-100 dark:border-white/10 pt-5">
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Order Date</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Order Date</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDate(po.orderDate ?? po.createdAt)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Expected Delivery</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Expected Delivery</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatDate(po.expectedDeliveryDate)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Total Amount</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Total Amount</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">
               {formatCurrency(po.totalAmount)}
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-gray-400 uppercase tracking-wide">Line Items</dt>
-            <dd className="mt-1 text-sm font-medium text-gray-800">{items.length}</dd>
+            <dt className="text-xs text-gray-400 dark:text-white/40 uppercase tracking-wide">Line Items</dt>
+            <dd className="mt-1 text-sm font-medium text-gray-800 dark:text-white">{items.length}</dd>
           </div>
         </dl>
       </div>
 
       {/* Line Items table */}
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Line Items</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Line Items</h2>
         <Table
           columns={LINE_ITEMS_COLUMNS}
           empty={items.length === 0}
           emptyMessage="No line items on this purchase order."
         >
           {items.map((item, i) => (
-            <tr key={item.id ?? i} className="hover:bg-gray-50 transition-colors duration-100">
-              <Table.Td className="font-medium text-gray-900">
+            <tr key={item.id ?? i} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+              <Table.Td className="font-medium text-gray-900 dark:text-white">
                 {item.productName ?? item.product?.name ?? '—'}
               </Table.Td>
               <Table.Td>{item.quantity ?? '—'}</Table.Td>
@@ -178,20 +178,20 @@ export default function PurchaseOrderDetailPage() {
       {/* Status History timeline */}
       {history.length > 0 && (
         <div>
-          <h2 className="text-base font-semibold text-gray-800 mb-3">Status History</h2>
-          <div className="rounded-xl border border-gray-200 bg-white divide-y divide-gray-100">
+          <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Status History</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 dark:backdrop-blur-sm divide-y divide-gray-100 dark:divide-white/10">
             {history.map((entry, i) => (
               <div key={entry.id ?? i} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex items-center gap-2 text-sm font-medium text-gray-800 min-w-0">
-                  <span className="text-gray-500">{entry.fromStatus ?? '—'}</span>
-                  <ArrowRight size={14} className="text-gray-400 shrink-0" />
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-800 dark:text-white min-w-0">
+                  <span className="text-gray-500 dark:text-white/60">{entry.fromStatus ?? '—'}</span>
+                  <ArrowRight size={14} className="text-gray-400 dark:text-white/40 shrink-0" />
                   <span>{entry.toStatus ?? '—'}</span>
                 </div>
-                <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-500">
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs text-gray-500 dark:text-white/60">
                   <span>{entry.changedBy ?? '—'}</span>
                   <span>{formatDateTime(entry.changedAt)}</span>
                   {entry.remarks && (
-                    <span className="italic text-gray-400">{entry.remarks}</span>
+                    <span className="italic text-gray-400 dark:text-white/40">{entry.remarks}</span>
                   )}
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function PurchaseOrderDetailPage() {
         (po.status === 'CREATED' && isProcurementManager) ||
         (po.status === 'CREATED' || po.status === 'APPROVED')
       ) && (
-        <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+        <div className="flex justify-end gap-3 border-t border-gray-100 dark:border-white/10 pt-4">
           {po.status === 'CREATED' && isProcurementManager && (
             <Button
               variant="primary"

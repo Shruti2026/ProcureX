@@ -114,7 +114,7 @@ function CreateGRNModal({ isOpen, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="relative w-full max-w-2xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0">
@@ -172,25 +172,25 @@ function CreateGRNModal({ isOpen, onClose }) {
                   <Spinner size="lg" />
                 </div>
               ) : approvedPOs.length === 0 ? (
-                <p className="text-center text-gray-400 py-12">No approved purchase orders available.</p>
+                <p className="text-center text-gray-400 dark:text-white/40 py-12">No approved purchase orders available.</p>
               ) : (
                 approvedPOs.map((po) => (
                   <button
                     key={po.id}
                     type="button"
                     onClick={() => handleSelectPO(po)}
-                    className="w-full text-left rounded-xl border border-gray-200 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    className="w-full text-left rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-primary-50 dark:hover:bg-white/10 hover:border-primary-200 dark:hover:border-white/20 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-primary-400"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-gray-800">
+                        <p className="text-sm font-semibold text-gray-800 dark:text-white">
                           {po.poNumber ?? po.id?.slice(-8).toUpperCase()}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">
                           {po.vendorName ?? po.vendor?.companyName ?? '—'}
                         </p>
                       </div>
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-700 dark:text-white/70">
                         {po.totalAmount != null
                           ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(po.totalAmount)
                           : '—'}
@@ -210,18 +210,18 @@ function CreateGRNModal({ isOpen, onClose }) {
                   <Spinner size="lg" />
                 </div>
               ) : warehouses.length === 0 ? (
-                <p className="text-center text-gray-400 py-12">No warehouses available.</p>
+                <p className="text-center text-gray-400 dark:text-white/40 py-12">No warehouses available.</p>
               ) : (
                 warehouses.map((wh) => (
                   <button
                     key={wh.warehouseId}
                     type="button"
                     onClick={() => handleSelectWarehouse(wh)}
-                    className="w-full text-left rounded-xl border border-gray-200 bg-gray-50 hover:bg-primary-50 hover:border-primary-200 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    className="w-full text-left rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-primary-50 dark:hover:bg-white/10 hover:border-primary-200 dark:hover:border-white/20 transition-colors p-4 focus:outline-none focus:ring-2 focus:ring-primary-400"
                   >
-                    <p className="text-sm font-semibold text-gray-800">{wh.warehouseName}</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white">{wh.warehouseName}</p>
                     {wh.location && (
-                      <p className="text-xs text-gray-500 mt-0.5">{wh.location}</p>
+                      <p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">{wh.location}</p>
                     )}
                   </button>
                 ))
@@ -238,36 +238,36 @@ function CreateGRNModal({ isOpen, onClose }) {
           {/* Step 3: Confirm quantities */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 text-sm">
-                <p className="text-gray-700">
-                  <span className="font-medium">PO:</span>{' '}
+              <div className="rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 px-4 py-3 text-sm">
+                <p className="text-gray-700 dark:text-white/60">
+                  <span className="font-medium dark:text-white">PO:</span>{' '}
                   {selectedPO?.poNumber ?? selectedPO?.id?.slice(-8).toUpperCase()}
                 </p>
-                <p className="text-gray-700 mt-1">
-                  <span className="font-medium">Warehouse:</span>{' '}
+                <p className="text-gray-700 dark:text-white/60 mt-1">
+                  <span className="font-medium dark:text-white">Warehouse:</span>{' '}
                   {selectedWarehouse?.warehouseName}
                 </p>
               </div>
 
               {poItems.length === 0 ? (
-                <p className="text-center text-gray-400 py-8">No line items on this PO.</p>
+                <p className="text-center text-gray-400 dark:text-white/40 py-8">No line items on this PO.</p>
               ) : (
                 <div className="space-y-3">
                   {poItems.map((item) => (
                     <div
                       key={item.id}
-                      className="rounded-lg border border-gray-200 bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+                      className="rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4 flex flex-col sm:flex-row sm:items-center gap-3"
                     >
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-800">
+                        <p className="text-sm font-medium text-gray-800 dark:text-white">
                           {item.productName ?? item.product?.name ?? '—'}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-500 dark:text-white/60 mt-0.5">
                           Ordered: {item.quantity}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-gray-600 whitespace-nowrap">
+                        <label className="text-xs text-gray-600 dark:text-white/60 whitespace-nowrap">
                           Received Qty
                         </label>
                         <input
@@ -281,7 +281,7 @@ function CreateGRNModal({ isOpen, onClose }) {
                               [item.id]: e.target.value,
                             }))
                           }
-                          className="w-20 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
+                          className="w-20 rounded-lg border border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-white px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent"
                         />
                       </div>
                     </div>
@@ -351,8 +351,8 @@ export default function GrnsPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Goods Received Notes (GRN)</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Goods Received Notes (GRN)</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Process incoming shipments, inspect goods, and record receipts against purchase orders.
           </p>
         </div>
@@ -363,7 +363,7 @@ export default function GrnsPage() {
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex gap-1 border-b border-gray-200 overflow-x-auto">
+      <div className="flex gap-1 border-b border-gray-200 dark:border-white/10 overflow-x-auto">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -373,7 +373,7 @@ export default function GrnsPage() {
               'px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none whitespace-nowrap',
               activeStatus === tab.value
                 ? 'border-b-2 border-primary-600 text-primary-600'
-                : 'text-gray-500 hover:text-gray-700 hover:border-b-2 hover:border-gray-300'
+                : 'text-gray-500 dark:text-white/60 hover:text-gray-700 dark:hover:text-white/80 hover:border-b-2 hover:border-gray-300 dark:hover:border-white/20'
             )}
           >
             {tab.label}
@@ -391,13 +391,13 @@ export default function GrnsPage() {
         {grns.map((grn) => (
           <tr
             key={grn.grnId}
-            className="hover:bg-gray-50 transition-colors duration-100 cursor-pointer"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 cursor-pointer"
             onClick={() => navigate(`/inventory/grns/${grn.grnId}`)}
           >
-            <Table.Td className="font-mono text-xs text-gray-600">
+            <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
               {grn.grnNumber ?? grn.id?.slice(-8).toUpperCase()}
             </Table.Td>
-            <Table.Td className="font-mono text-xs text-gray-500">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {grn.purchaseOrderId?.slice(-8).toUpperCase() ?? '—'}
             </Table.Td>
             <Table.Td>{grn.warehouseName ?? grn.warehouse?.name ?? '—'}</Table.Td>
