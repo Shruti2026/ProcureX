@@ -199,10 +199,24 @@ export default function FinanceDashboard() {
                 width={120}
                 tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
               />
-              <Tooltip formatter={(value, name, props) => [
-                `${((props.payload.used / props.payload.allocated) * 100).toFixed(1)}%`,
-                'Utilization'
-              ]} />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null
+                  return (
+                    <div className="bg-slate-900 dark:bg-[#1A1035] text-white text-xs px-3 py-2 rounded-lg shadow-lg border border-slate-700 dark:border-white/10">
+                      <p className="font-semibold text-slate-300 mb-1">{label}</p>
+                      {payload.map((entry, i) => {
+                        const pct = entry.payload.allocated
+                          ? ((entry.payload.used / entry.payload.allocated) * 100).toFixed(1)
+                          : entry.value
+                        return (
+                          <p key={i} style={{color: entry.color}}>{entry.name}: {pct}%</p>
+                        )
+                      })}
+                    </div>
+                  )
+                }}
+              />
               <Bar dataKey="used" fill="#4f46e5" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>

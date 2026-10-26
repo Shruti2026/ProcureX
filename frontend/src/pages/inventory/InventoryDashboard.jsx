@@ -137,7 +137,7 @@ export default function InventoryDashboard() {
       </div>
 
       {kpiError && (
-        <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           Failed to load KPI data. Check your connection and try refreshing.
         </div>
       )}

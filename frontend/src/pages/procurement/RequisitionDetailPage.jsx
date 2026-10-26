@@ -197,7 +197,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
               <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
                 Items
                 {errors.items?.message && (
-                  <span className="ml-2 text-xs font-normal text-red-500">
+                  <span className="ml-2 text-xs font-normal text-red-500 dark:text-red-400">
                     {errors.items.message}
                   </span>
                 )}
@@ -230,7 +230,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
                           className={clsx(
                             'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white bg-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
                             errors.items?.[index]?.productId
-                              ? 'border-red-400'
+                              ? 'border-red-400 dark:border-red-500/50'
                               : 'border-gray-300'
                           )}
                           {...register(`items.${index}.productId`)}
@@ -245,7 +245,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
                           ))}
                         </select>
                         {errors.items?.[index]?.productId && (
-                          <p className="mt-1 text-xs text-red-500">
+                          <p className="mt-1 text-xs text-red-500 dark:text-red-400">
                             {errors.items[index].productId.message}
                           </p>
                         )}
@@ -279,7 +279,7 @@ function EditRequisitionModal({ isOpen, onClose, requisition }) {
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 transition-colors"
+                        className="mt-6 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-300 transition-colors"
                         aria-label="Remove item"
                       >
                         <Trash2 size={15} />

@@ -64,7 +64,7 @@ function CreateBudgetModal({ onClose, onSuccess }) {
               className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               placeholder="e.g. Engineering"
             />
-            {errors.departmentName && <p className="text-xs text-red-500 mt-1">{errors.departmentName}</p>}
+            {errors.departmentName && <p className="text-xs text-red-500 mt-1 dark:text-red-400">{errors.departmentName}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Fiscal Year</label>
@@ -75,7 +75,7 @@ function CreateBudgetModal({ onClose, onSuccess }) {
               className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
               min="2020"
             />
-            {errors.fiscalYear && <p className="text-xs text-red-500 mt-1">{errors.fiscalYear}</p>}
+            {errors.fiscalYear && <p className="text-xs text-red-500 mt-1 dark:text-red-400">{errors.fiscalYear}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-white/80 mb-1">Allocated Amount</label>
@@ -88,7 +88,7 @@ function CreateBudgetModal({ onClose, onSuccess }) {
               min="0.01"
               step="0.01"
             />
-            {errors.allocatedAmount && <p className="text-xs text-red-500 mt-1">{errors.allocatedAmount}</p>}
+            {errors.allocatedAmount && <p className="text-xs text-red-500 mt-1 dark:text-red-400">{errors.allocatedAmount}</p>}
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="secondary" size="sm" type="button" onClick={onClose}>Cancel</Button>

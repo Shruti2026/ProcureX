@@ -27,16 +27,16 @@ const ALL_ACTIONS = [
 
 /** Action → color token */
 const ACTION_COLORS = {
-  LOGIN:              'bg-blue-50 text-blue-700 ring-blue-200',
-  LOGOUT:             'bg-slate-100 text-slate-600 ring-slate-200',
-  VENDOR_REGISTER:    'bg-violet-50 text-violet-700 ring-violet-200',
-  CREATE_EMPLOYEE:    'bg-green-50 text-green-700 ring-green-200',
-  APPROVE_VENDOR:     'bg-teal-50 text-teal-700 ring-teal-200',
-  REJECT_VENDOR:      'bg-red-50 text-red-700 ring-red-200',
-  UPDATE_USER_STATUS: 'bg-amber-50 text-amber-700 ring-amber-200',
-  SOFT_DELETE_USER:   'bg-red-50 text-red-700 ring-red-200',
-  VENDOR_SELF_DELETE: 'bg-orange-50 text-orange-700 ring-orange-200',
-  CHANGE_PASSWORD:    'bg-indigo-50 text-indigo-700 ring-indigo-200',
+  LOGIN:              'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:ring-blue-700/50',
+  LOGOUT:             'bg-slate-100 text-slate-600 ring-slate-200 dark:bg-slate-700/30 dark:text-slate-300 dark:ring-slate-600/50',
+  VENDOR_REGISTER:    'bg-violet-50 text-violet-700 ring-violet-200 dark:bg-violet-900/30 dark:text-violet-300 dark:ring-violet-700/50',
+  CREATE_EMPLOYEE:    'bg-green-50 text-green-700 ring-green-200 dark:bg-green-900/30 dark:text-green-300 dark:ring-green-700/50',
+  APPROVE_VENDOR:     'bg-teal-50 text-teal-700 ring-teal-200 dark:bg-teal-900/30 dark:text-teal-300 dark:ring-teal-700/50',
+  REJECT_VENDOR:      'bg-red-50 text-red-700 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700/50',
+  UPDATE_USER_STATUS: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:ring-amber-700/50',
+  SOFT_DELETE_USER:   'bg-red-50 text-red-700 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-700/50',
+  VENDOR_SELF_DELETE: 'bg-orange-50 text-orange-700 ring-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:ring-orange-700/50',
+  CHANGE_PASSWORD:    'bg-indigo-50 text-indigo-700 ring-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:ring-indigo-700/50',
 }
 
 const reducedMotion =
@@ -87,7 +87,7 @@ function prettyJson(raw) {
    ActionBadge
 ───────────────────────────────────────── */
 function ActionBadge({ action }) {
-  const colorClass = ACTION_COLORS[action] ?? 'bg-gray-100 text-gray-600 ring-gray-200'
+  const colorClass = ACTION_COLORS[action] ?? 'bg-gray-100 text-gray-600 ring-gray-200 dark:bg-gray-700/30 dark:text-gray-300 dark:ring-gray-600/50'
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ${colorClass}`}
@@ -510,7 +510,7 @@ export default function AuditLogsPage() {
               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
                          shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400
                          focus:border-transparent transition-colors
-                         dark:bg-white/5 dark:border-white/10 dark:text-white"
+                         dark:bg-white/5 dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
             />
           </div>
 
@@ -526,7 +526,7 @@ export default function AuditLogsPage() {
               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700
                          shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-400
                          focus:border-transparent transition-colors
-                         dark:bg-white/5 dark:border-white/10 dark:text-white"
+                         dark:bg-white/5 dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
             />
           </div>
 

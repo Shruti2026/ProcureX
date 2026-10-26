@@ -340,17 +340,17 @@ export default function AdminDashboard() {
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <Lock size={18} className="text-amber-600" />
+                <Lock size={18} className="text-amber-600 dark:text-amber-400" />
                 <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                   Security & Access
                 </h2>
               </div>
               {summaryData?.lockedAccounts > 0 ? (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">
                   {summaryData.lockedAccounts} Locked
                 </span>
               ) : (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                   Normal
                 </span>
               )}
@@ -362,8 +362,8 @@ export default function AdminDashboard() {
                   <div
                     className={
                       summaryData?.lockedAccounts > 0
-                        ? 'text-red-600'
-                        : 'text-green-600'
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'text-green-600 dark:text-green-400'
                     }
                   >
                     {summaryData?.lockedAccounts > 0 ? (

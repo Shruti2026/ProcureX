@@ -82,7 +82,7 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 dark:bg-[#0F0A1E]">
         <div className="w-full max-w-md rounded-2xl bg-white shadow-sm border border-primary-100 p-8 text-center animate-fade-slide-up dark:bg-white/5 dark:border-white/10">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
-            <CheckCircle2 size={32} className="text-green-600" />
+            <CheckCircle2 size={32} className="text-green-600 dark:text-green-400" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             Registration Successful

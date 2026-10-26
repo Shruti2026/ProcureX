@@ -208,7 +208,7 @@ export default function GrnDetailPage() {
           <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Inspection Form</h2>
 
           {formError && (
-            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700">
+            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-500/30 px-4 py-3 text-sm text-red-700 dark:text-red-400">
               {formError}
             </div>
           )}

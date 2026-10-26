@@ -286,9 +286,9 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
                   className={[
                     'w-full rounded-lg border px-3 py-2 text-sm text-gray-900',
                     'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
-                    'disabled:bg-gray-50 disabled:cursor-not-allowed',
+                    'disabled:bg-gray-50 dark:disabled:bg-white/5 disabled:cursor-not-allowed',
                     'dark:bg-white/5 dark:border-white/10 dark:text-white',
-                    errors.role ? 'border-red-300 focus:ring-red-400' : 'border-gray-200',
+                    errors.role ? 'border-red-300 dark:border-red-500/50 focus:ring-red-400' : 'border-gray-200',
                   ].join(' ')}
                   {...register('role')}
                 >

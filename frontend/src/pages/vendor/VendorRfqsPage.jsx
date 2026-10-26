@@ -26,10 +26,10 @@ function ClosingDateCell({ dateStr }) {
   if (days === null) {
     countdown = <span className="text-gray-400 dark:text-white/40">—</span>
   } else if (days < 0) {
-    countdown = <span className="text-red-600 text-xs font-medium">Expired</span>
+    countdown = <span className="text-red-600 dark:text-red-400 text-xs font-medium">Expired</span>
   } else if (days <= 3) {
     countdown = (
-      <span className="text-red-600 text-xs font-medium">{days} days left</span>
+      <span className="text-red-600 dark:text-red-400 text-xs font-medium">{days} days left</span>
     )
   } else {
     countdown = (

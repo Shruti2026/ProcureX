@@ -118,7 +118,7 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
         {/* Error state */}
         {!fetchLoading && fetchError && (
           <div className="space-y-4">
-            <p className="text-sm text-red-600">{fetchError}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{fetchError}</p>
             <div className="flex justify-end">
               <Button type="button" variant="secondary" size="sm" onClick={onClose}>
                 Close

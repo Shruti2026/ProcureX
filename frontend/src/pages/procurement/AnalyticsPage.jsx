@@ -178,7 +178,19 @@ export default function AnalyticsPage() {
                 width={140}
                 tick={{ fill: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}
               />
-              <Tooltip formatter={(value) => [formatCurrency(value), 'Total Spend']} />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null
+                  return (
+                    <div className="bg-slate-900 dark:bg-[#1A1035] text-white text-xs px-3 py-2 rounded-lg shadow-lg border border-slate-700 dark:border-white/10">
+                      <p className="font-semibold text-slate-300 mb-1">{label}</p>
+                      {payload.map((entry, i) => (
+                        <p key={i} style={{color: entry.color}}>{entry.name}: {formatCurrency(entry.value)}</p>
+                      ))}
+                    </div>
+                  )
+                }}
+              />
               <Bar dataKey="totalSpend" fill="#6366f1" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>

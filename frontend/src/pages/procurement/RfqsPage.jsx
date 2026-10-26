@@ -34,10 +34,10 @@ function ClosingDateCell({ dateStr }) {
   if (days === null) {
     countdown = <span className="text-gray-400 dark:text-white/40">—</span>
   } else if (days < 0) {
-    countdown = <span className="text-red-600 text-xs font-medium">Expired</span>
+    countdown = <span className="text-red-600 dark:text-red-400 text-xs font-medium">Expired</span>
   } else if (days <= 3) {
     countdown = (
-      <span className="text-red-600 text-xs font-medium">{days} days left</span>
+      <span className="text-red-600 dark:text-red-400 text-xs font-medium">{days} days left</span>
     )
   } else {
     countdown = (
@@ -178,7 +178,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               id="rfq-requisition"
               className={clsx(
                 'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-[#1A1035] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
-                errors.requisitionId ? 'border-red-400' : 'border-gray-300'
+                errors.requisitionId ? 'border-red-400 dark:border-red-500/50' : 'border-gray-300'
               )}
               {...register('requisitionId', { required: 'Requisition is required' })}
               disabled={requisitionsLoading}
@@ -194,7 +194,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               ))}
             </select>
             {errors.requisitionId && (
-              <p className="mt-1 text-xs text-red-500">{errors.requisitionId.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.requisitionId.message}</p>
             )}
           </div>
 
@@ -208,8 +208,8 @@ function CreateRfqModal({ isOpen, onClose }) {
               type="date"
               min={todayStr}
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
-                errors.closingDate ? 'border-red-400' : 'border-gray-300'
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 dark:border-white/10 dark:[color-scheme:dark] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
+                errors.closingDate ? 'border-red-400 dark:border-red-500/50' : 'border-gray-300'
               )}
               {...register('closingDate', {
                 required: 'Closing date is required',
@@ -218,7 +218,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               })}
             />
             {errors.closingDate && (
-              <p className="mt-1 text-xs text-red-500">{errors.closingDate.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.closingDate.message}</p>
             )}
           </div>
 
@@ -234,7 +234,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               size={Math.min(6, Math.max(3, vendors.length))}
               className={clsx(
                 'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-[#1A1035] dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white',
-                errors.invitedVendorIds ? 'border-red-400' : 'border-gray-300'
+                errors.invitedVendorIds ? 'border-red-400 dark:border-red-500/50' : 'border-gray-300'
               )}
               {...register('invitedVendorIds', {
                 required: 'At least one vendor must be selected',
@@ -256,7 +256,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               )}
             </select>
             {errors.invitedVendorIds && (
-              <p className="mt-1 text-xs text-red-500">{errors.invitedVendorIds.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.invitedVendorIds.message}</p>
             )}
           </div>
 
