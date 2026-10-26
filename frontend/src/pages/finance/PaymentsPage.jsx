@@ -116,7 +116,7 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
             <input
               type="date"
               {...register('paymentDate', { required: 'Payment date is required' })}
-              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:[color-scheme:dark] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.paymentDate && (
               <p className="mt-1 text-xs text-red-500">{errors.paymentDate.message}</p>
