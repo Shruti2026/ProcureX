@@ -188,6 +188,7 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="create-user-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 dark:bg-[#1A1035] dark:border dark:border-white/10">
         {/* Header */}
@@ -287,7 +288,7 @@ function CreateUserModal({ isOpen, onClose, onCreated }) {
                     'w-full rounded-lg border px-3 py-2 text-sm text-gray-900',
                     'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
                     'disabled:bg-gray-50 dark:disabled:bg-white/5 disabled:cursor-not-allowed',
-                    'dark:bg-white/5 dark:border-white/10 dark:text-white',
+                    'dark:bg-[#1A1035] dark:border-white/10 dark:text-white',
                     errors.role ? 'border-red-300 dark:border-red-500/50 focus:ring-red-400' : 'border-gray-200',
                   ].join(' ')}
                   {...register('role')}
@@ -352,6 +353,7 @@ function RejectReasonModal({ isOpen, onClose, onConfirm }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="reject-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 dark:bg-[#1A1035] dark:border dark:border-white/10">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">
@@ -403,6 +405,7 @@ function ConfirmDeleteModal({ isOpen, onClose, onConfirm, userName, loading }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="delete-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="bg-white rounded-xl shadow-xl w-full max-w-sm mx-4 dark:bg-[#1A1035] dark:border dark:border-white/10">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-white/10">

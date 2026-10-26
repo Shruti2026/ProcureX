@@ -83,6 +83,7 @@ function WarehouseModal({ isOpen, onClose, warehouse }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="warehouse-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-md mx-4">
         {/* Header */}
