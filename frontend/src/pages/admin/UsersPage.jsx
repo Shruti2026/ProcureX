@@ -735,7 +735,7 @@ export default function UsersPage() {
           </div>
         ) : (
           <Table
-            columns={['Name / Email', 'Role', 'Status', 'Actions']}
+            columns={['Name', 'Email', 'Role', 'Status', 'Actions']}
             loading={managersLoading}
             empty={!managersLoading && managers.length === 0}
             emptyMessage="No internal managers found."
@@ -746,12 +746,16 @@ export default function UsersPage() {
                 className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
                 style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               >
-                {/* Name / Email stacked */}
+                {/* Name */}
                 <Table.Td className="max-w-xs">
                   <div className="font-medium text-gray-900 dark:text-white truncate">
                     {manager.fullName}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-white/60 truncate">{manager.email}</div>
+                </Table.Td>
+
+                {/* Email */}
+                <Table.Td className="max-w-xs">
+                  <div className="text-sm text-gray-500 dark:text-white/60 truncate">{manager.email}</div>
                 </Table.Td>
 
                 {/* Role badge */}
@@ -805,7 +809,7 @@ export default function UsersPage() {
           </div>
         ) : (
           <Table
-            columns={['Vendor Name / Contact Email', 'Role', 'Status', 'Actions']}
+            columns={['Vendor Name', 'Contact Email', 'Role', 'Status', 'Actions']}
             loading={vendorsLoading}
             empty={!vendorsLoading && vendors.length === 0}
             emptyMessage="No registered vendors found."
@@ -816,12 +820,16 @@ export default function UsersPage() {
                 className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
                 style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
               >
-                {/* Vendor / Email stacked */}
+                {/* Vendor Name */}
                 <Table.Td className="max-w-xs">
                   <div className="font-medium text-gray-900 dark:text-white truncate">
                     {vendor.fullName}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-white/60 truncate">{vendor.email}</div>
+                </Table.Td>
+
+                {/* Contact Email */}
+                <Table.Td className="max-w-xs">
+                  <div className="text-sm text-gray-500 dark:text-white/60 truncate">{vendor.email}</div>
                 </Table.Td>
 
                 {/* Role badge */}
