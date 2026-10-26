@@ -23,10 +23,36 @@ spring:
               uri: lb://procurex-vendor-catalog-service
               predicates:
                 - Path=/api/v1/vendors/**, /api/v1/products/**, /api/v1/categories/**
+            - id: vendor-products-route
+              uri: lb://procurex-vendor-catalog-service
+              predicates:
+                - Path=/api/v1/vendor-products/**
             - id: procurement-service
               uri: lb://procurex-procurement-service
               predicates:
                 - Path=/api/v1/procurement/**
+            - id: inventory-service
+              uri: lb://procurex-inventory-service
+              predicates:
+                - Path=/api/v1/inventory/**
+            - id: finance-service
+              uri: lb://procurex-finance-service
+              predicates:
+                - Path=/api/v1/finance/**
+              filters:
+                - RewritePath=/api/v1/finance/(?<segment>.*), /api/v1/finance/${segment}
+            - id: notification-service
+              uri: lb://procurex-notification-service
+              predicates:
+                - Path=/api/v1/notifications/**
+              filters:
+                - RewritePath=/api/v1/notifications/(?<segment>.*), /api/v1/notifications/${segment}
+            - id: analytics-service
+              uri: lb://procurex-analytics-service
+              predicates:
+                - Path=/api/v1/reports/**
+              filters:
+                - RewritePath=/api/v1/reports/(?<segment>.*), /api/v1/reports/${segment}
 
 eureka:
   client:
