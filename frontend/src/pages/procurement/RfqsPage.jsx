@@ -194,7 +194,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               ))}
             </select>
             {errors.requisitionId && (
-              <p className="mt-1 text-xs text-red-500">{errors.requisitionId.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.requisitionId.message}</p>
             )}
           </div>
 
@@ -208,7 +208,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               type="date"
               min={todayStr}
               className={clsx(
-                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
+                'w-full rounded-lg border px-3 py-2 text-sm text-gray-800 dark:text-white dark:bg-white/5 dark:border-white/10 dark:[color-scheme:dark] focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent',
                 errors.closingDate ? 'border-red-400 dark:border-red-500/50' : 'border-gray-300'
               )}
               {...register('closingDate', {
@@ -256,7 +256,7 @@ function CreateRfqModal({ isOpen, onClose }) {
               )}
             </select>
             {errors.invitedVendorIds && (
-              <p className="mt-1 text-xs text-red-500">{errors.invitedVendorIds.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.invitedVendorIds.message}</p>
             )}
           </div>
 

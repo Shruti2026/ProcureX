@@ -197,7 +197,7 @@ function CreateRequisitionModal({ isOpen, onClose }) {
               <h3 className="text-sm font-semibold text-gray-700 dark:text-white/80">
                 Items
                 {errors.items?.message && (
-                  <span className="ml-2 text-xs font-normal text-red-500">
+                  <span className="ml-2 text-xs font-normal text-red-500 dark:text-red-400">
                     {errors.items.message}
                   </span>
                 )}
@@ -245,7 +245,7 @@ function CreateRequisitionModal({ isOpen, onClose }) {
                           ))}
                         </select>
                         {errors.items?.[index]?.productId && (
-                          <p className="mt-1 text-xs text-red-500">
+                          <p className="mt-1 text-xs text-red-500 dark:text-red-400">
                             {errors.items[index].productId.message}
                           </p>
                         )}

@@ -86,7 +86,7 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
               ))}
             </select>
             {errors.invoiceId && (
-              <p className="mt-1 text-xs text-red-500">{errors.invoiceId.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.invoiceId.message}</p>
             )}
           </div>
 
@@ -104,7 +104,7 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
               ))}
             </select>
             {errors.paymentMethod && (
-              <p className="mt-1 text-xs text-red-500">{errors.paymentMethod.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.paymentMethod.message}</p>
             )}
           </div>
 
@@ -119,7 +119,7 @@ function InitiatePaymentModal({ approvedInvoices, onClose, onSuccess }) {
               className="w-full border border-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:[color-scheme:dark] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.paymentDate && (
-              <p className="mt-1 text-xs text-red-500">{errors.paymentDate.message}</p>
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400">{errors.paymentDate.message}</p>
             )}
           </div>
 

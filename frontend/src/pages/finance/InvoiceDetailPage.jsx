@@ -285,14 +285,14 @@ export default function InvoiceDetailPage() {
                       <tr key={idx} className={rowOk ? 'bg-white dark:bg-transparent' : 'bg-red-50 dark:bg-red-900/20'}>
                         <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{line.productName ?? '—'}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{line.invoiceQty ?? '—'}</td>
-                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.poQty ? 'text-red-600 font-semibold' : ''}`}>{line.poQty ?? '—'}</td>
-                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.grnQty ? 'text-red-600 font-semibold' : ''}`}>{line.grnQty ?? '—'}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.poQty ? 'text-red-600 dark:text-red-400 font-semibold' : ''}`}>{line.poQty ?? '—'}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${line.invoiceQty !== line.grnQty ? 'text-red-600 dark:text-red-400 font-semibold' : ''}`}>{line.grnQty ?? '—'}</td>
                         <td className="px-4 py-3 text-right tabular-nums">{formatCurrency(line.invoicePrice)}</td>
-                        <td className={`px-4 py-3 text-right tabular-nums ${!priceMatch ? 'text-red-600 font-semibold' : ''}`}>{formatCurrency(line.poPrice)}</td>
+                        <td className={`px-4 py-3 text-right tabular-nums ${!priceMatch ? 'text-red-600 dark:text-red-400 font-semibold' : ''}`}>{formatCurrency(line.poPrice)}</td>
                         <td className="px-4 py-3 text-center">
                           {rowOk
-                            ? <CheckCircle size={15} className="text-green-500 mx-auto" />
-                            : <XCircle    size={15} className="text-red-500 mx-auto" />
+                            ? <CheckCircle size={15} className="text-green-500 dark:text-green-400 mx-auto" />
+                            : <XCircle    size={15} className="text-red-500 dark:text-red-400 mx-auto" />
                           }
                         </td>
                       </tr>

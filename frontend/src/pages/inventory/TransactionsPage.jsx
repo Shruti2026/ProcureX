@@ -8,11 +8,11 @@ import Spinner from '../../components/ui/Spinner'
 
 // ─── Transaction type badge styling ──────────────────────────────────────────
 const TYPE_CLASSES = {
-  INCOMING: 'text-green-700 bg-green-50 px-2 py-0.5 rounded text-xs font-medium',
-  OUTGOING: 'text-red-700 bg-red-50 px-2 py-0.5 rounded text-xs font-medium',
-  RESERVED: 'text-yellow-700 bg-yellow-50 px-2 py-0.5 rounded text-xs font-medium',
-  DAMAGED:  'text-orange-700 bg-orange-50 px-2 py-0.5 rounded text-xs font-medium',
-  ADJUSTED: 'text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium',
+  INCOMING: 'text-green-700 bg-green-50 dark:bg-green-900/30 dark:text-green-300 px-2 py-0.5 rounded text-xs font-medium',
+  OUTGOING: 'text-red-700 bg-red-50 dark:bg-red-900/30 dark:text-red-300 px-2 py-0.5 rounded text-xs font-medium',
+  RESERVED: 'text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 px-2 py-0.5 rounded text-xs font-medium',
+  DAMAGED:  'text-orange-700 bg-orange-50 dark:bg-orange-900/30 dark:text-orange-300 px-2 py-0.5 rounded text-xs font-medium',
+  ADJUSTED: 'text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded text-xs font-medium',
 }
 
 function TransactionTypeBadge({ type }) {
