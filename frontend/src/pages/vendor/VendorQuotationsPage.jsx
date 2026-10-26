@@ -65,8 +65,8 @@ export default function VendorQuotationsPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Quotations</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Quotations</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Track the status of quotations you have submitted against open RFQs.
         </p>
       </div>
@@ -81,26 +81,26 @@ export default function VendorQuotationsPage() {
         {quotations.map((row, i) => (
           <tr
             key={row.id}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 40}ms` }}
           >
             {/* Quotation Number */}
-            <Table.Td className="font-mono text-xs text-gray-500">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {row.quotationNumber ?? shortId(row.id)}
             </Table.Td>
 
             {/* RFQ ID */}
-            <Table.Td className="font-mono text-xs text-gray-500">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {shortId(row.rfqId)}
             </Table.Td>
 
             {/* Total Amount */}
-            <Table.Td className="font-medium text-gray-900">
+            <Table.Td className="font-medium text-gray-900 dark:text-white">
               {formatCurrency(row.totalAmount)}
             </Table.Td>
 
             {/* Lead Time */}
-            <Table.Td className="text-gray-700">
+            <Table.Td className="text-gray-700 dark:text-white/80">
               {row.leadTimeDays != null ? `${row.leadTimeDays} days` : '—'}
             </Table.Td>
 
@@ -109,8 +109,8 @@ export default function VendorQuotationsPage() {
               <div className="flex items-center gap-2">
                 <Badge status={row.status} />
                 {row.status === 'SELECTED' && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700">
-                    <CheckCircle2 size={13} className="text-green-600" />
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 dark:text-green-400">
+                    <CheckCircle2 size={13} className="text-green-600 dark:text-green-400" />
                     Won
                   </span>
                 )}
@@ -118,7 +118,7 @@ export default function VendorQuotationsPage() {
             </Table.Td>
 
             {/* Submitted Date */}
-            <Table.Td className="text-gray-600">
+            <Table.Td className="text-gray-600 dark:text-white/60">
               {formatDate(row.submittedAt ?? row.createdAt)}
             </Table.Td>
           </tr>

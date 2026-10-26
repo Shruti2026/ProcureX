@@ -108,8 +108,8 @@ export default function VendorDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Vendor Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">{today}</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Vendor Dashboard</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">{today}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -125,15 +125,15 @@ export default function VendorDashboard() {
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-gray-800 mb-3">Recent Purchase Orders</h2>
+        <h2 className="text-base font-semibold text-gray-800 dark:text-white mb-3">Recent Purchase Orders</h2>
         <Table columns={COLUMNS}>
           {poRows.map((row, i) => (
             <tr
               key={row.id ?? i}
-              className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+              className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
               style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
             >
-              <Table.Td className="font-medium text-gray-900">
+              <Table.Td className="font-medium text-gray-900 dark:text-white">
                 {row.poNumber ?? row.id ?? '—'}
               </Table.Td>
               <Table.Td>{row.vendorName ?? row.vendor ?? '—'}</Table.Td>
@@ -143,7 +143,7 @@ export default function VendorDashboard() {
               <Table.Td>
                 <Badge status={row.status} />
               </Table.Td>
-              <Table.Td className="text-gray-400">
+              <Table.Td className="text-gray-400 dark:text-white/40">
                 {formatDate(row.createdAt ?? row.orderDate ?? row.date)}
               </Table.Td>
             </tr>
