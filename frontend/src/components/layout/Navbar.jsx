@@ -153,9 +153,9 @@ export default function Navbar({ user, onLogout }) {
                       setDropdownOpen(false)
                       onLogout()
                     }}
-                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150 dark:text-red-400 dark:hover:bg-red-500/10"
                   >
-                    <LogOut size={16} className="text-red-500" />
+                    <LogOut size={16} className="text-red-500 dark:text-red-400" />
                     Logout
                   </button>
                 </motion.div>
