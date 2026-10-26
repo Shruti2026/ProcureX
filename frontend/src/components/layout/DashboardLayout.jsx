@@ -37,14 +37,14 @@ export default function DashboardLayout({ onLogout }) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-primary-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1E1B4B] dark:to-[#2D1B69]">
+    <div className="flex h-screen bg-primary-50 dark:bg-gradient-to-br dark:from-[#0F0A1E] dark:via-[#1E1B4B] dark:to-[#2D1B69]">
       <Sidebar
         userRole={userRole}
         collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
       />
 
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden min-h-0">
         <Navbar
           user={user}
           onLogout={onLogout}

@@ -51,7 +51,7 @@ function CreateBudgetModal({ onClose, onSuccess }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-md p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Create Budget</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
