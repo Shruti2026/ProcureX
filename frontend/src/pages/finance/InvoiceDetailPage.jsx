@@ -234,10 +234,10 @@ export default function InvoiceDetailPage() {
           <div className={`rounded-xl border p-4 mb-4 ${match.passed ? 'border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-900/20' : 'border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-900/20'}`}>
             <div className="flex items-center gap-2">
               {match.passed
-                ? <CheckCircle size={18} className="text-green-600" />
-                : <XCircle size={18} className="text-red-600" />
+                ? <CheckCircle size={18} className="text-green-600 dark:text-green-400" />
+                : <XCircle size={18} className="text-red-600 dark:text-red-400" />
               }
-              <span className={`font-semibold text-sm ${match.passed ? 'text-green-700' : 'text-red-700'}`}>
+              <span className={`font-semibold text-sm ${match.passed ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                 {match.passed
                   ? 'All checks passed — invoice matches PO and GRN'
                   : `${match.flags?.length ?? 'Some'} issue(s) detected — review discrepancies below`}
@@ -307,11 +307,11 @@ export default function InvoiceDetailPage() {
           {!(match.lineComparisons ?? match.items)?.length && match.flags?.length > 0 && (
             <div className="space-y-2 mt-2">
               {match.flags.map((flag, i) => (
-                <div key={i} className="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 p-3 text-sm">
-                  <XCircle size={15} className="text-orange-500 mt-0.5 shrink-0" />
+                <div key={i} className="flex items-start gap-3 rounded-lg border border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-500/30 p-3 text-sm">
+                  <XCircle size={15} className="text-orange-500 dark:text-orange-400 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-medium text-orange-700">{flag.productName} — {flag.flagType?.replace(/_/g, ' ')}</p>
-                    <p className="text-orange-600">{flag.details}</p>
+                    <p className="font-medium text-orange-700 dark:text-orange-300">{flag.productName} — {flag.flagType?.replace(/_/g, ' ')}</p>
+                    <p className="text-orange-600 dark:text-orange-400">{flag.details}</p>
                   </div>
                 </div>
               ))}

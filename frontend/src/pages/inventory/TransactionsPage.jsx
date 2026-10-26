@@ -82,7 +82,7 @@ export default function TransactionsPage() {
         {/* Error state */}
         {isError && !isLoading && (
           <div className="py-16 text-center">
-            <p className="text-sm text-red-600 font-medium">Failed to load transactions</p>
+            <p className="text-sm text-red-600 dark:text-red-400 font-medium">Failed to load transactions</p>
             <p className="mt-1 text-xs text-gray-400 dark:text-white/40">{error?.message ?? 'Unknown error'}</p>
           </div>
         )}
