@@ -82,7 +82,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
       {/* Panel */}
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-md mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5">
@@ -124,7 +124,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={() => setShowCurrent(!showCurrent)}
-              className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-[34px] text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/70 transition-colors"
               aria-label={showCurrent ? 'Hide current password' : 'Show current password'}
             >
               {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -144,7 +144,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={() => setShowNew(!showNew)}
-              className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-[34px] text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/70 transition-colors"
               aria-label={showNew ? 'Hide new password' : 'Show new password'}
             >
               {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -164,7 +164,7 @@ export default function ChangePasswordModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-[34px] text-gray-400 dark:text-white/40 hover:text-gray-600 dark:hover:text-white/70 transition-colors"
               aria-label={showConfirm ? 'Hide confirm password' : 'Show confirm password'}
             >
               {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}

@@ -81,7 +81,7 @@ export default function RegisterPage() {
     return (
       <div className="min-h-screen bg-primary-50 flex items-center justify-center px-4 dark:bg-[#0F0A1E]">
         <div className="w-full max-w-md rounded-2xl bg-white shadow-sm border border-primary-100 p-8 text-center animate-fade-slide-up dark:bg-white/5 dark:border-white/10">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20">
             <CheckCircle2 size={32} className="text-green-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -129,7 +129,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-md animate-fade-slide-up">
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 dark:bg-white/10">
-              <UserPlus size={28} className="text-primary-600" />
+              <UserPlus size={28} className="text-primary-600 dark:text-primary-400" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Vendor Registration
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                 className="pl-10"
                 {...register('companyName')}
               />
-              <Building size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <Building size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
             </div>
             <div className="relative">
               <Input
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                 className="pl-10"
                 {...register('contactPerson')}
               />
-              <User size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <User size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
             </div>
             <div className="relative">
               <Input
@@ -169,7 +169,7 @@ export default function RegisterPage() {
                 className="pl-10"
                 {...register('email')}
               />
-              <Mail size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <Mail size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
             </div>
             <div className="relative">
               <Input
@@ -179,7 +179,7 @@ export default function RegisterPage() {
                 className="pl-10"
                 {...register('phone')}
               />
-              <Phone size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <Phone size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
             </div>
             <div className="relative">
               <Input
@@ -190,11 +190,11 @@ export default function RegisterPage() {
                 className="pl-10 pr-12"
                 {...register('password')}
               />
-              <Lock size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <Lock size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-[39px] text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-[39px] text-gray-500 hover:text-gray-700 transition-colors dark:text-white/60 dark:hover:text-white/80"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -208,11 +208,11 @@ export default function RegisterPage() {
                 className="pl-10 pr-12"
                 {...register('confirmPassword')}
               />
-              <Lock size={18} className="absolute left-3 top-[39px] text-gray-400" />
+              <Lock size={18} className="absolute left-3 top-[39px] text-gray-400 dark:text-white/40" />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-3 top-[39px] text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-[39px] text-gray-500 hover:text-gray-700 transition-colors dark:text-white/60 dark:hover:text-white/80"
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>

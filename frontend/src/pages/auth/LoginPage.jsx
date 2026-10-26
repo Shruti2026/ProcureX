@@ -98,7 +98,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 dark:bg-white/10">
-              <LogIn size={28} className="text-primary-600" />
+              <LogIn size={28} className="text-primary-600 dark:text-primary-400" />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Welcome Back
@@ -128,7 +128,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors dark:text-white/40 dark:hover:text-white/60"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

@@ -60,29 +60,30 @@ export default function VendorInvoicesPage() {
     if (page < totalPages - 1) setPage((p) => p + 1)
   }
 
-  return (    <div className="space-y-6">
+  return (
+    <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invoices</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Track submitted invoices and monitor their verification and payment status.
         </p>
       </div>
 
       {/* Table card */}
-      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-white/5 dark:backdrop-blur-sm rounded-xl border border-[var(--color-surface-border)] dark:border-white/10 shadow-xs overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Spinner size="lg" />
           </div>
         ) : invoices.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-gray-500">No invoices found.</p>
+            <p className="text-sm text-gray-500 dark:text-white/60">No invoices found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/10">
+              <thead className="bg-gray-50 dark:bg-white/5">
                 <tr>
                   {[
                     'Invoice Number',
@@ -94,31 +95,31 @@ export default function VendorInvoicesPage() {
                     <th
                       key={col}
                       scope="col"
-                      className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                      className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide"
                     >
                       {col}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/10 bg-white dark:bg-transparent">
                 {invoices.map((invoice) => (
                   <tr
                     key={invoice.invoiceId}
-                    className="hover:bg-gray-50 transition-colors duration-100"
+                    className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100"
                   >
                     {/* Invoice Number */}
-                    <td className="px-5 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                    <td className="px-5 py-4 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {invoice.invoiceNumber ?? '—'}
                     </td>
 
                     {/* PO ID (first 8 chars) */}
-                    <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap font-mono">
+                    <td className="px-5 py-4 text-sm text-gray-700 dark:text-white/80 whitespace-nowrap font-mono">
                       {shortId(invoice.purchaseOrderId)}
                     </td>
 
                     {/* Amount */}
-                    <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                    <td className="px-5 py-4 text-sm text-gray-700 dark:text-white/80 whitespace-nowrap">
                       {formatCurrency(invoice.invoiceAmount)}
                     </td>
 
@@ -131,7 +132,7 @@ export default function VendorInvoicesPage() {
                     </td>
 
                     {/* Submitted Date */}
-                    <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                    <td className="px-5 py-4 text-sm text-gray-700 dark:text-white/80 whitespace-nowrap">
                       {formatDate(invoice.submittedAt ?? invoice.invoiceDate)}
                     </td>
 

@@ -94,16 +94,16 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
       aria-modal="true"
       aria-labelledby="invoice-modal-title"
     >
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 p-6 space-y-5">
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-2xl mx-4 p-6 space-y-5">
         {/* Header */}
         <div>
           <h2
             id="invoice-modal-title"
-            className="text-lg font-semibold text-gray-900"
+            className="text-lg font-semibold text-gray-900 dark:text-white"
           >
             Upload Invoice
           </h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             PO {po.poNumber} &mdash; {formatCurrency(po.totalAmount)}
           </p>
         </div>
@@ -131,24 +131,24 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
         {!fetchLoading && !fetchError && (
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
             {fields.length === 0 ? (
-              <p className="text-sm text-gray-500">No line items found for this PO.</p>
+              <p className="text-sm text-gray-500 dark:text-white/60">No line items found for this PO.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-100">
-                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-1/2">
+                    <tr className="border-b border-gray-100 dark:border-white/10">
+                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide w-1/2">
                         Product
                       </th>
-                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">
                         Quantity
                       </th>
-                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide">
                         Unit Price
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-gray-50 dark:divide-white/5">
                     {fields.map((field, index) => (
                       <tr key={field.id} className="align-top">
                         {/* Hidden fields for productId and productName */}
@@ -162,7 +162,7 @@ function InvoiceUploadModal({ po, onClose, onSuccess }) {
                         />
 
                         {/* Product name — read-only label */}
-                        <td className="py-3 pr-4 text-gray-800 font-medium">
+                        <td className="py-3 pr-4 text-gray-800 dark:text-white/80 font-medium">
                           {field.productName || '—'}
                         </td>
 
@@ -300,33 +300,33 @@ export default function VendorOrdersPage() {
     <div className="space-y-6">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Purchase Orders</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Purchase Orders</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
           Review, accept or decline incoming orders and submit invoices for fulfilled deliveries.
         </p>
       </div>
 
       {/* Table card */}
-      <div className="bg-white rounded-xl border border-[var(--color-surface-border)] shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-white/5 dark:backdrop-blur-sm rounded-xl border border-[var(--color-surface-border)] dark:border-white/10 shadow-xs overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Spinner size="lg" />
           </div>
         ) : orders.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-gray-500">No purchase orders found.</p>
+            <p className="text-sm text-gray-500 dark:text-white/60">No purchase orders found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-100">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-gray-100 dark:divide-white/10">
+              <thead className="bg-gray-50 dark:bg-white/5">
                 <tr>
                   {['PO Number', 'Total Amount', 'Status', 'Expected Delivery', 'Actions'].map(
                     (col) => (
                       <th
                         key={col}
                         scope="col"
-                        className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                        className="px-5 py-3 text-left text-xs font-semibold text-gray-500 dark:text-white/60 uppercase tracking-wide"
                       >
                         {col}
                       </th>
@@ -334,18 +334,18 @@ export default function VendorOrdersPage() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 bg-white">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/10 bg-white dark:bg-transparent">
                 {orders.map((po) => {
                   const isActing = actionLoading === po.purchaseOrderId
                   return (
-                    <tr key={po.purchaseOrderId} className="hover:bg-gray-50 transition-colors duration-100">
+                    <tr key={po.purchaseOrderId} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
                       {/* PO Number */}
-                      <td className="px-5 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                      <td className="px-5 py-4 text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">
                         {po.poNumber ?? '—'}
                       </td>
 
                       {/* Total Amount */}
-                      <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      <td className="px-5 py-4 text-sm text-gray-700 dark:text-white/80 whitespace-nowrap">
                         {formatCurrency(po.totalAmount)}
                       </td>
 
@@ -355,7 +355,7 @@ export default function VendorOrdersPage() {
                       </td>
 
                       {/* Expected Delivery */}
-                      <td className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap">
+                      <td className="px-5 py-4 text-sm text-gray-700 dark:text-white/80 whitespace-nowrap">
                         {formatDate(po.expectedDeliveryDate)}
                       </td>
 

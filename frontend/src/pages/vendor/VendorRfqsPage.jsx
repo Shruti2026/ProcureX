@@ -24,7 +24,7 @@ function ClosingDateCell({ dateStr }) {
 
   let countdown = null
   if (days === null) {
-    countdown = <span className="text-gray-400">—</span>
+    countdown = <span className="text-gray-400 dark:text-white/40">—</span>
   } else if (days < 0) {
     countdown = <span className="text-red-600 text-xs font-medium">Expired</span>
   } else if (days <= 3) {
@@ -33,13 +33,13 @@ function ClosingDateCell({ dateStr }) {
     )
   } else {
     countdown = (
-      <span className="text-gray-500 text-xs">{days} days left</span>
+      <span className="text-gray-500 dark:text-white/60 text-xs">{days} days left</span>
     )
   }
 
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-gray-700">{formatDate(dateStr)}</span>
+      <span className="text-gray-700 dark:text-white/80">{formatDate(dateStr)}</span>
       {countdown}
     </div>
   )
@@ -88,7 +88,7 @@ function QuotationSubmitModal({ rfq, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
     >
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-md mx-4 bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-5 flex-shrink-0">
@@ -229,8 +229,8 @@ export default function VendorRfqsPage() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Open RFQs</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Open RFQs</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
             Browse open requests for quotation and submit your bids.
           </p>
         </div>
@@ -244,11 +244,11 @@ export default function VendorRfqsPage() {
         emptyMessage="No open RFQs available at this time."
       >
         {rfqs.map((row) => (
-          <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-100">
-            <Table.Td className="font-mono text-xs text-gray-500">
+          <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100">
+            <Table.Td className="font-mono text-xs text-gray-500 dark:text-white/60">
               {row.rfqNumber ?? row.id?.slice(-8).toUpperCase()}
             </Table.Td>
-            <Table.Td className="font-medium text-gray-900 max-w-[220px] truncate">
+            <Table.Td className="font-medium text-gray-900 dark:text-white max-w-[220px] truncate">
               {row.title}
             </Table.Td>
             <Table.Td>
@@ -274,7 +274,7 @@ export default function VendorRfqsPage() {
       {/* Pagination */}
       {!loading && rfqs.length > 0 && (
         <div className="flex items-center justify-between px-1">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-white/60">
             Page {page + 1} of {totalPages}
           </p>
           <div className="flex items-center gap-2">

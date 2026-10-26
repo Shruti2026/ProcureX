@@ -49,18 +49,18 @@ function PreferencesModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Notification Preferences</h2>
+      <div className="bg-white dark:bg-[#1A1035] dark:border dark:border-white/10 rounded-xl shadow-xl w-full max-w-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Notification Preferences</h2>
         {loading ? (
-          <p className="text-sm text-gray-400 py-4">Loading...</p>
+          <p className="text-sm text-gray-400 dark:text-white/40 py-4">Loading...</p>
         ) : (
           <div className="space-y-4">
             <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Email Notifications</span>
+              <span className="text-sm text-gray-700 dark:text-white/80">Email Notifications</span>
               <button
                 type="button"
                 onClick={() => setPrefs(p => ({ ...p, emailEnabled: !p.emailEnabled }))}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${prefs.emailEnabled ? 'bg-primary-600' : 'bg-gray-200'}`}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${prefs.emailEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-white/10'}`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${prefs.emailEnabled ? 'translate-x-5' : 'translate-x-0'}`}
@@ -68,11 +68,11 @@ function PreferencesModal({ onClose }) {
               </button>
             </label>
             <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">In-App Notifications</span>
+              <span className="text-sm text-gray-700 dark:text-white/80">In-App Notifications</span>
               <button
                 type="button"
                 onClick={() => setPrefs(p => ({ ...p, inAppEnabled: !p.inAppEnabled }))}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${prefs.inAppEnabled ? 'bg-primary-600' : 'bg-gray-200'}`}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${prefs.inAppEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-white/10'}`}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${prefs.inAppEnabled ? 'translate-x-5' : 'translate-x-0'}`}
@@ -132,13 +132,13 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-white/60">
               Stay updated on approvals, status changes, and alerts.
             </p>
           </div>
           {unreadCount > 0 && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 ring-1 ring-inset ring-primary-200">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700 ring-1 ring-inset ring-primary-200 dark:bg-primary-900/30 dark:text-primary-300 dark:ring-primary-500/30">
               {unreadCount} unread
             </span>
           )}
@@ -157,14 +157,14 @@ export default function NotificationsPage() {
         {notifications.map((n, i) => (
           <tr
             key={n.notificationId}
-            className="hover:bg-gray-50 transition-colors duration-100 animate-fade-slide-up"
+            className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
             style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
           >
-            <Table.Td className="font-medium text-gray-900 max-w-[200px] truncate">{n.title}</Table.Td>
-            <Table.Td className="max-w-[280px] truncate text-gray-500">{n.message}</Table.Td>
+            <Table.Td className="font-medium text-gray-900 dark:text-white max-w-[200px] truncate">{n.title}</Table.Td>
+            <Table.Td className="max-w-[280px] truncate text-gray-500 dark:text-white/60">{n.message}</Table.Td>
             <Table.Td><Badge status={n.channel} label={n.channel} /></Table.Td>
             <Table.Td><Badge status={n.status} /></Table.Td>
-            <Table.Td className="text-gray-400">{formatDateTime(n.createdAt)}</Table.Td>
+            <Table.Td className="text-gray-400 dark:text-white/40">{formatDateTime(n.createdAt)}</Table.Td>
           </tr>
         ))}
       </Table>
