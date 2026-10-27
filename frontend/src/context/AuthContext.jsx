@@ -6,6 +6,7 @@ import {
   logout as logoutService,
   restoreSession,
   decodeToken,
+  getSelfProfile,
 } from "../services/authService";
 
 export const AuthContext = createContext(null);
@@ -22,7 +23,15 @@ export function AuthProvider({ children }) {
         const currentUser = await restoreSession();
 
         if (currentUser) {
-          setUser(currentUser);
+          // Fetch full profile to get fullName not available in JWT claims
+          let fullName = null;
+          try {
+            const profile = await getSelfProfile();
+            fullName = profile?.fullName ?? null;
+          } catch {
+            // non-fatal
+          }
+          setUser({ ...currentUser, fullName });
         }
       } catch (error) {
         console.error("Failed to restore session:", error);
@@ -39,11 +48,21 @@ export function AuthProvider({ children }) {
 
     const decoded = data?.accessToken ? decodeToken(data.accessToken) : null;
 
+    // Fetch full profile to get fullName and other details not in the JWT
+    let fullName = null;
+    try {
+      const profile = await getSelfProfile();
+      fullName = profile?.fullName ?? null;
+    } catch {
+      // non-fatal — proceed without fullName
+    }
+
     const userObject = {
       id: data.userId,
       role: data.role,
       organizationId: data.organizationId,
       email: decoded?.email || credentials.email,
+      fullName,
     };
 
     setUser(userObject);
