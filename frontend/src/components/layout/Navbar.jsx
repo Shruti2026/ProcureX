@@ -4,6 +4,7 @@ import { Bell, ChevronDown, KeyRound, LogOut, Moon, Sun, User } from 'lucide-rea
 import { AnimatePresence, motion } from 'motion/react'
 import { useTheme } from '../../context/ThemeContext'
 import { ROLE_LABELS } from '../../constants/roles'
+import Badge from '../ui/Badge'
 import ChangePasswordModal from '../auth/ChangePasswordModal'
 import { notificationService } from '../../services/notificationService'
 
@@ -125,14 +126,20 @@ export default function Navbar({ user, onLogout }) {
                   transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
                   className="absolute right-0 mt-2 w-52 rounded-xl border border-primary-100 bg-white shadow-lg shadow-primary-900/10 ring-1 ring-black/5 py-1 z-50 dark:bg-[#1A1035] dark:border-white/10 dark:shadow-black/30"
                 >
+                  {/* Badge */}
+                  {userRole && (
+                    <div className="px-4 pt-3 pb-2">
+                      <Badge status={userRole} label={ROLE_LABELS[userRole] ?? userRole} />
+                    </div>
+                  )}
                   {/* User identity header */}
-                  <div className="px-4 py-3 border-b border-gray-100 dark:border-white/10 flex items-center gap-3">
+                  <div className="px-4 pb-3 border-b border-gray-100 dark:border-white/10 flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-semibold text-sm shrink-0 dark:bg-white/10 dark:text-white">
-                      {roleLabel ? roleLabel.charAt(0).toUpperCase() : <User size={16} />}
+                      {user?.fullName ? user.fullName.charAt(0).toUpperCase() : (roleLabel ? roleLabel.charAt(0).toUpperCase() : <User size={16} />)}
                     </div>
                     <div className="flex flex-col min-w-0">
                       <span className="text-sm font-semibold text-gray-800 dark:text-white truncate">
-                        {roleLabel ?? 'User'}
+                        {user?.fullName ?? roleLabel ?? 'User'}
                       </span>
                       <span className="text-xs text-gray-500 dark:text-white/50 truncate">
                         {user?.email ?? ''}
