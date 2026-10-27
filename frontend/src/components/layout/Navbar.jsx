@@ -38,6 +38,7 @@ export default function Navbar({ user, onLogout }) {
   }, [])
 
   const userRole = user?.role
+  const roleLabel = userRole ? (ROLE_LABELS[userRole] ?? userRole) : null
 
   return (
     <>
@@ -104,13 +105,10 @@ export default function Navbar({ user, onLogout }) {
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-primary-50 transition-colors duration-150 dark:hover:bg-white/10"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-semibold text-sm shrink-0 dark:bg-white/10 dark:text-white">
-                {user?.email?.charAt(0)?.toUpperCase() ?? <User size={16} />}
+                {roleLabel ? roleLabel.charAt(0).toUpperCase() : <User size={16} />}
               </div>
               <div className="hidden sm:flex flex-col items-start leading-tight">
-                <span className="text-gray-800 font-medium dark:text-white">{user?.email ?? 'User'}</span>
-                {userRole && (
-                  <span className="text-xs text-gray-500 dark:text-white/50">{ROLE_LABELS[userRole] ?? userRole}</span>
-                )}
+                <span className="text-gray-800 font-medium dark:text-white">{roleLabel ?? 'User'}</span>
               </div>
               <ChevronDown
                 size={16}
