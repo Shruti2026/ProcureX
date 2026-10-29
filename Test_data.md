@@ -1,40 +1,68 @@
 # ProcureX — Test Data Guide
 
-## Seed File
+## Seed Files
 
-**Location:** `backend/seed-test-data.sql`
-
-Run this once after all services are up to populate all 7 databases with realistic test data covering the full procurement lifecycle.
+| File | Purpose |
+|---|---|
+| `backend/seed.ps1` | **PowerShell** — reads UUIDs from DB, patches the SQL, clears old data, runs the seed |
+| `backend/seed.bat` | **Command Prompt / batch** — same as above, for non-PowerShell terminals |
+| `backend/seed-test-data.sql` | The seed SQL — all test data across all 7 databases |
+| `backend/clear-seed-data.sql` | Clears previously seeded data (safe — only deletes seed rows by ID) |
+| `backend/verify-seed.sql` | Verification query — row counts for all seeded tables |
 
 ---
 
 ## Pre-requisites
 
-Before running the seed, all services must be running and healthy so Flyway has created all tables. Verify with:
+1. All services are running and healthy (Flyway has created all tables).
+2. Users have been created via the APIs — see [Users.md](./Users.md) for credentials.
 
+Verify containers:
 ```powershell
 docker ps --format "table {{.Names}}\t{{.Status}}"
 ```
-
 All `procurex-*` containers should show `(healthy)`.
 
 ---
 
-## How to Run
+## How to Run (New Machine)
 
-MySQL runs inside Docker (`procurex-mysql` container). The only reliable way to run the seed from Windows PowerShell is to copy the file into the container first, then execute it:
+On a new machine, user UUIDs and org_id will be different every time. Use one of the helper scripts — they do everything automatically:
 
+**PowerShell:**
 ```powershell
-# 1. Copy the file into the container
-docker cp "D:\Projects\ProcureX\backend\seed-test-data.sql" procurex-mysql:/seed-test-data.sql
-
-# 2. Execute it
-docker exec procurex-mysql bash -c "mysql -u root -proot 2>/dev/null < /seed-test-data.sql && echo SUCCESS || echo FAILED"
+cd D:\Projects\ProcureX\backend
+.\seed.ps1
 ```
 
-The script uses `INSERT IGNORE` throughout — safe to re-run on a machine that already has data, duplicates are silently skipped.
+**Command Prompt:**
+```bat
+cd D:\Projects\ProcureX\backend
+seed.bat
+```
 
-> **Note:** Do NOT use `mysql -u root -p < file.sql` in PowerShell — the `<` operator is not supported for redirection in PowerShell. Always use the `docker cp` + `docker exec` approach above.
+What both scripts do:
+1. Query `procurex_identity.users` for real UUIDs and org_id
+2. Patch the `SET @...` block in `seed-test-data.sql` with those values
+3. Run `clear-seed-data.sql` to remove any stale seed rows
+4. Run `seed-test-data.sql` to insert fresh data
+5. Print a row-count summary
+
+---
+
+## How to Run Manually
+
+If you prefer to run it yourself after updating UUIDs manually:
+
+```powershell
+# 1. Clear old seed data
+docker cp "D:\Projects\ProcureX\backend\clear-seed-data.sql" procurex-mysql:/clear-seed-data.sql
+docker exec procurex-mysql bash -c "mysql -u root -proot 2>/dev/null < /clear-seed-data.sql"
+
+# 2. Run the seed
+docker cp "D:\Projects\ProcureX\backend\seed-test-data.sql" procurex-mysql:/seed-test-data.sql
+docker exec procurex-mysql bash -c "mysql -u root -proot 2>/dev/null < /seed-test-data.sql && echo SUCCESS || echo FAILED"
+```
 
 ---
 
@@ -62,7 +90,7 @@ Expected output:
 | budgets | 5 |
 | invoices | 2 |
 | payments | 1 |
-| notification_preferences | 13 |
+| notification_preferences | 10+ |
 | notifications | 8 |
 | vendor_rating_cards | 5 |
 
@@ -74,90 +102,71 @@ Expected output:
 
 | Database | What's seeded |
 |---|---|
-| `procurex_identity` | 8 audit log entries (admin approving vendors, creating employees) |
+| `procurex_identity` | Audit log entries (admin creating employees, approving vendors) |
 | `procurex_vendor` | 6 vendors (5 ACTIVE, 1 INACTIVE), 25 vendor-product mappings, 5 contracts |
 | `procurex_procurement` | 5 PRs, 3 RFQs with vendor invitations, 3 quotations, 5 POs across all status stages with full history |
 | `procurex_inventory` | 2 warehouses, 10 inventory records, 2 GRNs, 2 quality inspections, 9 stock transactions |
 | `procurex_finance` | 5 department budgets, 2 invoices with items and history, 1 completed payment |
-| `procurex_notification` | 13 notification preferences, 8 in-app notifications |
+| `procurex_notification` | Notification preferences per user, 8 in-app notifications |
 | `procurex_analytics` | 5 vendor rating cards with realistic scores |
 
 ### Full lifecycle covered
 
 ```
-PR-1 → RFQ-1 → Quotations (TechSupply wins, PrintMaster rejected)
+PR-1 → RFQ-1 → Quotations (Acme Industrial wins, Learning Academy rejected)
      → PO-1 (COMPLETED) → GRN-1 (CLOSED) → Inspection (PASSED)
-     → Invoice-1 (APPROVED) → Payment (COMPLETED)
+     → Invoice-1 (APPROVED) → Payment (COMPLETED via WIRE)
 ```
 
 The remaining POs cover every other status so all UI badges have data:
 
 | PO | Vendor | Status |
 |---|---|---|
-| PO-2026-00001 | TechSupply Co. | COMPLETED |
-| PO-2026-00002 | OfficeWorld Pvt. Ltd. | DELIVERED |
-| PO-2026-00003 | CleanPro Supplies | APPROVED |
-| PO-2026-00004 | FurniturePlus India | ACCEPTED |
-| PO-2026-00005 | PrintMaster Solutions | CREATED |
+| PO-2026-00001 | Acme Industrial Supplies | COMPLETED |
+| PO-2026-00002 | MoriSaki Bookshop | DELIVERED |
+| PO-2026-00003 | Scalin | APPROVED |
+| PO-2026-00004 | Penguin House India | ACCEPTED |
+| PO-2026-00005 | Learning Academy | CREATED |
 
 ### Vendors
 
-| Company | Status | Categories |
+| Company | Email | Status |
 |---|---|---|
-| TechSupply Co. | ACTIVE | IT Equipment, Printing |
-| OfficeWorld Pvt. Ltd. | ACTIVE | Office Supplies, Pantry |
-| FurniturePlus India | ACTIVE | Furniture |
-| CleanPro Supplies | ACTIVE | Cleaning, Safety |
-| SafeGuard Equipment | INACTIVE | Safety |
-| PrintMaster Solutions | ACTIVE | Printing, IT Equipment |
+| Acme Industrial Supplies | sales@acmesupplier.com | ACTIVE |
+| MoriSaki Bookshop | query@morisakibooks.com | ACTIVE |
+| Penguin House India | info@penguin.com | ACTIVE |
+| Scalin | finance@scale.com | ACTIVE |
+| AI Bounty Corp | win@aibounty.com | INACTIVE |
+| Learning Academy | learn@courses.com | ACTIVE |
 
 ---
 
-## Optional: Use Real User UUIDs
+## Important: Organization ID
 
-The seed ships with placeholder UUIDs for all users (`aaaaaaaa-...`, `bbbbbbbb-...`, `cccccccc-...`). This is fine for testing — the app will work but "created by" fields will show unknown users.
+All seed data is scoped to the `organization_id` of your real admin user. The `seed.ps1` script reads this automatically. If you run `seed-test-data.sql` manually, make sure the `SET @ORG_ID` value at the top of the file matches the org_id in your `procurex_identity.users` table:
 
-To use real UUIDs after creating users via the API:
+```sql
+SELECT user_id, email, organization_id FROM procurex_identity.users;
+```
 
-1. Get your user IDs:
-   ```sql
-   -- Run inside the container or via any MySQL client
-   SELECT user_id, email FROM procurex_identity.users;
-   ```
-2. Open `backend/seed-test-data.sql` and update the `SET @...` block at the top of the file with your real UUIDs.
-3. Re-run the seed using the `docker cp` + `docker exec` commands above.
+A mismatch means all seeded procurement/finance/inventory data will be invisible in the UI (queries filter strictly by org_id from the JWT).
 
 ---
 
 ## Bugs Fixed During Setup
 
-These were discovered during the seed setup process and are now fixed in the codebase:
-
 ### 1. `finance-service` and `notification-service` — Flyway never ran
 
-**Root cause:** Both services had `flyway-core` in `pom.xml` instead of `spring-boot-starter-flyway`. Without the starter, Spring Boot's Flyway autoconfiguration never activates regardless of `application.yml` settings.
+**Root cause:** Both services had `flyway-core` in `pom.xml` instead of `spring-boot-starter-flyway`. Without the starter, Spring Boot's Flyway autoconfiguration never activates.
 
-**Fix:** Replaced `flyway-core` with `spring-boot-starter-flyway` in both `pom.xml` files.
+**Fix:** Replaced `flyway-core` with `spring-boot-starter-flyway`.
 
-Files changed:
-- `backend/finance-service/pom.xml`
-- `backend/notification-service/pom.xml`
+Files: `backend/finance-service/pom.xml`, `backend/notification-service/pom.xml`
 
 ### 2. Missing `baseline-version: 0` in finance and notification
 
-**Root cause:** Without `baseline-version: 0`, Flyway defaults to baselining at version `1`, which marks V1 as "already applied" on a fresh database — so the actual V1 migration that creates the tables never runs.
+**Root cause:** Without it, Flyway defaults to baselining at version `1`, marking V1 as already applied — so the migration that creates the tables never runs.
 
 **Fix:** Added `baseline-version: 0` to both `application.yml` files.
 
-Files changed:
-- `backend/finance-service/src/main/resources/application.yml`
-- `backend/notification-service/src/main/resources/application.yml`
-
----
-
-## Files Added
-
-| File | Purpose |
-|---|---|
-| `backend/seed-test-data.sql` | Main seed script — inserts all test data across all 7 databases |
-| `backend/verify-seed.sql` | Verification query — shows row counts for all seeded tables |
+Files: `backend/finance-service/src/main/resources/application.yml`, `backend/notification-service/src/main/resources/application.yml`

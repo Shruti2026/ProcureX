@@ -21,43 +21,45 @@
 --   that already has the data is safe — duplicates are skipped.
 --
 -- ============================================================
--- STEP 0 — PASTE YOUR USER UUIDs HERE
+-- STEP 0 — USER UUIDs (pre-filled with real values)
 -- ============================================================
--- After creating users through the API, run:
---   SELECT user_id, email, role_id FROM procurex_identity.users;
--- and paste the UUIDs below.
---
--- The seed file ships with placeholder values that match the
--- hardcoded org_id and role structure so you can test the
--- queries before you have real users.  Replace the values in
--- the SET block below with real ones once your users exist.
+-- These are sourced from the actual procurex_identity.users table.
+-- On a new machine, re-bootstrap users first, then run:
+--   SELECT user_id, email FROM procurex_identity.users;
+-- and update the SET block below before running the seed.
 -- ============================================================
 
-SET @ORG_ID          = '550e8400-e29b-41d4-a716-446655440000';
+-- ============================================================
+-- Real user UUIDs — sourced from procurex_identity.users
+-- Update these if you re-bootstrap on a new machine.
+-- Query: SELECT user_id, email, organization_id FROM procurex_identity.users;
+-- ============================================================
 
--- Admin user (created via POST /api/v1/bootstrap/admin)
-SET @ADMIN_ID        = 'aaaaaaaa-0000-0000-0000-000000000001';
+SET @ORG_ID          = '20e3006c-86ad-11f1-aa2e-462403e66e86';
 
--- Procurement Managers (created via POST /api/v1/admin/users)
-SET @PM_ALICE_ID     = 'bbbbbbbb-0000-0000-0000-000000000001';
-SET @PM_BOB_ID       = 'bbbbbbbb-0000-0000-0000-000000000002';
-SET @PM_CAROL_ID     = 'bbbbbbbb-0000-0000-0000-000000000003';
+-- Admin
+SET @ADMIN_ID        = ''; -- admin@procurex.com; -- admin@procurex.com
+
+-- Procurement Managers
+SET @PM_ALICE_ID     = ''; -- sarah.procurement@procurex.com; -- sarah.procurement@procurex.com
+SET @PM_BOB_ID       = ''; -- fyodor@procurex.com; -- fyodor@procurex.com
+SET @PM_CAROL_ID     = ''; -- sarah.procurement@procurex.com (reused); -- sarah.procurement@procurex.com (reused)
 
 -- Inventory Managers
-SET @IM_DAN_ID       = 'bbbbbbbb-0000-0000-0000-000000000004';
-SET @IM_EVE_ID       = 'bbbbbbbb-0000-0000-0000-000000000005';
+SET @IM_DAN_ID       = ''; -- john.inventory@procurex.com; -- john.inventory@procurex.com
+SET @IM_EVE_ID       = ''; -- john.inventory@procurex.com (reused); -- john.inventory@procurex.com (reused)
 
 -- Finance Managers
-SET @FM_FRANK_ID     = 'bbbbbbbb-0000-0000-0000-000000000006';
-SET @FM_GRACE_ID     = 'bbbbbbbb-0000-0000-0000-000000000007';
+SET @FM_FRANK_ID     = ''; -- bruce.finance@procurex.com; -- bruce.finance@procurex.com
+SET @FM_GRACE_ID     = ''; -- bruce.finance@procurex.com (reused); -- bruce.finance@procurex.com (reused)
 
--- Vendors (registered via POST /api/v1/auth/vendor/register, then approved)
-SET @V1_USER_ID      = 'cccccccc-0000-0000-0000-000000000001';
-SET @V2_USER_ID      = 'cccccccc-0000-0000-0000-000000000002';
-SET @V3_USER_ID      = 'cccccccc-0000-0000-0000-000000000003';
-SET @V4_USER_ID      = 'cccccccc-0000-0000-0000-000000000004';
-SET @V5_USER_ID      = 'cccccccc-0000-0000-0000-000000000005';
-SET @V6_USER_ID      = 'cccccccc-0000-0000-0000-000000000006';
+-- Vendors — all 6 real vendor users
+SET @V1_USER_ID      = ''; -- sales@acmesupplier.com; -- sales@acmesupplier.com
+SET @V2_USER_ID      = ''; -- query@morisakibooks.com; -- query@morisakibooks.com
+SET @V3_USER_ID      = ''; -- info@penguin.com; -- info@penguin.com
+SET @V4_USER_ID      = ''; -- finance@scale.com; -- finance@scale.com
+SET @V5_USER_ID      = ''; -- win@aibounty.com; -- win@aibounty.com
+SET @V6_USER_ID      = ''; -- learn@courses.com; -- learn@courses.com
 
 -- Vendor catalog UUIDs (vendor_id in procurex_vendor.vendors —
 -- created by the identity-service outbox → vendor-catalog-service)
@@ -137,32 +139,32 @@ INSERT IGNORE INTO vendors
      vendor_status, rating, is_deleted, created_at, updated_at)
 VALUES
     (@V1_VENDOR_ID, @ORG_ID, @V1_USER_ID,
-     'TechSupply Co.',         'Raj Kumar',   'raj@techsupply.co',
+     'Acme Industrial Supplies',   'Alex Carter',  'sales@acmesupplier.com',
      '+91-9876543210', '12 MG Road',     'Bengaluru', 'Karnataka', 'India', '560001',
      'GST27AABCU9603R1ZM', 'ACTIVE', 4.50, 0, NOW(), NOW()),
 
     (@V2_VENDOR_ID, @ORG_ID, @V2_USER_ID,
-     'OfficeWorld Pvt. Ltd.',  'Priya Sharma', 'priya@officeworld.in',
+     'MoriSaki Bookshop',          'Kenji Morino',  'query@morisakibooks.com',
      '+91-9812345678', '45 Connaught Place', 'New Delhi', 'Delhi', 'India', '110001',
      'GST07AACCM9617R1Z5', 'ACTIVE', 4.20, 0, NOW(), NOW()),
 
     (@V3_VENDOR_ID, @ORG_ID, @V3_USER_ID,
-     'FurniturePlus India',    'Amit Desai',   'amit@furnitureplus.in',
+     'Penguin House India',         'Priya Sharma',  'info@penguin.com',
      '+91-9765432109', '78 GIDC Estate', 'Surat', 'Gujarat', 'India', '395002',
      'GST24AABCF0582R1ZP', 'ACTIVE', 3.90, 0, NOW(), NOW()),
 
     (@V4_VENDOR_ID, @ORG_ID, @V4_USER_ID,
-     'CleanPro Supplies',      'Sunita Nair',  'sunita@cleanpro.in',
+     'Scalin',                      'Rohan Mehta',   'finance@scale.com',
      '+91-9654321098', '22 Industrial Area', 'Pune', 'Maharashtra', 'India', '411019',
      'GST27AABCC4589R1ZN', 'ACTIVE', 4.10, 0, NOW(), NOW()),
 
     (@V5_VENDOR_ID, @ORG_ID, @V5_USER_ID,
-     'SafeGuard Equipment',    'Vikram Singh', 'vikram@safeguard.in',
+     'AI Bounty Corp',              'Vikram Singh',  'win@aibounty.com',
      '+91-9543210987', '5 Sector 17',    'Chandigarh', 'Punjab', 'India', '160017',
      'GST03AABCS7654R1ZK', 'INACTIVE', 0.00, 0, NOW(), NOW()),
 
     (@V6_VENDOR_ID, @ORG_ID, @V6_USER_ID,
-     'PrintMaster Solutions',  'Neha Gupta',   'neha@printmaster.in',
+     'Learning Academy',            'Neha Gupta',    'learn@courses.com',
      '+91-9432109876', '90 Anna Salai',  'Chennai', 'Tamil Nadu', 'India', '600002',
      'GST33AABCP1234R1ZT', 'ACTIVE', 3.70, 0, NOW(), NOW());
 
@@ -398,22 +400,22 @@ INSERT IGNORE INTO rfq_vendors
     (rfq_vendor_id, organization_id, rfq_id, vendor_id, company_name,
      invitation_status, created_at, updated_at)
 VALUES
-    -- RFQ-1 invites TechSupply and PrintMaster
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V1_VENDOR_ID, 'TechSupply Co.',
+    -- RFQ-1 invites Acme Industrial and Learning Academy
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V1_VENDOR_ID, 'Acme Industrial Supplies',
      'RESPONDED', '2026-10-06 10:05:00', '2026-10-10 12:00:00'),
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V6_VENDOR_ID, 'PrintMaster Solutions',
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V6_VENDOR_ID, 'Learning Academy',
      'RESPONDED', '2026-10-06 10:05:00', '2026-10-11 09:00:00'),
 
-    -- RFQ-2 invites OfficeWorld and FurniturePlus
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000002', @V2_VENDOR_ID, 'OfficeWorld Pvt. Ltd.',
+    -- RFQ-2 invites MoriSaki Bookshop and Penguin House
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000002', @V2_VENDOR_ID, 'MoriSaki Bookshop',
      'RESPONDED', '2026-10-09 09:10:00', '2026-10-12 14:00:00'),
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000002', @V3_VENDOR_ID, 'FurniturePlus India',
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000002', @V3_VENDOR_ID, 'Penguin House India',
      'DECLINED',  '2026-10-09 09:10:00', '2026-10-10 08:00:00'),
 
-    -- RFQ-3 invites TechSupply and PrintMaster
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000003', @V1_VENDOR_ID, 'TechSupply Co.',
+    -- RFQ-3 invites Acme Industrial and Learning Academy
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000003', @V1_VENDOR_ID, 'Acme Industrial Supplies',
      'VIEWED',    '2026-10-13 09:10:00', '2026-10-14 10:00:00'),
-    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000003', @V6_VENDOR_ID, 'PrintMaster Solutions',
+    (UUID(), @ORG_ID, 'ff000001-0000-0000-0000-000000000003', @V6_VENDOR_ID, 'Learning Academy',
      'SENT',      '2026-10-13 09:10:00', '2026-10-13 09:10:00');
 
 -- ============================================================
@@ -431,17 +433,17 @@ INSERT IGNORE INTO quotations
      submitted_at, updated_at)
 VALUES
     (@Q1_ID, @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V1_VENDOR_ID,
-     'TechSupply Co.',
+     'Acme Industrial Supplies',
      16200.00, 5, 'Net 30',     '2026-10-20', 'SELECTED',
      '2026-10-10 12:00:00', '2026-10-14 11:00:00'),
 
     (@Q2_ID, @ORG_ID, 'ff000001-0000-0000-0000-000000000001', @V6_VENDOR_ID,
-     'PrintMaster Solutions',
+     'Learning Academy',
      17850.00, 7, 'Net 45',     '2026-10-20', 'REJECTED',
      '2026-10-11 09:00:00', '2026-10-14 11:00:00'),
 
     (@Q3_ID, @ORG_ID, 'ff000001-0000-0000-0000-000000000002', @V2_VENDOR_ID,
-     'OfficeWorld Pvt. Ltd.',
+     'MoriSaki Bookshop',
      32800.00, 3, 'Immediate',  '2026-10-23', 'SELECTED',
      '2026-10-12 14:00:00', '2026-10-17 09:00:00');
 
@@ -499,23 +501,23 @@ INSERT IGNORE INTO purchase_orders
      approved_by, version, created_by, updated_by, created_at, updated_at)
 VALUES
     (@PO1_ID, @ORG_ID, 'PO-2026-00001', @Q1_ID, @V1_VENDOR_ID,
-     'TechSupply Co.',  '2026-10-14', '2026-10-19', 16200.00, 'COMPLETED',
+     'Acme Industrial Supplies', '2026-10-14', '2026-10-19', 16200.00, 'COMPLETED',
      @PM_ALICE_ID, 5, @PM_ALICE_ID, @PM_ALICE_ID, '2026-10-14 11:00:00', '2026-10-22 16:00:00'),
 
     (@PO2_ID, @ORG_ID, 'PO-2026-00002', @Q3_ID, @V2_VENDOR_ID,
-     'OfficeWorld Pvt. Ltd.', '2026-10-17', '2026-10-20', 32800.00, 'DELIVERED',
+     'MoriSaki Bookshop', '2026-10-17', '2026-10-20', 32800.00, 'DELIVERED',
      @PM_CAROL_ID, 4, @PM_CAROL_ID, @PM_CAROL_ID, '2026-10-17 09:00:00', '2026-10-21 12:00:00'),
 
     (@PO3_ID, @ORG_ID, 'PO-2026-00003', NULL, @V4_VENDOR_ID,
-     'CleanPro Supplies', '2026-10-16', '2026-10-23', 14340.00, 'APPROVED',
+     'Scalin', '2026-10-16', '2026-10-23', 14340.00, 'APPROVED',
      @PM_ALICE_ID, 2, @PM_ALICE_ID, @PM_ALICE_ID, '2026-10-15 14:00:00', '2026-10-16 10:00:00'),
 
     (@PO4_ID, @ORG_ID, 'PO-2026-00004', NULL, @V3_VENDOR_ID,
-     'FurniturePlus India', '2026-10-18', '2026-11-01', 410000.00, 'ACCEPTED',
+     'Penguin House India', '2026-10-18', '2026-11-01', 410000.00, 'ACCEPTED',
      @PM_BOB_ID, 3, @PM_BOB_ID, @PM_BOB_ID, '2026-10-18 10:00:00', '2026-10-19 09:00:00'),
 
     (@PO5_ID, @ORG_ID, 'PO-2026-00005', NULL, @V6_VENDOR_ID,
-     'PrintMaster Solutions', '2026-10-20', '2026-10-27', 22800.00, 'CREATED',
+     'Learning Academy', '2026-10-20', '2026-10-27', 22800.00, 'CREATED',
      NULL, 1, @PM_BOB_ID, @PM_BOB_ID, '2026-10-20 11:00:00', '2026-10-20 11:00:00');
 
 -- PO line items
@@ -567,29 +569,29 @@ INSERT IGNORE INTO purchase_order_history
      from_status, to_status, remarks, changed_by, changed_at)
 VALUES
     -- PO1 full lifecycle
-    (UUID(), @ORG_ID, @PO1_ID, NULL,        'CREATED',   'PO raised from winning quotation', @PM_ALICE_ID, '2026-10-14 11:00:00'),
-    (UUID(), @ORG_ID, @PO1_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',  @PM_ALICE_ID, '2026-10-14 15:00:00'),
-    (UUID(), @ORG_ID, @PO1_ID, 'APPROVED',  'ACCEPTED',  'Vendor confirmed order',           @V1_USER_ID,  '2026-10-15 09:00:00'),
-    (UUID(), @ORG_ID, @PO1_ID, 'ACCEPTED',  'DELIVERED', 'Goods delivered to warehouse',     @IM_DAN_ID,   '2026-10-19 14:00:00'),
-    (UUID(), @ORG_ID, @PO1_ID, 'DELIVERED', 'COMPLETED', 'Inspection passed and invoice paid',@FM_FRANK_ID,'2026-10-22 16:00:00'),
+    (UUID(), @ORG_ID, @PO1_ID, NULL,        'CREATED',   'PO raised from winning quotation',  @PM_ALICE_ID, '2026-10-14 11:00:00'),
+    (UUID(), @ORG_ID, @PO1_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',   @PM_ALICE_ID, '2026-10-14 15:00:00'),
+    (UUID(), @ORG_ID, @PO1_ID, 'APPROVED',  'ACCEPTED',  'Vendor confirmed order',            @V1_USER_ID,  '2026-10-15 09:00:00'),
+    (UUID(), @ORG_ID, @PO1_ID, 'ACCEPTED',  'DELIVERED', 'Goods delivered to warehouse',      @IM_DAN_ID,   '2026-10-19 14:00:00'),
+    (UUID(), @ORG_ID, @PO1_ID, 'DELIVERED', 'COMPLETED', 'Inspection passed and invoice paid', @FM_FRANK_ID,'2026-10-22 16:00:00'),
 
     -- PO2 (DELIVERED)
-    (UUID(), @ORG_ID, @PO2_ID, NULL,        'CREATED',   'PO raised from winning quotation', @PM_CAROL_ID, '2026-10-17 09:00:00'),
-    (UUID(), @ORG_ID, @PO2_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',  @PM_CAROL_ID, '2026-10-17 11:00:00'),
-    (UUID(), @ORG_ID, @PO2_ID, 'APPROVED',  'ACCEPTED',  'Vendor acknowledged',              @V2_USER_ID,  '2026-10-17 13:00:00'),
-    (UUID(), @ORG_ID, @PO2_ID, 'ACCEPTED',  'DELIVERED', 'Delivery confirmed by warehouse',  @IM_EVE_ID,   '2026-10-21 12:00:00'),
+    (UUID(), @ORG_ID, @PO2_ID, NULL,        'CREATED',   'PO raised from winning quotation',  @PM_CAROL_ID, '2026-10-17 09:00:00'),
+    (UUID(), @ORG_ID, @PO2_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',   @PM_CAROL_ID, '2026-10-17 11:00:00'),
+    (UUID(), @ORG_ID, @PO2_ID, 'APPROVED',  'ACCEPTED',  'Vendor acknowledged',               @V2_USER_ID,  '2026-10-17 13:00:00'),
+    (UUID(), @ORG_ID, @PO2_ID, 'ACCEPTED',  'DELIVERED', 'Delivery confirmed by warehouse',   @IM_EVE_ID,   '2026-10-21 12:00:00'),
 
     -- PO3 (APPROVED)
-    (UUID(), @ORG_ID, @PO3_ID, NULL,        'CREATED',   'PO raised for cleaning supplies',  @PM_ALICE_ID, '2026-10-15 14:00:00'),
-    (UUID(), @ORG_ID, @PO3_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',  @PM_ALICE_ID, '2026-10-16 10:00:00'),
+    (UUID(), @ORG_ID, @PO3_ID, NULL,        'CREATED',   'PO raised for cleaning supplies',   @PM_ALICE_ID, '2026-10-15 14:00:00'),
+    (UUID(), @ORG_ID, @PO3_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',   @PM_ALICE_ID, '2026-10-16 10:00:00'),
 
     -- PO4 (ACCEPTED)
-    (UUID(), @ORG_ID, @PO4_ID, NULL,        'CREATED',   'PO raised for 3rd floor fit-out',  @PM_BOB_ID,   '2026-10-18 10:00:00'),
-    (UUID(), @ORG_ID, @PO4_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',  @PM_BOB_ID,   '2026-10-18 12:00:00'),
-    (UUID(), @ORG_ID, @PO4_ID, 'APPROVED',  'ACCEPTED',  'FurniturePlus confirmed order',    @V3_USER_ID,  '2026-10-19 09:00:00'),
+    (UUID(), @ORG_ID, @PO4_ID, NULL,        'CREATED',   'PO raised for 3rd floor fit-out',   @PM_BOB_ID,   '2026-10-18 10:00:00'),
+    (UUID(), @ORG_ID, @PO4_ID, 'CREATED',   'APPROVED',  'Approved by procurement manager',   @PM_BOB_ID,   '2026-10-18 12:00:00'),
+    (UUID(), @ORG_ID, @PO4_ID, 'APPROVED',  'ACCEPTED',  'Penguin House India confirmed order',@V3_USER_ID,  '2026-10-19 09:00:00'),
 
     -- PO5 (CREATED)
-    (UUID(), @ORG_ID, @PO5_ID, NULL,        'CREATED',   'PO raised for printer consumables',@PM_BOB_ID,   '2026-10-20 11:00:00');
+    (UUID(), @ORG_ID, @PO5_ID, NULL,        'CREATED',   'PO raised for printer consumables', @PM_BOB_ID,   '2026-10-20 11:00:00');
 
 
 -- ============================================================
@@ -750,14 +752,14 @@ INSERT IGNORE INTO invoices
 VALUES
     -- INV1: PO1 fully paid (COMPLETED lifecycle)
     (@INV1_ID, @ORG_ID, @PO1_ID, @V1_VENDOR_ID,
-     'INV-TECH-2026-0041', 16200.00, 'APPROVED',
+     'INV-ACME-2026-0041', 16200.00, 'APPROVED',
      '2026-10-21 09:00:00', '2026-10-21 14:00:00', @FM_FRANK_ID,
      '2026-10-22 10:00:00', @FM_FRANK_ID,
      '2026-10-21 09:00:00', '2026-10-22 10:00:00'),
 
     -- INV2: PO2 office supplies — verified, awaiting approval
     (@INV2_ID, @ORG_ID, @PO2_ID, @V2_VENDOR_ID,
-     'INV-OFW-2026-0088', 32800.00, 'VERIFIED',
+     'INV-MORI-2026-0088', 32800.00, 'VERIFIED',
      '2026-10-22 10:00:00', '2026-10-23 11:00:00', @FM_GRACE_ID,
      NULL, NULL,
      '2026-10-22 10:00:00', '2026-10-23 11:00:00');
@@ -847,49 +849,49 @@ INSERT IGNORE INTO notifications
      event_type, title, message, channel, status, sent_at, created_at)
 VALUES
     -- Vendor approved → vendor receives notification
-    (UUID(), @ORG_ID, @V1_USER_ID, 'raj@techsupply.co',
+    (UUID(), @ORG_ID, @V1_USER_ID, 'sales@acmesupplier.com',
      'VENDOR_APPROVED', 'Your account has been approved',
-     'Congratulations! Your vendor account for TechSupply Co. has been approved. You can now log in and start responding to RFQs.',
+     'Congratulations! Your vendor account for Acme Industrial Supplies has been approved. You can now log in and start responding to RFQs.',
      'IN_APP', 'SENT', NOW(), '2026-10-02 10:00:00'),
 
-    (UUID(), @ORG_ID, @V2_USER_ID, 'priya@officeworld.in',
+    (UUID(), @ORG_ID, @V2_USER_ID, 'query@morisakibooks.com',
      'VENDOR_APPROVED', 'Your account has been approved',
-     'Congratulations! Your vendor account for OfficeWorld Pvt. Ltd. has been approved.',
+     'Congratulations! Your vendor account for MoriSaki Bookshop has been approved.',
      'IN_APP', 'SENT', NOW(), '2026-10-02 10:15:00'),
 
     -- RFQ invitation → vendor receives invitation
-    (UUID(), @ORG_ID, @V1_USER_ID, 'raj@techsupply.co',
+    (UUID(), @ORG_ID, @V1_USER_ID, 'sales@acmesupplier.com',
      'RFQ_INVITATION', 'New RFQ Invitation: RFQ-2026-0001',
      'You have been invited to submit a quotation for RFQ-2026-0001 (IT Equipment for New Hires). Closing date: 13 Oct 2026.',
      'IN_APP', 'SENT', NOW(), '2026-10-06 10:05:00'),
 
-    (UUID(), @ORG_ID, @V6_USER_ID, 'neha@printmaster.in',
+    (UUID(), @ORG_ID, @V6_USER_ID, 'learn@courses.com',
      'RFQ_INVITATION', 'New RFQ Invitation: RFQ-2026-0001',
      'You have been invited to submit a quotation for RFQ-2026-0001 (IT Equipment for New Hires). Closing date: 13 Oct 2026.',
      'IN_APP', 'SENT', NOW(), '2026-10-06 10:05:00'),
 
     -- PO approved → vendor receives PO
-    (UUID(), @ORG_ID, @V1_USER_ID, 'raj@techsupply.co',
+    (UUID(), @ORG_ID, @V1_USER_ID, 'sales@acmesupplier.com',
      'PO_APPROVED', 'Purchase Order PO-2026-00001 Approved',
      'Purchase Order PO-2026-00001 has been approved and issued to you. Please confirm acceptance at the earliest.',
      'IN_APP', 'SENT', NOW(), '2026-10-14 15:00:00'),
 
     -- Payment completed → vendor notified
-    (UUID(), @ORG_ID, @V1_USER_ID, 'raj@techsupply.co',
-     'PAYMENT_COMPLETED', 'Payment Received: INV-TECH-2026-0041',
-     'Payment of INR 16,200 for invoice INV-TECH-2026-0041 has been completed via wire transfer. Transaction ref: WIRE-20261022-001234.',
+    (UUID(), @ORG_ID, @V1_USER_ID, 'sales@acmesupplier.com',
+     'PAYMENT_COMPLETED', 'Payment Received: INV-ACME-2026-0041',
+     'Payment of INR 16,200 for invoice INV-ACME-2026-0041 has been completed via wire transfer. Transaction ref: WIRE-20261022-001234.',
      'IN_APP', 'SENT', NOW(), '2026-10-22 15:05:00'),
 
     -- Manager notified when RFQ quotations arrive
-    (UUID(), @ORG_ID, @PM_ALICE_ID, 'alice.morgan@procurex.com',
+    (UUID(), @ORG_ID, @PM_ALICE_ID, 'sarah.procurement@procurex.com',
      'QUOTATION_SUBMITTED', 'New Quotation for RFQ-2026-0001',
-     'TechSupply Co. has submitted a quotation for RFQ-2026-0001. Total amount: INR 16,200. Please review.',
+     'Acme Industrial Supplies has submitted a quotation for RFQ-2026-0001. Total amount: INR 16,200. Please review.',
      'IN_APP', 'SENT', NOW(), '2026-10-10 12:00:00'),
 
     -- Finance manager notified when invoice submitted
-    (UUID(), @ORG_ID, @FM_FRANK_ID, 'frank.oliver@procurex.com',
+    (UUID(), @ORG_ID, @FM_FRANK_ID, 'bruce.finance@procurex.com',
      'INVOICE_SUBMITTED', 'New Invoice for PO-2026-00001',
-     'TechSupply Co. has submitted invoice INV-TECH-2026-0041 for INR 16,200 against PO-2026-00001. Verification pending.',
+     'Acme Industrial Supplies has submitted invoice INV-ACME-2026-0041 for INR 16,200 against PO-2026-00001. Verification pending.',
      'IN_APP', 'SENT', NOW(), '2026-10-21 09:05:00');
 
 
