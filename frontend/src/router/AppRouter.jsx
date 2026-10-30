@@ -1,52 +1,54 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import DashboardLayout from "../components/layout/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import Spinner from "../components/ui/Spinner";
 
-// Auth
+// Auth — kept eager since they are the entry point before the app loads
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import UnauthorizedPage from "../pages/UnauthorizedPage";
 
 // Admin Pages
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import UsersPage from "../pages/admin/UsersPage";
-import AuditLogsPage from "../pages/admin/AuditLogsPage";
-import HealthPage from "../pages/admin/HealthPage";
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
+const UsersPage      = lazy(() => import("../pages/admin/UsersPage"));
+const AuditLogsPage  = lazy(() => import("../pages/admin/AuditLogsPage"));
+const HealthPage     = lazy(() => import("../pages/admin/HealthPage"));
 
 // Procurement Pages
-import ProcurementDashboard from "../pages/procurement/ProcurementDashboard";
-import RequisitionsPage from "../pages/procurement/RequisitionsPage";
-import RequisitionDetailPage from "../pages/procurement/RequisitionDetailPage";
-import RfqsPage from "../pages/procurement/RfqsPage";
-import PurchaseOrdersPage from "../pages/procurement/PurchaseOrdersPage";
-import PurchaseOrderDetailPage from "../pages/procurement/PurchaseOrderDetailPage";
-import AnalyticsPage from "../pages/procurement/AnalyticsPage";
+const ProcurementDashboard    = lazy(() => import("../pages/procurement/ProcurementDashboard"));
+const RequisitionsPage        = lazy(() => import("../pages/procurement/RequisitionsPage"));
+const RequisitionDetailPage   = lazy(() => import("../pages/procurement/RequisitionDetailPage"));
+const RfqsPage                = lazy(() => import("../pages/procurement/RfqsPage"));
+const PurchaseOrdersPage      = lazy(() => import("../pages/procurement/PurchaseOrdersPage"));
+const PurchaseOrderDetailPage = lazy(() => import("../pages/procurement/PurchaseOrderDetailPage"));
+const AnalyticsPage           = lazy(() => import("../pages/procurement/AnalyticsPage"));
 
 // Inventory Pages
-import InventoryDashboard from "../pages/inventory/InventoryDashboard";
-import StockPage from "../pages/inventory/StockPage";
-import WarehousesPage from "../pages/inventory/WarehousesPage";
-import GrnsPage from "../pages/inventory/GrnsPage";
-import GrnDetailPage from "../pages/inventory/GrnDetailPage";
-import TransactionsPage from "../pages/inventory/TransactionsPage";
+const InventoryDashboard = lazy(() => import("../pages/inventory/InventoryDashboard"));
+const StockPage          = lazy(() => import("../pages/inventory/StockPage"));
+const WarehousesPage     = lazy(() => import("../pages/inventory/WarehousesPage"));
+const GrnsPage           = lazy(() => import("../pages/inventory/GrnsPage"));
+const GrnDetailPage      = lazy(() => import("../pages/inventory/GrnDetailPage"));
+const TransactionsPage   = lazy(() => import("../pages/inventory/TransactionsPage"));
 
 // Finance Pages
-import FinanceDashboard from "../pages/finance/FinanceDashboard";
-import InvoicesPage from "../pages/finance/InvoicesPage";
-import InvoiceDetailPage from "../pages/finance/InvoiceDetailPage";
-import BudgetsPage from "../pages/finance/BudgetsPage";
-import PaymentsPage from "../pages/finance/PaymentsPage";
+const FinanceDashboard  = lazy(() => import("../pages/finance/FinanceDashboard"));
+const InvoicesPage      = lazy(() => import("../pages/finance/InvoicesPage"));
+const InvoiceDetailPage = lazy(() => import("../pages/finance/InvoiceDetailPage"));
+const BudgetsPage       = lazy(() => import("../pages/finance/BudgetsPage"));
+const PaymentsPage      = lazy(() => import("../pages/finance/PaymentsPage"));
 
 // Vendor Pages
-import VendorDashboard from "../pages/vendor/VendorDashboard";
-import VendorRfqsPage from "../pages/vendor/VendorRfqsPage";
-import VendorQuotationsPage from "../pages/vendor/VendorQuotationsPage";
-import VendorOrdersPage from "../pages/vendor/VendorOrdersPage";
-import VendorInvoicesPage from "../pages/vendor/VendorInvoicesPage";
+const VendorDashboard      = lazy(() => import("../pages/vendor/VendorDashboard"));
+const VendorRfqsPage       = lazy(() => import("../pages/vendor/VendorRfqsPage"));
+const VendorQuotationsPage = lazy(() => import("../pages/vendor/VendorQuotationsPage"));
+const VendorOrdersPage     = lazy(() => import("../pages/vendor/VendorOrdersPage"));
+const VendorInvoicesPage   = lazy(() => import("../pages/vendor/VendorInvoicesPage"));
 
 // Shared Pages
-import NotificationsPage from "../pages/NotificationsPage";
+const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
 
 import { ROLES } from "../constants/roles";
 
@@ -65,6 +67,15 @@ function getDashboardPath(role) {
   }
 }
 
+/** Full-page spinner shown while a lazy chunk is loading */
+function PageLoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-primary-50 dark:bg-transparent">
+      <Spinner size="lg" />
+    </div>
+  );
+}
+
 export default function AppRouter({ user, onLogout }) {
   // Redirect already-authenticated users away from the login page.
   const loginElement = user
@@ -72,6 +83,7 @@ export default function AppRouter({ user, onLogout }) {
     : <LoginPage />;
 
   return (
+    <Suspense fallback={<PageLoadingFallback />}>
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={loginElement} />
@@ -316,5 +328,6 @@ export default function AppRouter({ user, onLogout }) {
           element={<Navigate to="/" replace />}
         />
       </Routes>
+    </Suspense>
   );
 }
