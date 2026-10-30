@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AppRouter from '../AppRouter'
@@ -30,30 +30,44 @@ function renderWithRole(role, initialPath) {
   )
 }
 
+// Pages are loaded via React.lazy, so assertions must be async
+// (waitFor polls until the lazy chunk resolves and the heading appears).
 describe('AppRouter sidebar routes', () => {
-  it('renders Audit Logs page on /admin/audit-logs without redirect loops', () => {
+  it('renders Audit Logs page on /admin/audit-logs without redirect loops', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/audit-logs')
-    expect(screen.getByRole('heading', { level: 1, name: 'Audit Logs' })).toBeDefined()
-    expect(screen.getByRole('heading', { level: 3, name: 'Audit Trail' })).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Audit Logs' })).toBeDefined()
+    })
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 3, name: 'Audit Trail' })).toBeDefined()
+    })
   })
 
-  it('renders Users page on /admin/users', () => {
+  it('renders Users page on /admin/users', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/users')
-    expect(screen.getByRole('heading', { level: 1, name: 'Users' })).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Users' })).toBeDefined()
+    })
   })
 
-  it('renders Health page on /admin/health', () => {
+  it('renders Health page on /admin/health', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/health')
-    expect(screen.getByRole('heading', { level: 1, name: 'System Health' })).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'System Health' })).toBeDefined()
+    })
   })
 
-  it('renders Requisitions page on /procurement/requisitions', () => {
+  it('renders Requisitions page on /procurement/requisitions', async () => {
     renderWithRole(ROLES.PROCUREMENT_MANAGER, '/procurement/requisitions')
-    expect(screen.getByRole('heading', { level: 1, name: 'Purchase Requisitions' })).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Purchase Requisitions' })).toBeDefined()
+    })
   })
 
-  it('renders Notifications page on /notifications', () => {
+  it('renders Notifications page on /notifications', async () => {
     renderWithRole(ROLES.ADMIN, '/notifications')
-    expect(screen.getByRole('heading', { level: 1, name: 'Notifications' })).toBeDefined()
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Notifications' })).toBeDefined()
+    })
   })
 })
