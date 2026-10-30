@@ -11,6 +11,8 @@ import Badge from '../Badge'
 // ── Internal STATUS_COLORS mirror ──────────────────────────────────────────────
 // Mirrors the STATUS_COLORS map defined in Badge.jsx so we can derive the
 // expected bg class for each key without re-exporting the internal constant.
+// Mirrors Badge.jsx STATUS_COLORS — light-mode classes only (dark: variants
+// are additional classes and don't affect the light bg class assertions).
 const STATUS_COLORS = {
   // General
   ACTIVE:               'bg-green-100 text-green-800 ring-green-200',
@@ -32,6 +34,7 @@ const STATUS_COLORS = {
   DELIVERED:            'bg-cyan-100 text-cyan-800 ring-cyan-200',
   COMPLETED:            'bg-green-100 text-green-800 ring-green-200',
   CANCELLED:            'bg-red-100 text-red-800 ring-red-200',
+  DECLINED:             'bg-red-100 text-red-800 ring-red-200',
 
   // Quotation
   SUBMITTED:            'bg-blue-100 text-blue-800 ring-blue-200',
@@ -55,8 +58,8 @@ const STATUS_COLORS = {
   PASSED:               'bg-green-100 text-green-800 ring-green-200',
   PARTIAL:              'bg-orange-100 text-orange-800 ring-orange-200',
 
-  // Roles
-  ADMIN:                'bg-purple-100 text-purple-800 ring-purple-200',
+  // Roles — ADMIN uses primary (violet) scale, not purple
+  ADMIN:                'bg-primary-100 text-primary-800 ring-primary-200',
   PROCUREMENT_MANAGER:  'bg-blue-100 text-blue-800 ring-blue-200',
   INVENTORY_MANAGER:    'bg-teal-100 text-teal-800 ring-teal-200',
   FINANCE_MANAGER:      'bg-indigo-100 text-indigo-800 ring-indigo-200',

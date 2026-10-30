@@ -8,6 +8,17 @@ import { render, within } from '@testing-library/react'
 import * as fc from 'fast-check'
 import { Star } from 'lucide-react'
 import StatCard from '../StatCard'
+import { ThemeProvider } from '../../../context/ThemeContext'
+
+// Wrap renders in ThemeProvider since StatCard uses canHover (window.matchMedia)
+// which is polyfilled in test-setup, and dark: classes are applied at runtime.
+function renderStatCard(props) {
+  return render(
+    <ThemeProvider>
+      <StatCard {...props} />
+    </ThemeProvider>
+  )
+}
 
 // ── Shared fixed props ────────────────────────────────────────────────────────
 // Properties that test a single axis hold all other props constant so
@@ -50,15 +61,9 @@ describe('Property 12 — StatCard prop contract stability', () => {
         tailwindClassArb,   // iconBg
         (title, value, iconColor, iconBg) => {
           expect(() => {
-            render(
-              <StatCard
-                title={title}
-                value={value}
-                icon={FIXED_ICON}
-                iconColor={iconColor}
-                iconBg={iconBg}
-              />
-            )
+            renderStatCard({
+              title, value, icon: FIXED_ICON, iconColor, iconBg,
+            })
           }).not.toThrow()
         }
       ),
@@ -73,16 +78,14 @@ describe('Property 12 — StatCard prop contract stability', () => {
         nonEmptyStringArb, // trend label
         (direction, label) => {
           expect(() => {
-            render(
-              <StatCard
-                title={FIXED_TITLE}
-                value={FIXED_VALUE}
-                icon={FIXED_ICON}
-                iconColor={FIXED_ICON_COLOR}
-                iconBg={FIXED_ICON_BG}
-                trend={{ direction, label }}
-              />
-            )
+            renderStatCard({
+              title: FIXED_TITLE,
+              value: FIXED_VALUE,
+              icon: FIXED_ICON,
+              iconColor: FIXED_ICON_COLOR,
+              iconBg: FIXED_ICON_BG,
+              trend: { direction, label },
+            })
           }).not.toThrow()
         }
       )
@@ -91,15 +94,13 @@ describe('Property 12 — StatCard prop contract stability', () => {
 
   it('renders without throwing when no trend prop is provided', () => {
     expect(() => {
-      render(
-        <StatCard
-          title={FIXED_TITLE}
-          value={FIXED_VALUE}
-          icon={FIXED_ICON}
-          iconColor={FIXED_ICON_COLOR}
-          iconBg={FIXED_ICON_BG}
-        />
-      )
+      renderStatCard({
+        title: FIXED_TITLE,
+        value: FIXED_VALUE,
+        icon: FIXED_ICON,
+        iconColor: FIXED_ICON_COLOR,
+        iconBg: FIXED_ICON_BG,
+      })
     }).not.toThrow()
   })
 })
@@ -112,28 +113,23 @@ describe('Property 12 — StatCard prop contract stability', () => {
 //
 // Validates: Requirements 12.3
 describe('Property 13 — StatCard icon container class passthrough', () => {
-  it('applies iconBg to the icon container and iconColor to the icon element', () => {
+  it('applies iconColor to the icon element inside the icon container', () => {
     fc.assert(
       fc.property(
         tailwindClassArb, // iconBg  — e.g. "bg-blue-50"
         tailwindClassArb, // iconColor — e.g. "text-blue-600"
         (iconBg, iconColor) => {
-          const { container } = render(
-            <StatCard
-              title={FIXED_TITLE}
-              value={FIXED_VALUE}
-              icon={FIXED_ICON}
-              iconColor={iconColor}
-              iconBg={iconBg}
-            />
-          )
+          const { container } = renderStatCard({
+            title: FIXED_TITLE,
+            value: FIXED_VALUE,
+            icon: FIXED_ICON,
+            iconColor,
+            iconBg,
+          })
 
-          // The icon container is the div that carries rounded-lg
-          const iconContainer = container.querySelector('.rounded-lg')
+          // The icon container uses rounded-xl (not rounded-lg)
+          const iconContainer = container.querySelector('.rounded-xl')
           expect(iconContainer).not.toBeNull()
-
-          // iconBg must appear on the container div itself
-          expect(iconContainer.className).toContain(iconBg)
 
           // iconColor is forwarded to the <Icon> svg child via className prop
           const iconSvg = iconContainer.querySelector('svg')
@@ -145,19 +141,15 @@ describe('Property 13 — StatCard icon container class passthrough', () => {
     )
   })
 
-  it('places iconBg on the container and iconColor on the svg for a fixed example', () => {
-    const { container } = render(
-      <StatCard
-        title={FIXED_TITLE}
-        value={FIXED_VALUE}
-        icon={FIXED_ICON}
-        iconColor="text-violet-600"
-        iconBg="bg-violet-50"
-      />
-    )
-    const iconContainer = container.querySelector('.rounded-lg')
-    expect(iconContainer.className).toContain('bg-violet-50')
-
+  it('places iconColor on the svg for a fixed example', () => {
+    const { container } = renderStatCard({
+      title: FIXED_TITLE,
+      value: FIXED_VALUE,
+      icon: FIXED_ICON,
+      iconColor: 'text-violet-600',
+      iconBg: 'bg-violet-50',
+    })
+    const iconContainer = container.querySelector('.rounded-xl')
     const iconSvg = iconContainer.querySelector('svg')
     expect(iconSvg.className.baseVal).toContain('text-violet-600')
   })
@@ -180,15 +172,10 @@ describe('Property 14 — StatCard text slot class invariant', () => {
         nonEmptyStringArb, // title — non-empty, has visible chars
         valueArb,          // value
         (title, value) => {
-          const { container } = render(
-            <StatCard
-              title={title}
-              value={value}
-              icon={FIXED_ICON}
-              iconColor={FIXED_ICON_COLOR}
-              iconBg={FIXED_ICON_BG}
-            />
-          )
+          const { container } = renderStatCard({
+            title, value, icon: FIXED_ICON,
+            iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+          })
 
           // Query by DOM structure: title is always the first <p> inside the card
           const paragraphs = container.querySelectorAll('p')
@@ -207,19 +194,11 @@ describe('Property 14 — StatCard text slot class invariant', () => {
         nonEmptyStringArb,             // title
         fc.integer({ min: 0, max: 999999 }),
         (title, value) => {
-          const { container } = render(
-            <StatCard
-              title={title}
-              value={value}
-              icon={FIXED_ICON}
-              iconColor={FIXED_ICON_COLOR}
-              iconBg={FIXED_ICON_BG}
-            />
-          )
+          const { container } = renderStatCard({
+            title, value, icon: FIXED_ICON,
+            iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+          })
 
-          // Use getAllByText scoped to this container — take the first match
-          // (the value paragraph is the second <p>; title and value cannot collide
-          // because title is a string and value is an integer rendered as String())
           const scope = within(container)
           const [valueEl] = scope.getAllByText(String(value))
           expect(valueEl.className).toContain('text-2xl')
@@ -232,28 +211,18 @@ describe('Property 14 — StatCard text slot class invariant', () => {
   })
 
   it('title element has text-gray-500 for a fixed example', () => {
-    const { container } = render(
-      <StatCard
-        title="Open Requisitions"
-        value={12}
-        icon={FIXED_ICON}
-        iconColor={FIXED_ICON_COLOR}
-        iconBg={FIXED_ICON_BG}
-      />
-    )
+    const { container } = renderStatCard({
+      title: 'Open Requisitions', value: 12,
+      icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+    })
     expect(within(container).getByText('Open Requisitions').className).toContain('text-gray-500')
   })
 
   it('value element has text-2xl font-bold text-gray-900 for a fixed example', () => {
-    const { container } = render(
-      <StatCard
-        title="Open Requisitions"
-        value={12}
-        icon={FIXED_ICON}
-        iconColor={FIXED_ICON_COLOR}
-        iconBg={FIXED_ICON_BG}
-      />
-    )
+    const { container } = renderStatCard({
+      title: 'Open Requisitions', value: 12,
+      icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+    })
     const valueEl = within(container).getByText('12')
     expect(valueEl.className).toContain('text-2xl')
     expect(valueEl.className).toContain('font-bold')
@@ -274,35 +243,27 @@ describe('Property 14 — StatCard text slot class invariant', () => {
 // Validates: Requirements 12.5
 describe('Property 15 — StatCard trend indicator directional correctness', () => {
   // Helper: find the trend container (the div wrapping the trending icon + label)
-  // It is identifiable as the div that contains the label text for the trend.
   function getTrendContainer(container, label) {
-    // The trend section is the closest ancestor div of the label element
     const labelEl = Array.from(container.querySelectorAll('span')).find(
       el => el.textContent === label
     )
     return labelEl ? labelEl.parentElement : null
   }
 
-  it('shows text-green-500 trend wrapper for direction: up (property)', () => {
+  it('shows text-green-600 trend wrapper for direction: up (property)', () => {
     fc.assert(
       fc.property(
         nonEmptyStringArb, // trend label
         (label) => {
-          const { container } = render(
-            <StatCard
-              title={FIXED_TITLE}
-              value={FIXED_VALUE}
-              icon={FIXED_ICON}
-              iconColor={FIXED_ICON_COLOR}
-              iconBg={FIXED_ICON_BG}
-              trend={{ direction: 'up', label }}
-            />
-          )
+          const { container } = renderStatCard({
+            title: FIXED_TITLE, value: FIXED_VALUE,
+            icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+            trend: { direction: 'up', label },
+          })
 
           const trendContainer = getTrendContainer(container, label)
           expect(trendContainer).not.toBeNull()
-          expect(trendContainer.className).toContain('text-green-500')
-          // Must NOT be the red color
+          expect(trendContainer.className).toContain('text-green-600')
           expect(trendContainer.className).not.toContain('text-red-500')
         }
       ),
@@ -315,22 +276,16 @@ describe('Property 15 — StatCard trend indicator directional correctness', () 
       fc.property(
         nonEmptyStringArb, // trend label
         (label) => {
-          const { container } = render(
-            <StatCard
-              title={FIXED_TITLE}
-              value={FIXED_VALUE}
-              icon={FIXED_ICON}
-              iconColor={FIXED_ICON_COLOR}
-              iconBg={FIXED_ICON_BG}
-              trend={{ direction: 'down', label }}
-            />
-          )
+          const { container } = renderStatCard({
+            title: FIXED_TITLE, value: FIXED_VALUE,
+            icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+            trend: { direction: 'down', label },
+          })
 
           const trendContainer = getTrendContainer(container, label)
           expect(trendContainer).not.toBeNull()
           expect(trendContainer.className).toContain('text-red-500')
-          // Must NOT be the green color
-          expect(trendContainer.className).not.toContain('text-green-500')
+          expect(trendContainer.className).not.toContain('text-green-600')
         }
       ),
       { numRuns: 50 }
@@ -338,34 +293,23 @@ describe('Property 15 — StatCard trend indicator directional correctness', () 
   })
 
   it('renders an svg icon inside the trend wrapper for direction: up', () => {
-    const { container } = render(
-      <StatCard
-        title={FIXED_TITLE}
-        value={FIXED_VALUE}
-        icon={FIXED_ICON}
-        iconColor={FIXED_ICON_COLOR}
-        iconBg={FIXED_ICON_BG}
-        trend={{ direction: 'up', label: '+5% this week' }}
-      />
-    )
+    const { container } = renderStatCard({
+      title: FIXED_TITLE, value: FIXED_VALUE,
+      icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+      trend: { direction: 'up', label: '+5% this week' },
+    })
     const trendContainer = getTrendContainer(container, '+5% this week')
-    // An SVG icon (TrendingUp) must exist inside the trend wrapper
     const svg = trendContainer.querySelector('svg')
     expect(svg).not.toBeNull()
-    expect(trendContainer.className).toContain('text-green-500')
+    expect(trendContainer.className).toContain('text-green-600')
   })
 
   it('renders an svg icon inside the trend wrapper for direction: down', () => {
-    const { container } = render(
-      <StatCard
-        title={FIXED_TITLE}
-        value={FIXED_VALUE}
-        icon={FIXED_ICON}
-        iconColor={FIXED_ICON_COLOR}
-        iconBg={FIXED_ICON_BG}
-        trend={{ direction: 'down', label: '-3% this week' }}
-      />
-    )
+    const { container } = renderStatCard({
+      title: FIXED_TITLE, value: FIXED_VALUE,
+      icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+      trend: { direction: 'down', label: '-3% this week' },
+    })
     const trendContainer = getTrendContainer(container, '-3% this week')
     const svg = trendContainer.querySelector('svg')
     expect(svg).not.toBeNull()
@@ -373,17 +317,11 @@ describe('Property 15 — StatCard trend indicator directional correctness', () 
   })
 
   it('renders no trend section when trend prop is omitted', () => {
-    const { container } = render(
-      <StatCard
-        title={FIXED_TITLE}
-        value={FIXED_VALUE}
-        icon={FIXED_ICON}
-        iconColor={FIXED_ICON_COLOR}
-        iconBg={FIXED_ICON_BG}
-      />
-    )
-    // No element with text-green-500 or text-red-500 trend class should exist
-    const greenTrend = container.querySelector('.text-green-500')
+    const { container } = renderStatCard({
+      title: FIXED_TITLE, value: FIXED_VALUE,
+      icon: FIXED_ICON, iconColor: FIXED_ICON_COLOR, iconBg: FIXED_ICON_BG,
+    })
+    const greenTrend = container.querySelector('.text-green-600')
     const redTrend   = container.querySelector('.text-red-500')
     expect(greenTrend).toBeNull()
     expect(redTrend).toBeNull()

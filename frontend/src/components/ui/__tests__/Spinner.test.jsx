@@ -63,17 +63,17 @@ describe('Property 9 — Spinner size class correctness (Validates: Requirements
 
 // ─── Bonus: default className → text-primary-500 ─────────────────────────────
 describe('Spinner default color class', () => {
-  it('includes text-primary-500 when no className prop is passed', () => {
+  it('includes text-primary-600 when no className prop is passed', () => {
     const { getByRole } = render(<Spinner />)
     const el = getByRole('status')
-    expect(el.className).toContain('text-primary-500')
+    expect(el.className).toContain('text-primary-600')
   })
 
-  it('does not apply text-primary-500 when a custom className is passed', () => {
+  it('does not apply text-primary-600 when a custom className is passed', () => {
     const { getByRole } = render(<Spinner className="text-red-500" />)
     const el = getByRole('status')
     expect(el.className).toContain('text-red-500')
-    expect(el.className).not.toContain('text-primary-500')
+    expect(el.className).not.toContain('text-primary-600')
   })
 
   it('property: any non-empty custom className overrides the default color', () => {
@@ -85,7 +85,7 @@ describe('Spinner default color class', () => {
           const { getByRole } = render(<Spinner className={customClass} />)
           const el = getByRole('status')
           const hasCustom = el.className.includes(customClass)
-          const lacksDefault = !el.className.includes('text-primary-500')
+          const lacksDefault = !el.className.includes('text-primary-600')
 
           // Clean up DOM after each fast-check iteration
           cleanup()

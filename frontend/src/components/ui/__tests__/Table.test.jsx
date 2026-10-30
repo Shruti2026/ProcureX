@@ -24,7 +24,7 @@ describe('Property 10 — Table header column label styling invariant', () => {
   const REQUIRED_HEADER_CLASSES = [
     'text-xs',
     'font-semibold',
-    'text-gray-400',
+    'text-primary-700',
     'uppercase',
     'tracking-wider',
   ]

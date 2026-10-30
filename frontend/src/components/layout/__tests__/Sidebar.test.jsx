@@ -68,24 +68,24 @@ function renderSidebar(role, activePath) {
 }
 
 // ── Property 1 — Active navigation link styling invariant ─────────────────────
-// For any nav link rendered in the Sidebar with a matching URL (making it
-// active), the rendered <a> element's className MUST contain `bg-primary-50`
-// AND `text-primary-700`.
+// The redesigned Sidebar uses a dark purple gradient background.
+// Active links use bg-white/10 and text-white (not the old bg-primary-50 / text-primary-700).
+// Inactive links use text-white/70.
 //
 // Validates: Requirements 2.4
 describe('Property 1 — Active navigation link styling invariant', () => {
   // ── Concrete test 1: Admin role — active Dashboard link ──────────────────
-  it('Admin role: active Dashboard link has bg-primary-50 and text-primary-700', () => {
+  it('Admin role: active Dashboard link has bg-white/10 and text-white', () => {
     const { container } = renderSidebar(ROLES.ADMIN, '/admin/dashboard')
     const link = container.querySelector('a[href="/admin/dashboard"]')
 
     expect(link).not.toBeNull()
-    expect(link.className).toContain('bg-primary-50')
-    expect(link.className).toContain('text-primary-700')
+    expect(link.className).toContain('bg-white/10')
+    expect(link.className).toContain('text-white')
   })
 
   // ── Concrete test 2: Procurement role — active Requisitions link ─────────
-  it('Procurement role: active Requisitions link has bg-primary-50 and text-primary-700', () => {
+  it('Procurement role: active Requisitions link has bg-white/10 and text-white', () => {
     const { container } = renderSidebar(
       ROLES.PROCUREMENT_MANAGER,
       '/procurement/requisitions'
@@ -93,12 +93,12 @@ describe('Property 1 — Active navigation link styling invariant', () => {
     const link = container.querySelector('a[href="/procurement/requisitions"]')
 
     expect(link).not.toBeNull()
-    expect(link.className).toContain('bg-primary-50')
-    expect(link.className).toContain('text-primary-700')
+    expect(link.className).toContain('bg-white/10')
+    expect(link.className).toContain('text-white')
   })
 
   // ── Concrete test 3: Inactive siblings do NOT receive active styles ───────
-  it('Admin role: inactive sibling links do NOT have bg-primary-50', () => {
+  it('Admin role: inactive sibling links do NOT have bg-white/10', () => {
     const { container } = renderSidebar(ROLES.ADMIN, '/admin/dashboard')
 
     const allLinks = Array.from(container.querySelectorAll('a'))
@@ -108,15 +108,12 @@ describe('Property 1 — Active navigation link styling invariant', () => {
 
     expect(inactiveLinks.length).toBeGreaterThan(0)
     for (const link of inactiveLinks) {
-      expect(link.className).not.toContain('bg-primary-50')
-      expect(link.className).not.toContain('text-primary-700')
+      expect(link.className).not.toContain('bg-white/10')
     }
   })
 
   // ── Property test: active link classes hold across all roles × all paths ──
-  // Uses a single flat fc.property over ALL_ROLE_PATH_PAIRS to avoid the
-  // performance cost of nested fc.assert calls.
-  it('active link always has bg-primary-50 and text-primary-700 across all roles and paths', () => {
+  it('active link always has bg-white/10 and text-white across all roles and paths', () => {
     fc.assert(
       fc.property(
         fc.constantFrom(...ALL_ROLE_PATH_PAIRS),
@@ -125,8 +122,8 @@ describe('Property 1 — Active navigation link styling invariant', () => {
           const link = container.querySelector(`a[href="${activePath}"]`)
 
           expect(link).not.toBeNull()
-          expect(link.className).toContain('bg-primary-50')
-          expect(link.className).toContain('text-primary-700')
+          expect(link.className).toContain('bg-white/10')
+          expect(link.className).toContain('text-white')
         }
       ),
       { numRuns: 50 }
@@ -134,8 +131,7 @@ describe('Property 1 — Active navigation link styling invariant', () => {
   })
 
   // ── Property test: inactive siblings never carry active classes ───────────
-  it('inactive sibling links never have bg-primary-50 for any role × active path combination', () => {
-    // Only test roles that have more than one path (otherwise no inactive siblings)
+  it('inactive sibling links never have bg-white/10 for any role × active path combination', () => {
     const pairsWithSiblings = ALL_ROLE_PATH_PAIRS.filter(([role]) => {
       return NAV_PATHS[role].length > 1
     })
@@ -150,8 +146,7 @@ describe('Property 1 — Active navigation link styling invariant', () => {
           ).filter((a) => a.getAttribute('href') !== activePath)
 
           for (const link of inactiveLinks) {
-            expect(link.className).not.toContain('bg-primary-50')
-            expect(link.className).not.toContain('text-primary-700')
+            expect(link.className).not.toContain('bg-white/10')
           }
         }
       ),

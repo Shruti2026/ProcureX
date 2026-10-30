@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AppRouter from '../AppRouter'
 import { AuthContext } from '../../context/AuthContext'
+import { ThemeProvider } from '../../context/ThemeContext'
 import { ROLES } from '../../constants/roles'
 
 function renderWithRole(role, initialPath) {
@@ -20,13 +21,15 @@ function renderWithRole(role, initialPath) {
   }
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ user: mockUser, token: 'fake-token', logout: () => {} }}>
-        <MemoryRouter initialEntries={[initialPath]}>
-          <AppRouter user={mockUser} onLogout={() => {}} />
-        </MemoryRouter>
-      </AuthContext.Provider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthContext.Provider value={{ user: mockUser, token: 'fake-token', logout: () => {} }}>
+          <MemoryRouter initialEntries={[initialPath]}>
+            <AppRouter user={mockUser} onLogout={() => {}} />
+          </MemoryRouter>
+        </AuthContext.Provider>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 
@@ -35,23 +38,23 @@ function renderWithRole(role, initialPath) {
 describe('AppRouter sidebar routes', () => {
   it('renders Audit Logs page on /admin/audit-logs without redirect loops', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/audit-logs')
+    // AuditLogsPage renders a single h1 "Audit Logs" — no h3 "Audit Trail"
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1, name: 'Audit Logs' })).toBeDefined()
-    })
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 3, name: 'Audit Trail' })).toBeDefined()
     })
   })
 
   it('renders Users page on /admin/users', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/users')
+    // UsersPage renders h1 "Users & Accounts"
     await waitFor(() => {
-      expect(screen.getByRole('heading', { level: 1, name: 'Users' })).toBeDefined()
+      expect(screen.getByRole('heading', { level: 1, name: 'Users & Accounts' })).toBeDefined()
     })
   })
 
   it('renders Health page on /admin/health', async () => {
     renderWithRole(ROLES.ADMIN, '/admin/health')
+    // HealthPage renders h1 "System Health"
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1, name: 'System Health' })).toBeDefined()
     })
