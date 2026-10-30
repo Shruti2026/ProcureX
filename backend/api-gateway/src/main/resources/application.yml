@@ -74,7 +74,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
 
 springdoc:
   swagger-ui:
@@ -82,6 +85,6 @@ springdoc:
 
 logging:
   level:
-    org.springframework.cloud.gateway: TRACE
-    org.springframework.cloud.loadbalancer: TRACE
-    reactor.netty.http.client: DEBUG
+    org.springframework.cloud.gateway: WARN
+    org.springframework.cloud.loadbalancer: WARN
+    reactor.netty.http.client: WARN

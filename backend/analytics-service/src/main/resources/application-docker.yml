@@ -9,3 +9,9 @@ spring:
   rabbitmq:
     host: rabbitmq
     port: 5672
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
+      idle-timeout: 300000

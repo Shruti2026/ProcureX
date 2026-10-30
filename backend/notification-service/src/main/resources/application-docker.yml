@@ -14,3 +14,9 @@ spring:
     port: ${SMTP_PORT:587}
     username: ${SMTP_USERNAME:}
     password: ${SMTP_PASSWORD:}
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
+      idle-timeout: 300000
