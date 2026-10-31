@@ -20,7 +20,7 @@ const STATUS_TABS = [
   { label: 'Rejected', value: 'REJECTED' },
 ]
 
-const COLUMNS = ['Invoice Number', 'Vendor ID', 'Amount', 'Status', 'Submitted', 'Verified', 'Approved']
+const COLUMNS = ['Invoice Number', 'Vendor', 'Amount', 'Status', 'Submitted', 'Verified', 'Approved']
 
 export default function InvoicesPage() {
   const navigate = useNavigate()
@@ -95,7 +95,11 @@ export default function InvoicesPage() {
             onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
           >
             <Table.Td className="font-medium text-gray-900 dark:text-white">{inv.invoiceNumber}</Table.Td>
-            <Table.Td className="text-gray-400 dark:text-white/40 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
+            <Table.Td className="text-gray-600 dark:text-white/60 text-sm">
+              {inv.vendorName && inv.vendorName.trim()
+                ? inv.vendorName
+                : inv.vendorId?.slice(-8).toUpperCase()}
+            </Table.Td>
             <Table.Td className="font-medium">{formatCurrency(inv.invoiceAmount)}</Table.Td>
             <Table.Td><Badge status={inv.status} /></Table.Td>
             <Table.Td>{formatDate(inv.submittedAt)}</Table.Td>

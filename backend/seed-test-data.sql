@@ -31,8 +31,12 @@
 
 -- ============================================================
 -- Real user UUIDs — sourced from procurex_identity.users
--- Update these if you re-bootstrap on a new machine.
--- Query: SELECT user_id, email, organization_id FROM procurex_identity.users;
+-- !! REQUIRED BEFORE RUNNING !!
+-- Run this query first to get real UUIDs:
+--   SELECT user_id, email, organization_id FROM procurex_identity.users;
+-- Then fill in the values below. Leave empty = all notifications,
+-- audit log actors, and preferences will have blank user_id and
+-- will NOT match any logged-in user (notifications page shows empty).
 -- ============================================================
 
 SET @ORG_ID          = '20e3006c-86ad-11f1-aa2e-462403e66e86';
@@ -631,9 +635,12 @@ VALUES
 
 -- ------------------------------------------------------------
 -- GRNs  (for PO1 which is COMPLETED and PO2 which is DELIVERED)
+-- GRN3 is intentionally left PENDING_INSPECTION so the
+-- Inventory Dashboard shows a non-zero Pending GRNs KPI.
 -- ------------------------------------------------------------
 SET @GRN1_ID = 'dd444444-0000-0000-0000-000000000001';  -- for PO1 (CLOSED after inspection)
 SET @GRN2_ID = 'dd444444-0000-0000-0000-000000000002';  -- for PO2 (INSPECTED)
+SET @GRN3_ID = 'dd444444-0000-0000-0000-000000000003';  -- for PO3 (PENDING_INSPECTION)
 
 INSERT IGNORE INTO goods_receipt_notes
     (grn_id, organization_id, purchase_order_id, warehouse_id, grn_number,
@@ -643,7 +650,11 @@ VALUES
      'CLOSED', @IM_DAN_ID, '2026-10-19 14:00:00', '2026-10-19 14:00:00', '2026-10-20 10:00:00'),
 
     (@GRN2_ID, @ORG_ID, @PO2_ID, @WH1_ID, 'GRN-2026-00002',
-     'INSPECTED', @IM_EVE_ID, '2026-10-21 12:00:00', '2026-10-21 12:00:00', '2026-10-22 09:00:00');
+     'INSPECTED', @IM_EVE_ID, '2026-10-21 12:00:00', '2026-10-21 12:00:00', '2026-10-22 09:00:00'),
+
+    -- GRN3: Cleaning supplies from PO3 (APPROVED) — received but not yet inspected
+    (@GRN3_ID, @ORG_ID, @PO3_ID, @WH2_ID, 'GRN-2026-00003',
+     'PENDING_INSPECTION', @IM_DAN_ID, NOW(), NOW(), NOW());
 
 -- GRN items
 INSERT IGNORE INTO grn_items
@@ -659,7 +670,12 @@ VALUES
     (UUID(), @ORG_ID, @GRN2_ID, '650e8400-e29b-41d4-a716-446655440001', 'A4 Copy Paper',      100, 100, NOW(), NOW()),
     (UUID(), @ORG_ID, @GRN2_ID, '650e8400-e29b-41d4-a716-446655440002', 'Ballpoint Pen (Blue)', 10,  10, NOW(), NOW()),
     (UUID(), @ORG_ID, @GRN2_ID, '650e8400-e29b-41d4-a716-446655440016', 'Tea Bags (100 pack)',  20,  20, NOW(), NOW()),
-    (UUID(), @ORG_ID, @GRN2_ID, '650e8400-e29b-41d4-a716-446655440015', 'Instant Coffee 200g',  12,  12, NOW(), NOW());
+    (UUID(), @ORG_ID, @GRN2_ID, '650e8400-e29b-41d4-a716-446655440015', 'Instant Coffee 200g',  12,  12, NOW(), NOW()),
+
+    -- GRN3 (PO3 — Cleaning Supplies, PENDING_INSPECTION)
+    (UUID(), @ORG_ID, @GRN3_ID, '650e8400-e29b-41d4-a716-446655440009', 'Multi-surface Cleaner 1L',     48, 48, NOW(), NOW()),
+    (UUID(), @ORG_ID, @GRN3_ID, '650e8400-e29b-41d4-a716-446655440010', 'Microfibre Cloth Pack',         10, 10, NOW(), NOW()),
+    (UUID(), @ORG_ID, @GRN3_ID, '650e8400-e29b-41d4-a716-446655440011', 'Disposable Face Mask (50 pack)', 20, 20, NOW(), NOW());
 
 -- ------------------------------------------------------------
 -- QUALITY INSPECTIONS
@@ -740,29 +756,38 @@ VALUES
 
 -- ------------------------------------------------------------
 -- INVOICES  (vendors submit invoices against delivered/completed POs)
+-- INV1 = APPROVED (paid), INV2 = VERIFIED (awaiting approval)
+-- INV3 = PENDING_VERIFICATION so FinanceDashboard Pending KPI > 0
 -- ------------------------------------------------------------
 SET @INV1_ID = 'ff666666-0000-0000-0000-000000000001';  -- for PO1 — APPROVED (payment pending)
 SET @INV2_ID = 'ff666666-0000-0000-0000-000000000002';  -- for PO2 — VERIFIED (awaiting approval)
+SET @INV3_ID = 'ff666666-0000-0000-0000-000000000003';  -- for PO4 — PENDING_VERIFICATION
 
 INSERT IGNORE INTO invoices
-    (invoice_id, organization_id, purchase_order_id, vendor_id,
+    (invoice_id, organization_id, purchase_order_id, vendor_id, vendor_name,
      invoice_number, invoice_amount, status,
      submitted_at, verified_at, verified_by, approved_at, approved_by,
      created_at, updated_at)
 VALUES
     -- INV1: PO1 fully paid (COMPLETED lifecycle)
-    (@INV1_ID, @ORG_ID, @PO1_ID, @V1_VENDOR_ID,
+    (@INV1_ID, @ORG_ID, @PO1_ID, @V1_VENDOR_ID, 'TechSupply Co.',
      'INV-ACME-2026-0041', 16200.00, 'APPROVED',
      '2026-10-21 09:00:00', '2026-10-21 14:00:00', @FM_FRANK_ID,
      '2026-10-22 10:00:00', @FM_FRANK_ID,
      '2026-10-21 09:00:00', '2026-10-22 10:00:00'),
 
     -- INV2: PO2 office supplies — verified, awaiting approval
-    (@INV2_ID, @ORG_ID, @PO2_ID, @V2_VENDOR_ID,
+    (@INV2_ID, @ORG_ID, @PO2_ID, @V2_VENDOR_ID, 'OfficeWorld',
      'INV-MORI-2026-0088', 32800.00, 'VERIFIED',
      '2026-10-22 10:00:00', '2026-10-23 11:00:00', @FM_GRACE_ID,
      NULL, NULL,
-     '2026-10-22 10:00:00', '2026-10-23 11:00:00');
+     '2026-10-22 10:00:00', '2026-10-23 11:00:00'),
+
+    -- INV3: PO4 furniture (FurniturePlus) — just submitted, pending verification
+    (@INV3_ID, @ORG_ID, @PO4_ID, @V3_VENDOR_ID, 'FurniturePlus',
+     'INV-FURN-2026-0012', 410000.00, 'PENDING_VERIFICATION',
+     NOW(), NULL, NULL, NULL, NULL,
+     NOW(), NOW());
 
 -- Invoice line items
 INSERT IGNORE INTO invoice_items
@@ -799,10 +824,15 @@ VALUES
 
     -- INV2 trail
     (UUID(), @ORG_ID, @INV2_ID, NULL,                   'PENDING_VERIFICATION', 'Invoice submitted by vendor',         @V2_USER_ID,  '2026-10-22 10:00:00'),
-    (UUID(), @ORG_ID, @INV2_ID, 'PENDING_VERIFICATION', 'VERIFIED',             '3-way match passed: PO + GRN + Inv',  @FM_GRACE_ID, '2026-10-23 11:00:00');
+    (UUID(), @ORG_ID, @INV2_ID, 'PENDING_VERIFICATION', 'VERIFIED',             '3-way match passed: PO + GRN + Inv',  @FM_GRACE_ID, '2026-10-23 11:00:00'),
+
+    -- INV3 trail (newly submitted, pending verification)
+    (UUID(), @ORG_ID, @INV3_ID, NULL,                   'PENDING_VERIFICATION', 'Invoice submitted by vendor',         @V3_USER_ID,  NOW());
 
 -- ------------------------------------------------------------
 -- PAYMENTS  (one completed payment for INV1)
+-- Use NOW() for initiated_at/completed_at so "Payments This Month"
+-- KPI is always non-zero regardless of when the seed is run.
 -- ------------------------------------------------------------
 INSERT IGNORE INTO payments
     (payment_id, organization_id, invoice_id, amount, payment_method,
@@ -811,8 +841,7 @@ INSERT IGNORE INTO payments
 VALUES
     (UUID(), @ORG_ID, @INV1_ID, 16200.00, 'WIRE',
      'WIRE-20261022-001234', 'COMPLETED',
-     '2026-10-22 11:00:00', '2026-10-22 15:00:00',
-     '2026-10-22 11:00:00', '2026-10-22 15:00:00');
+     NOW(), NOW(), NOW(), NOW());
 
 
 -- ============================================================
