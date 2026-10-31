@@ -241,7 +241,7 @@ export default function AnalyticsPage() {
                   <Table.Td>{onTimePct}</Table.Td>
                   <Table.Td>{qualityPct}</Table.Td>
                   <Table.Td>
-                    <ScoreBadge score={vendor.score ?? 0} />
+                    <ScoreBadge score={vendor.performanceScore ?? 0} />
                   </Table.Td>
                 </tr>
               )
