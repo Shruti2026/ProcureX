@@ -65,6 +65,7 @@ public class ReportController {
         List<VendorPerformanceResponse> responses = analyticsService.getVendorRatingCards(organizationId).stream()
                 .map(card -> new VendorPerformanceResponse(
                         card.getVendorId(),
+                        card.getVendorName(),
                         card.getOnTimeRatio(),
                         card.getQualityRatio(),
                         card.getPerformanceScore(),

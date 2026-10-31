@@ -18,7 +18,7 @@ const reducedMotion =
 const STAGGER_DELAYS = [0, 75, 150, 225]
 
 const VENDOR_COLUMNS = [
-  'Vendor ID',
+  'Vendor',
   'Total Deliveries',
   'On-Time %',
   'Quality %',
@@ -216,9 +216,11 @@ export default function AnalyticsPage() {
             emptyMessage="No vendor performance data available."
           >
             {vendorData.map((vendor, i) => {
-              const vendorIdShort = vendor.vendorId
-                ? vendor.vendorId.slice(0, 8) + '...'
-                : '—'
+              const vendorDisplay = vendor.vendorName && vendor.vendorName.trim()
+                ? vendor.vendorName
+                : vendor.vendorId
+                  ? vendor.vendorId.slice(0, 8) + '...'
+                  : '—'
               const onTimePct = vendor.onTimeRatio != null
                 ? (vendor.onTimeRatio * 100).toFixed(1) + '%'
                 : '—'
@@ -232,8 +234,8 @@ export default function AnalyticsPage() {
                   className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-100 animate-fade-slide-up"
                   style={{ animationDelay: reducedMotion ? '0ms' : `${i * 50}ms` }}
                 >
-                  <Table.Td className="font-mono text-xs text-gray-600 dark:text-white/60">
-                    {vendorIdShort}
+                  <Table.Td className="font-medium text-gray-800 dark:text-white">
+                    {vendorDisplay}
                   </Table.Td>
                   <Table.Td>{vendor.totalDeliveries ?? 0}</Table.Td>
                   <Table.Td>{onTimePct}</Table.Td>

@@ -63,16 +63,21 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     @Transactional
-    public void updateVendorRatingCard(UUID vendorId, UUID orgId, int accepted, int rejected) {
+    public void updateVendorRatingCard(UUID vendorId, UUID orgId, String vendorName, int accepted, int rejected) {
         VendorRatingCard card = vendorRatingCardRepository.findByVendorId(vendorId)
             .orElse(VendorRatingCard.builder()
                 .vendorId(vendorId)
+                .vendorName(vendorName != null ? vendorName : "")
                 .organizationId(orgId)
                 .totalDeliveries(0)
                 .onTimeDeliveries(0)
                 .totalInspectedItems(0)
                 .totalAcceptedItems(0)
                 .build());
+        // Update name if we now have one and the card was created without it
+        if (vendorName != null && !vendorName.isBlank() && card.getVendorName().isBlank()) {
+            card.setVendorName(vendorName);
+        }
         card.setTotalInspectedItems(card.getTotalInspectedItems() + accepted + rejected);
         card.setTotalAcceptedItems(card.getTotalAcceptedItems() + accepted);
         if (accepted > 0) {

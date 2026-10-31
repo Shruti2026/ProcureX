@@ -11,6 +11,9 @@ public record VendorPerformanceResponse(
         @Schema(description = "Vendor's unique identifier")
         UUID vendorId,
 
+        @Schema(description = "Vendor company name", example = "Acme Supplier Ltd.")
+        String vendorName,
+
         @Schema(description = "Ratio of on-time deliveries to total deliveries (0.0–1.0)", example = "0.92")
         BigDecimal onTimeRatio,
 

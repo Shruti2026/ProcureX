@@ -25,6 +25,9 @@ public class VendorRatingCard {
     @Column(name = "vendor_id", nullable = false, unique = true)
     private UUID vendorId;
 
+    @Column(name = "vendor_name", nullable = false, length = 200)
+    private String vendorName;
+
     @Column(name = "total_deliveries")
     private int totalDeliveries;
 
@@ -56,6 +59,7 @@ public class VendorRatingCard {
     protected void onCreate() {
         calculatedAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (vendorName == null) vendorName = "";
         if (onTimeRatio == null) onTimeRatio = BigDecimal.ZERO;
         if (qualityRatio == null) qualityRatio = BigDecimal.ZERO;
         if (performanceScore == null) performanceScore = BigDecimal.ZERO;

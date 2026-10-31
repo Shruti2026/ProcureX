@@ -906,31 +906,47 @@ USE procurex_analytics;
 -- but we seed realistic baseline values for testing the UI.
 -- ------------------------------------------------------------
 INSERT IGNORE INTO vendor_rating_cards
-    (rating_card_id, organization_id, vendor_id,
+    (rating_card_id, organization_id, vendor_id, vendor_name,
      total_deliveries, on_time_deliveries,
      total_inspected_items, total_accepted_items,
      on_time_ratio, quality_ratio, performance_score,
      calculated_at, updated_at)
 VALUES
     -- TechSupply Co. — excellent performance
-    (UUID(), @ORG_ID, @V1_VENDOR_ID,
+    (UUID(), @ORG_ID, @V1_VENDOR_ID, 'TechSupply Co.',
      5, 5, 150, 148, 1.00, 0.99, 4.9, NOW(), NOW()),
 
     -- OfficeWorld — good performance, minor quality issue
-    (UUID(), @ORG_ID, @V2_VENDOR_ID,
+    (UUID(), @ORG_ID, @V2_VENDOR_ID, 'OfficeWorld',
      8, 7, 420, 415, 0.88, 0.99, 4.2, NOW(), NOW()),
 
     -- FurniturePlus — in progress, limited data
-    (UUID(), @ORG_ID, @V3_VENDOR_ID,
+    (UUID(), @ORG_ID, @V3_VENDOR_ID, 'FurniturePlus',
      2, 2, 30, 29, 1.00, 0.97, 3.9, NOW(), NOW()),
 
     -- CleanPro — reliable but slower deliveries
-    (UUID(), @ORG_ID, @V4_VENDOR_ID,
+    (UUID(), @ORG_ID, @V4_VENDOR_ID, 'CleanPro',
      6, 5, 200, 198, 0.83, 0.99, 4.1, NOW(), NOW()),
 
     -- PrintMaster — newer vendor, some delays
-    (UUID(), @ORG_ID, @V6_VENDOR_ID,
+    (UUID(), @ORG_ID, @V6_VENDOR_ID, 'PrintMaster',
      3, 2, 60, 58, 0.67, 0.97, 3.7, NOW(), NOW());
+
+-- ------------------------------------------------------------
+-- DASHBOARD METRICS  (KPI counters for the analytics page)
+-- These are normally written by RabbitMQ events. We seed
+-- realistic values so the KPI cards show real numbers.
+-- ------------------------------------------------------------
+INSERT IGNORE INTO dashboard_metrics
+    (metric_id, organization_id, metric_key, metric_value, metric_type,
+     calculated_at, updated_at)
+VALUES
+    (UUID(), @ORG_ID, 'TOTAL_PO_COUNT',      '5',           'COUNT', NOW(), NOW()),
+    (UUID(), @ORG_ID, 'TOTAL_PO_VALUE_MTD',  '487500.00',   'AMOUNT', NOW(), NOW()),
+    (UUID(), @ORG_ID, 'TOTAL_GRN_COUNT',     '2',           'COUNT', NOW(), NOW()),
+    (UUID(), @ORG_ID, 'OPEN_RFQ_COUNT',      '3',           'COUNT', NOW(), NOW()),
+    (UUID(), @ORG_ID, 'TOTAL_PAYMENTS_MTD',  '125000.00',   'AMOUNT', NOW(), NOW()),
+    (UUID(), @ORG_ID, 'TOTAL_INSPECTIONS',   '2',           'COUNT', NOW(), NOW());
 
 
 -- ============================================================

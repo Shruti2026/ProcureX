@@ -48,9 +48,10 @@ public class MetricsEventListener {
             JsonNode node = objectMapper.readTree(payload);
             UUID organizationId = UUID.fromString(node.get("organizationId").asText());
             UUID vendorId = UUID.fromString(node.get("vendorId").asText());
+            String vendorName = node.has("vendorName") ? node.get("vendorName").asText("") : "";
             int totalAccepted = node.get("totalAccepted").asInt(0);
             int totalRejected = node.get("totalRejected").asInt(0);
-            analyticsService.updateVendorRatingCard(vendorId, organizationId, totalAccepted, totalRejected);
+            analyticsService.updateVendorRatingCard(vendorId, organizationId, vendorName, totalAccepted, totalRejected);
             analyticsService.incrementMetricCount(organizationId, "TOTAL_INSPECTIONS");
         } catch (Exception e) {
             log.error("Error processing inspection completed event: {}", e.getMessage(), e);
