@@ -75,8 +75,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .totalAcceptedItems(0)
                 .build());
         // Update name if we now have one and the card was created without it
-        if (vendorName != null && !vendorName.isBlank() && card.getVendorName().isBlank()) {
+        if (vendorName != null && !vendorName.isBlank()
+                && (card.getVendorName() == null || card.getVendorName().isBlank())) {
             card.setVendorName(vendorName);
+        }
+        // Ensure vendorName is never stored as null
+        if (card.getVendorName() == null) {
+            card.setVendorName("");
         }
         card.setTotalInspectedItems(card.getTotalInspectedItems() + accepted + rejected);
         card.setTotalAcceptedItems(card.getTotalAcceptedItems() + accepted);

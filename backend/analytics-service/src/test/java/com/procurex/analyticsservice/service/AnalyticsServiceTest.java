@@ -175,6 +175,7 @@ class AnalyticsServiceTest {
         VendorRatingCard existing = VendorRatingCard.builder()
                 .ratingCardId(UUID.randomUUID())
                 .vendorId(vendorId)
+                .vendorName("Existing Vendor")
                 .organizationId(orgId)
                 .totalDeliveries(5)
                 .onTimeDeliveries(4)
