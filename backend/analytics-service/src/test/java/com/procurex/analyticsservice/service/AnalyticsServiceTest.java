@@ -150,7 +150,7 @@ class AnalyticsServiceTest {
         when(vendorRatingCardRepository.findByVendorId(vendorId)).thenReturn(Optional.empty());
         when(vendorRatingCardRepository.save(any(VendorRatingCard.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        analyticsService.updateVendorRatingCard(vendorId, orgId, 8, 2);
+        analyticsService.updateVendorRatingCard(vendorId, orgId, "Test Vendor", 8, 2);
 
         ArgumentCaptor<VendorRatingCard> captor = ArgumentCaptor.forClass(VendorRatingCard.class);
         verify(vendorRatingCardRepository).save(captor.capture());
@@ -185,7 +185,7 @@ class AnalyticsServiceTest {
         when(vendorRatingCardRepository.findByVendorId(vendorId)).thenReturn(Optional.of(existing));
         when(vendorRatingCardRepository.save(any(VendorRatingCard.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        analyticsService.updateVendorRatingCard(vendorId, orgId, 10, 0);
+        analyticsService.updateVendorRatingCard(vendorId, orgId, "Test Vendor", 10, 0);
 
         ArgumentCaptor<VendorRatingCard> captor = ArgumentCaptor.forClass(VendorRatingCard.class);
         verify(vendorRatingCardRepository).save(captor.capture());
