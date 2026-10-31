@@ -65,6 +65,7 @@ public class ReportController {
         List<VendorPerformanceResponse> responses = analyticsService.getVendorRatingCards(organizationId).stream()
                 .map(card -> new VendorPerformanceResponse(
                         card.getVendorId(),
+                        card.getVendorName(),
                         card.getOnTimeRatio(),
                         card.getQualityRatio(),
                         card.getPerformanceScore(),
@@ -96,23 +97,43 @@ public class ReportController {
     }
 
     @GetMapping("/spend-by-department")
-    @PreAuthorize("hasAnyRole('ADMIN','FINANCE_MANAGER')")
-    @Operation(summary = "Get spend breakdown by department for the current month-to-date")
+    @PreAuthorize("hasAnyRole('ADMIN','FINANCE_MANAGER','PROCUREMENT_MANAGER')")
+    @Operation(summary = "Get spend breakdown by category for the current month-to-date")
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Spend by department retrieved successfully"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "Unauthorized — authentication required"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — insufficient permissions")
     })
-    public ResponseEntity<ApiResponse<Map<String, String>>> getSpendByDepartment(
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getSpendByDepartment(
             @RequestHeader("X-Organization-Id") String orgId) {
 
         UUID organizationId = UUID.fromString(orgId);
-        Map<String, String> spendMap = new LinkedHashMap<>();
+
+        // Return an array of {department, totalSpend} objects so the frontend
+        // BarChart can map d.department and d.totalSpend directly.
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+
         dashboardMetricRepository.findByOrganizationIdAndMetricKey(organizationId, "TOTAL_PO_VALUE_MTD")
-                .ifPresent(m -> spendMap.put("TOTAL_PO_VALUE_MTD", m.getMetricValue()));
+                .ifPresent(m -> {
+                    Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("department", "PO Spend MTD");
+                    entry.put("totalSpend", parseBigDecimal(m.getMetricValue()));
+                    result.add(entry);
+                });
+
         dashboardMetricRepository.findByOrganizationIdAndMetricKey(organizationId, "TOTAL_PAYMENTS_MTD")
-                .ifPresent(m -> spendMap.put("TOTAL_PAYMENTS_MTD", m.getMetricValue()));
-        return ResponseEntity.ok(ApiResponse.success("Spend by department retrieved successfully", spendMap));
+                .ifPresent(m -> {
+                    Map<String, Object> entry = new LinkedHashMap<>();
+                    entry.put("department", "Payments MTD");
+                    entry.put("totalSpend", parseBigDecimal(m.getMetricValue()));
+                    result.add(entry);
+                });
+
+        return ResponseEntity.ok(ApiResponse.success("Spend by department retrieved successfully", result));
+    }
+
+    private BigDecimal parseBigDecimal(String value) {
+        try { return new BigDecimal(value); } catch (Exception e) { return BigDecimal.ZERO; }
     }
 
     private long parseCount(Optional<DashboardMetric> metric) {

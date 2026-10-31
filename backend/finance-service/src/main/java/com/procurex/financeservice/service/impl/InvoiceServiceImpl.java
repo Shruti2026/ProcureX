@@ -92,6 +92,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .organizationId(orgId)
                 .purchaseOrderId(request.purchaseOrderId())
                 .vendorId(poResponse.data().vendorId())
+                .vendorName(poResponse.data().companyName() != null ? poResponse.data().companyName() : "")
                 .invoiceNumber(invoiceNumber)
                 .invoiceAmount(totalAmount)
                 .items(new ArrayList<>())
@@ -371,6 +372,7 @@ public class InvoiceServiceImpl implements InvoiceService {
                 invoice.getInvoiceNumber(),
                 invoice.getPurchaseOrderId(),
                 invoice.getVendorId(),
+                invoice.getVendorName() != null ? invoice.getVendorName() : "",
                 invoice.getInvoiceAmount(),
                 invoice.getStatus(),
                 itemResponses,

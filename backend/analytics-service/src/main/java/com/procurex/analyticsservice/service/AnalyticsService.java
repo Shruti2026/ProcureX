@@ -10,7 +10,7 @@ public interface AnalyticsService {
     void upsertMetric(UUID orgId, String key, String type, String value);
     void incrementMetricCount(UUID orgId, String key);
     void addToMetricAmount(UUID orgId, String key, BigDecimal amount);
-    void updateVendorRatingCard(UUID vendorId, UUID orgId, int accepted, int rejected);
+    void updateVendorRatingCard(UUID vendorId, UUID orgId, String vendorName, int accepted, int rejected);
     List<VendorRatingCard> getVendorRatingCards(UUID orgId);
     List<DashboardMetric> getDashboardMetrics(UUID orgId);
 }

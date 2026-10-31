@@ -206,13 +206,16 @@ public class InspectionServiceImpl implements InspectionService {
             int totalRejected = inspection.getItems().stream()
                     .mapToInt(InspectionItem::getRejectedQuantity).sum();
 
-            // Resolve vendorId from the linked PO
+            // Resolve vendorId and vendorName from the linked PO
             UUID vendorId = null;
+            String vendorName = "";
             try {
                 PurchaseOrderClientResponse poResponse = procurementClient
                         .getPurchaseOrder(grn.getPurchaseOrderId(), orgId.toString());
                 if (poResponse.data() != null) {
                     vendorId = poResponse.data().vendorId();
+                    vendorName = poResponse.data().companyName() != null
+                            ? poResponse.data().companyName() : "";
                 }
             } catch (FeignException e) {
                 log.warn("Could not resolve vendorId for PO {} during outbox event write: {}",
@@ -225,6 +228,7 @@ public class InspectionServiceImpl implements InspectionService {
             payloadMap.put("totalAccepted", totalAccepted);
             payloadMap.put("totalRejected", totalRejected);
             payloadMap.put("vendorId", vendorId != null ? vendorId.toString() : "");
+            payloadMap.put("vendorName", vendorName);
             payloadMap.put("organizationId", inspection.getOrganizationId().toString());
 
             OutboxEvent outboxEvent = OutboxEvent.builder()

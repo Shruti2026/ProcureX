@@ -28,6 +28,7 @@ public class Invoice {
     private UUID organizationId;
     private UUID purchaseOrderId;
     private UUID vendorId;
+    private String vendorName;
     private String invoiceNumber;
 
     @Column(precision = 15, scale = 2)
@@ -58,6 +59,7 @@ public class Invoice {
         createdAt = submittedAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         status = InvoiceStatus.PENDING_VERIFICATION;
+        if (vendorName == null) vendorName = "";
     }
 
     @PreUpdate

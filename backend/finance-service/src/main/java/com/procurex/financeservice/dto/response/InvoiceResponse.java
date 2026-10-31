@@ -23,6 +23,9 @@ public record InvoiceResponse(
         @Schema(description = "Vendor's user ID who submitted the invoice")
         UUID vendorId,
 
+        @Schema(description = "Vendor company name", example = "Acme Industrial Supplies")
+        String vendorName,
+
         @Schema(description = "Total invoice amount in INR", example = "242500.00")
         BigDecimal invoiceAmount,
 

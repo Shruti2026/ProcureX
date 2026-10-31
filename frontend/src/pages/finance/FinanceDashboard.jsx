@@ -22,7 +22,7 @@ const reducedMotion =
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 const STAGGER_DELAYS = [0, 75, 150, 225]
-const RECENT_COLUMNS = ['Invoice Number', 'Vendor ID', 'Amount', 'Status', 'Submitted', 'Actions']
+const RECENT_COLUMNS = ['Invoice Number', 'Vendor', 'Amount', 'Status', 'Submitted', 'Actions']
 
 export default function FinanceDashboard() {
   const navigate = useNavigate()
@@ -239,7 +239,10 @@ export default function FinanceDashboard() {
               onClick={() => navigate(`/finance/invoices/${inv.invoiceId}`)}
             >
               <Table.Td className="font-medium text-gray-900 dark:text-white">{inv.invoiceNumber}</Table.Td>
-              <Table.Td className="text-gray-400 dark:text-white/40 font-mono text-xs">{inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
+              <Table.Td className="text-gray-600 dark:text-white/60 text-sm">
+                {inv.vendorName && inv.vendorName.trim()
+                  ? inv.vendorName
+                  : inv.vendorId?.slice(-8).toUpperCase()}</Table.Td>
               <Table.Td className="font-medium">{formatCurrency(inv.invoiceAmount)}</Table.Td>
               <Table.Td><Badge status={inv.status} /></Table.Td>
               <Table.Td className="text-gray-400 dark:text-white/40">{formatDate(inv.submittedAt)}</Table.Td>
