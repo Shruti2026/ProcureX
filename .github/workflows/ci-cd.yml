@@ -55,6 +55,9 @@ jobs:
           distribution: "temurin"
           cache: "maven"
 
+      - name: Clear stale Spring Boot parent cache
+        run: rm -rf ~/.m2/repository/org/springframework/boot/spring-boot-starter-parent/4.1.0
+
       - name: Compile and run tests
         run: mvn clean verify --no-transfer-progress
         working-directory: backend
