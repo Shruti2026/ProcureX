@@ -61,4 +61,4 @@ springdoc:
 
 procurex:
   bootstrap:
-    enabled: true
+    enabled: ${BOOTSTRAP_ENABLED:false}
