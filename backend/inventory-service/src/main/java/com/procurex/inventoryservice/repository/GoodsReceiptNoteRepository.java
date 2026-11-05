@@ -22,4 +22,8 @@ public interface GoodsReceiptNoteRepository extends JpaRepository<GoodsReceiptNo
     long countByGrnNumberStartingWith(String prefix);
 
     boolean existsByPurchaseOrderId(UUID purchaseOrderId);
+
+    Page<GoodsReceiptNote> findByOrganizationIdAndPurchaseOrderId(UUID organizationId, UUID purchaseOrderId, Pageable pageable);
+
+    Page<GoodsReceiptNote> findByOrganizationIdAndStatusAndPurchaseOrderId(UUID organizationId, GrnStatus status, UUID purchaseOrderId, Pageable pageable);
 }
