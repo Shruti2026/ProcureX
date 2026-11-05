@@ -95,6 +95,7 @@ services:
       SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       JWT_SECRET: ${JWT_SECRET}
+      BOOTSTRAP_ENABLED: ${BOOTSTRAP_ENABLED:-false}
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
       interval: 10s
