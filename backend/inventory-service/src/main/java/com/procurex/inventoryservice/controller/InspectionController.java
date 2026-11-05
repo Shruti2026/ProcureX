@@ -4,6 +4,7 @@ import com.procurex.inventoryservice.dto.request.SubmitInspectionRequest;
 import com.procurex.inventoryservice.dto.response.InspectionResponse;
 import com.procurex.inventoryservice.service.InspectionService;
 import com.procurex.inventoryservice.util.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,10 +27,11 @@ public class InspectionController {
     @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
     public ResponseEntity<ApiResponse<InspectionResponse>> submitInspection(
             @Valid @RequestBody SubmitInspectionRequest request,
-            Principal principal) {
+            Principal principal,
+            HttpServletRequest httpRequest) {
 
         InspectionResponse response = inspectionService.submitInspection(request,
-                (UsernamePasswordAuthenticationToken) principal);
+                (UsernamePasswordAuthenticationToken) principal, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Inspection submitted successfully", response));
     }

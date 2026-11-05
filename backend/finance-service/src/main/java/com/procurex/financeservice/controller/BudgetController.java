@@ -7,6 +7,7 @@ import com.procurex.financeservice.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -45,8 +45,8 @@ public class BudgetController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — finance manager or admin role required")
     })
     public ResponseEntity<ApiResponse<BudgetResponse>> create(
-            @Valid @RequestBody CreateBudgetRequest request, Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            @Valid @RequestBody CreateBudgetRequest request, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         BudgetResponse response = budgetService.create(request, orgId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Budget created", response));
@@ -63,8 +63,8 @@ public class BudgetController {
     public ResponseEntity<ApiResponse<Page<BudgetResponse>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         Page<BudgetResponse> result = budgetService.getAll(orgId, PageRequest.of(page, size));
         return ResponseEntity.ok(ApiResponse.success("Budgets retrieved", result));
     }
@@ -79,8 +79,8 @@ public class BudgetController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Budget not found")
     })
     public ResponseEntity<ApiResponse<BudgetResponse>> getById(
-            @PathVariable UUID id, Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            @PathVariable UUID id, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         BudgetResponse response = budgetService.getById(id, orgId);
         return ResponseEntity.ok(ApiResponse.success("Budget retrieved", response));
     }
@@ -98,15 +98,14 @@ public class BudgetController {
     public ResponseEntity<ApiResponse<BudgetResponse>> update(
             @PathVariable UUID id,
             @Valid @RequestBody CreateBudgetRequest request,
-            Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         BudgetResponse response = budgetService.update(id, request, orgId);
         return ResponseEntity.ok(ApiResponse.success("Budget updated", response));
     }
 
-    @SuppressWarnings("unchecked")
-    private UUID extractOrgId(Authentication auth) {
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        return UUID.fromString((String) details.get("organizationId"));
+    private UUID extractOrgId(HttpServletRequest request) {
+        String orgIdStr = (String) request.getAttribute("X-Organization-Id");
+        return UUID.fromString(orgIdStr);
     }
 }

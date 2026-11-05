@@ -20,6 +20,7 @@ import com.procurex.inventoryservice.enums.TransactionType;
 import com.procurex.inventoryservice.exception.ConflictException;
 import com.procurex.inventoryservice.exception.ResourceNotFoundException;
 import com.procurex.inventoryservice.exception.ValidationException;
+import com.procurex.inventoryservice.filter.SecurityContextFilter;
 import com.procurex.inventoryservice.repository.GoodsReceiptNoteRepository;
 import com.procurex.inventoryservice.repository.InventoryRepository;
 import com.procurex.inventoryservice.repository.OutboxEventRepository;
@@ -27,6 +28,7 @@ import com.procurex.inventoryservice.repository.QualityInspectionRepository;
 import com.procurex.inventoryservice.repository.StockTransactionRepository;
 import com.procurex.inventoryservice.service.InspectionService;
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -61,11 +63,11 @@ public class InspectionServiceImpl implements InspectionService {
     @Override
     @Transactional
     public InspectionResponse submitInspection(SubmitInspectionRequest request,
-                                                UsernamePasswordAuthenticationToken auth) {
-        // 1. Extract org and user
-        @SuppressWarnings("unchecked")
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        UUID orgId = UUID.fromString((String) details.get("organizationId"));
+                                                UsernamePasswordAuthenticationToken auth,
+                                                HttpServletRequest httpRequest) {
+        // 1. Extract org and user from request attribute (set by SecurityContextFilter)
+        String orgIdStr = (String) httpRequest.getAttribute(SecurityContextFilter.ORGANIZATION_ID_ATTR);
+        UUID orgId = UUID.fromString(orgIdStr);
         UUID userId = UUID.fromString(auth.getName());
 
         // 2. Load GRN

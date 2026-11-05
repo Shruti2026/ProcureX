@@ -8,6 +8,7 @@ import com.procurex.financeservice.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -45,8 +45,8 @@ public class InvoiceController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Forbidden — vendor or admin role required")
     })
     public ResponseEntity<ApiResponse<InvoiceResponse>> submit(
-            @Valid @RequestBody SubmitInvoiceRequest request, Authentication auth) {
-        UUID orgId  = extractOrgId(auth);
+            @Valid @RequestBody SubmitInvoiceRequest request, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId  = extractOrgId(httpRequest);
         UUID userId = UUID.fromString(auth.getName());
         InvoiceResponse response = invoiceService.submit(request, orgId, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -65,8 +65,8 @@ public class InvoiceController {
             @RequestParam(required = false) InvoiceStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         Page<InvoiceResponse> result = invoiceService.getAll(orgId, status, PageRequest.of(page, size));
         return ResponseEntity.ok(ApiResponse.success("Invoices retrieved", result));
     }
@@ -94,8 +94,8 @@ public class InvoiceController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Invoice not found")
     })
     public ResponseEntity<ApiResponse<InvoiceResponse>> getById(
-            @PathVariable UUID id, Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            @PathVariable UUID id, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         InvoiceResponse response = invoiceService.getById(id, orgId);
         return ResponseEntity.ok(ApiResponse.success("Invoice retrieved", response));
     }
@@ -111,8 +111,8 @@ public class InvoiceController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invoice is not in a matchable state")
     })
     public ResponseEntity<ApiResponse<InvoiceResponse>> runMatch(
-            @PathVariable UUID id, Authentication auth) {
-        UUID orgId  = extractOrgId(auth);
+            @PathVariable UUID id, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId  = extractOrgId(httpRequest);
         UUID userId = UUID.fromString(auth.getName());
         InvoiceResponse response = invoiceService.runThreeWayMatch(id, orgId, userId);
         return ResponseEntity.ok(ApiResponse.success("Three-way match completed", response));
@@ -131,8 +131,8 @@ public class InvoiceController {
     public ResponseEntity<ApiResponse<InvoiceResponse>> approve(
             @PathVariable UUID id,
             @RequestParam(required = false) String remarks,
-            Authentication auth) {
-        UUID orgId  = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId  = extractOrgId(httpRequest);
         UUID userId = UUID.fromString(auth.getName());
         InvoiceResponse response = invoiceService.approve(id, orgId, userId, remarks);
         return ResponseEntity.ok(ApiResponse.success("Invoice approved", response));
@@ -151,16 +151,15 @@ public class InvoiceController {
     public ResponseEntity<ApiResponse<InvoiceResponse>> reject(
             @PathVariable UUID id,
             @RequestParam(required = false) String remarks,
-            Authentication auth) {
-        UUID orgId  = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId  = extractOrgId(httpRequest);
         UUID userId = UUID.fromString(auth.getName());
         InvoiceResponse response = invoiceService.reject(id, orgId, userId, remarks);
         return ResponseEntity.ok(ApiResponse.success("Invoice rejected", response));
     }
 
-    @SuppressWarnings("unchecked")
-    private UUID extractOrgId(Authentication auth) {
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        return UUID.fromString((String) details.get("organizationId"));
+    private UUID extractOrgId(HttpServletRequest request) {
+        String orgIdStr = (String) request.getAttribute("X-Organization-Id");
+        return UUID.fromString(orgIdStr);
     }
 }

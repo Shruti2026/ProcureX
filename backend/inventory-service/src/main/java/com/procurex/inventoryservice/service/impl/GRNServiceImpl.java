@@ -16,12 +16,14 @@ import com.procurex.inventoryservice.enums.GrnStatus;
 import com.procurex.inventoryservice.exception.ConflictException;
 import com.procurex.inventoryservice.exception.ResourceNotFoundException;
 import com.procurex.inventoryservice.exception.ValidationException;
+import com.procurex.inventoryservice.filter.SecurityContextFilter;
 import com.procurex.inventoryservice.repository.GoodsReceiptNoteRepository;
 import com.procurex.inventoryservice.repository.OutboxEventRepository;
 import com.procurex.inventoryservice.repository.WarehouseRepository;
 import com.procurex.inventoryservice.service.GRNService;
 import com.procurex.inventoryservice.util.GRNNumberGenerator;
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,11 +52,10 @@ public class GRNServiceImpl implements GRNService {
 
     @Override
     @Transactional
-    public GrnResponse create(CreateGrnRequest request, UsernamePasswordAuthenticationToken auth) {
-        // 1. Extract org and user from auth
-        @SuppressWarnings("unchecked")
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        UUID orgId = UUID.fromString((String) details.get("organizationId"));
+    public GrnResponse create(CreateGrnRequest request, UsernamePasswordAuthenticationToken auth, HttpServletRequest httpRequest) {
+        // 1. Extract org and user from request attribute (set by SecurityContextFilter)
+        String orgIdStr = (String) httpRequest.getAttribute(SecurityContextFilter.ORGANIZATION_ID_ATTR);
+        UUID orgId = UUID.fromString(orgIdStr);
         UUID userId = UUID.fromString(auth.getName());
 
         // 2. Load and validate warehouse
