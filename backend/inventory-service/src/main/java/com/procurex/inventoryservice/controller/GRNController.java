@@ -44,11 +44,12 @@ public class GRNController {
     public ResponseEntity<ApiResponse<Page<GrnResponse>>> getAll(
             @RequestHeader("X-Organization-Id") String orgId,
             @RequestParam(required = false) GrnStatus status,
+            @RequestParam(required = false) UUID purchaseOrderId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<GrnResponse> result = grnService.getAll(UUID.fromString(orgId), status, pageable);
+        Page<GrnResponse> result = grnService.getAll(UUID.fromString(orgId), status, purchaseOrderId, pageable);
         return ResponseEntity.ok(ApiResponse.success("GRNs retrieved successfully", result));
     }
 

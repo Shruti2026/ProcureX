@@ -153,10 +153,17 @@ public class GRNServiceImpl implements GRNService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<GrnResponse> getAll(UUID orgId, GrnStatus status, Pageable pageable) {
-        Page<GoodsReceiptNote> page = status == null
-                ? grnRepository.findByOrganizationId(orgId, pageable)
-                : grnRepository.findByOrganizationIdAndStatus(orgId, status, pageable);
+    public Page<GrnResponse> getAll(UUID orgId, GrnStatus status, UUID purchaseOrderId, Pageable pageable) {
+        Page<GoodsReceiptNote> page;
+        if (status == null && purchaseOrderId == null) {
+            page = grnRepository.findByOrganizationId(orgId, pageable);
+        } else if (status != null && purchaseOrderId == null) {
+            page = grnRepository.findByOrganizationIdAndStatus(orgId, status, pageable);
+        } else if (status == null) {
+            page = grnRepository.findByOrganizationIdAndPurchaseOrderId(orgId, purchaseOrderId, pageable);
+        } else {
+            page = grnRepository.findByOrganizationIdAndStatusAndPurchaseOrderId(orgId, status, purchaseOrderId, pageable);
+        }
         return page.map(this::toResponse);
     }
 

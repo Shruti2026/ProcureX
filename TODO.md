@@ -4,9 +4,6 @@
   - [ ] `Jackson2JsonMessageConverter` deprecation across several `RabbitMQConfig.java` files — existing code, not introduced today
   - [ ] `SecurityContextFilter` using deprecated servlet API — same, pre-existing
 
-- [ ] '`GET /api/v1/procurement/requisitions/{requisitionId}` — Get requisition by ID' - Check if this api is really needed by all (admin, vendor, managers)
-  - [ ] Check same things for all other apis
-
 - [ ] Check for Security vulnerabilities in the codebase.
   - [ ] Like SQL Injection, XSS, CSRF, etc.
   - [ ] Any other vulnerabilities that may be present in the codebase.
@@ -51,4 +48,5 @@
 - [x] For this project for initial setup which is better the current approach or if we use data seeder and put admin credential via .env file.
 - [x] Implement silent refresh via UI
   - i.e. refreshing token a min before it expires without user interaction.
-
+- [x] '`GET /api/v1/procurement/requisitions/{requisitionId}` — Get requisition by ID' - Check if this api is really needed by all (admin, vendor, managers)
+  - [x] Check same things for all other apis

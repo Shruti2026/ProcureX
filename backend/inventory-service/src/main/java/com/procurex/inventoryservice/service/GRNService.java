@@ -13,7 +13,7 @@ public interface GRNService {
 
     GrnResponse create(CreateGrnRequest request, UsernamePasswordAuthenticationToken auth);
 
-    Page<GrnResponse> getAll(UUID orgId, GrnStatus status, Pageable pageable);
+    Page<GrnResponse> getAll(UUID orgId, GrnStatus status, UUID purchaseOrderId, Pageable pageable);
 
     GrnResponse getById(UUID grnId, UUID orgId);
 }

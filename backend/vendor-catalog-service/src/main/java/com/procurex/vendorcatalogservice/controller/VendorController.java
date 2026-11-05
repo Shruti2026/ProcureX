@@ -44,14 +44,6 @@ public class VendorController {
         return ResponseEntity.ok(ApiResponse.success("Vendors retrieved successfully", page));
     }
 
-    @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<VendorResponse>> getMyVendorProfile(
-            @RequestHeader("X-User-Id") String userId) {
-        VendorResponse response = vendorService.getVendorByUserId(UUID.fromString(userId));
-        return ResponseEntity.ok(ApiResponse.success("Vendor profile retrieved successfully", response));
-    }
-
     @GetMapping("/{vendorId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<VendorResponse>> getVendorById(

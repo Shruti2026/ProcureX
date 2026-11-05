@@ -55,15 +55,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public CategoryResponse getCategoryById(UUID categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Category not found with id: " + categoryId));
-        return toResponse(category);
-    }
-
-    @Override
     public CategoryResponse update(UUID categoryId, UpdateCategoryRequest request) {
         Category category = categoryRepository.findById(categoryId)
                 .filter(c -> !c.isDeleted())
