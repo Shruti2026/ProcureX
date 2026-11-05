@@ -3,6 +3,7 @@ package com.procurex.inventoryservice.service;
 import com.procurex.inventoryservice.dto.request.CreateGrnRequest;
 import com.procurex.inventoryservice.dto.response.GrnResponse;
 import com.procurex.inventoryservice.enums.GrnStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 public interface GRNService {
 
-    GrnResponse create(CreateGrnRequest request, UsernamePasswordAuthenticationToken auth);
+    GrnResponse create(CreateGrnRequest request, UsernamePasswordAuthenticationToken auth, HttpServletRequest httpRequest);
 
     Page<GrnResponse> getAll(UUID orgId, GrnStatus status, UUID purchaseOrderId, Pageable pageable);
 

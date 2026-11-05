@@ -5,6 +5,7 @@ import com.procurex.notificationservice.dto.response.NotificationResponse;
 import com.procurex.notificationservice.dto.response.PreferencesResponse;
 import com.procurex.notificationservice.service.NotificationService;
 import com.procurex.notificationservice.util.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -50,9 +50,9 @@ public class NotificationController {
 
     @GetMapping("/preferences")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<PreferencesResponse>> getPreferences(Authentication auth) {
+    public ResponseEntity<ApiResponse<PreferencesResponse>> getPreferences(Authentication auth, HttpServletRequest httpRequest) {
         UUID userId = UUID.fromString(auth.getName());
-        UUID orgId  = extractOrgId(auth);
+        UUID orgId  = extractOrgId(httpRequest);
         PreferencesResponse prefs = notificationService.getPreferences(userId, orgId);
         return ResponseEntity.ok(ApiResponse.success("Preferences retrieved", prefs));
     }
@@ -60,18 +60,16 @@ public class NotificationController {
     @PutMapping("/preferences")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<PreferencesResponse>> updatePreferences(
-            @RequestBody UpdatePreferencesRequest request, Authentication auth) {
+            @RequestBody UpdatePreferencesRequest request, Authentication auth, HttpServletRequest httpRequest) {
         UUID userId = UUID.fromString(auth.getName());
-        UUID orgId  = extractOrgId(auth);
+        UUID orgId  = extractOrgId(httpRequest);
         PreferencesResponse prefs = notificationService.updatePreferences(
                 userId, orgId, request.emailEnabled(), request.inAppEnabled());
         return ResponseEntity.ok(ApiResponse.success("Preferences updated", prefs));
     }
 
-    @SuppressWarnings("unchecked")
-    private UUID extractOrgId(Authentication auth) {
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        String orgIdStr = (String) details.get("organizationId");
+    private UUID extractOrgId(HttpServletRequest request) {
+        String orgIdStr = (String) request.getAttribute("X-Organization-Id");
         return (orgIdStr != null && !orgIdStr.isBlank())
                 ? UUID.fromString(orgIdStr)
                 : UUID.randomUUID();

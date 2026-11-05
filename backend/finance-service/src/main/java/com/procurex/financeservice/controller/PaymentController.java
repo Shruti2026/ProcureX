@@ -7,6 +7,7 @@ import com.procurex.financeservice.util.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -45,8 +45,8 @@ public class PaymentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Invoice is not in an approved state")
     })
     public ResponseEntity<ApiResponse<PaymentResponse>> initiate(
-            @Valid @RequestBody InitiatePaymentRequest request, Authentication auth) {
-        UUID orgId  = extractOrgId(auth);
+            @Valid @RequestBody InitiatePaymentRequest request, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId  = extractOrgId(httpRequest);
         UUID userId = UUID.fromString(auth.getName());
         PaymentResponse response = paymentService.initiatePayment(request, orgId, userId);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -64,8 +64,8 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<Page<PaymentResponse>>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
-            Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         Page<PaymentResponse> result = paymentService.getAll(orgId, PageRequest.of(page, size));
         return ResponseEntity.ok(ApiResponse.success("Payments retrieved", result));
     }
@@ -80,15 +80,14 @@ public class PaymentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Payment not found for the given invoice")
     })
     public ResponseEntity<ApiResponse<PaymentResponse>> getByInvoice(
-            @PathVariable UUID invoiceId, Authentication auth) {
-        UUID orgId = extractOrgId(auth);
+            @PathVariable UUID invoiceId, Authentication auth, HttpServletRequest httpRequest) {
+        UUID orgId = extractOrgId(httpRequest);
         PaymentResponse response = paymentService.getByInvoiceId(invoiceId, orgId);
         return ResponseEntity.ok(ApiResponse.success("Payment retrieved", response));
     }
 
-    @SuppressWarnings("unchecked")
-    private UUID extractOrgId(Authentication auth) {
-        Map<String, Object> details = (Map<String, Object>) auth.getDetails();
-        return UUID.fromString((String) details.get("organizationId"));
+    private UUID extractOrgId(HttpServletRequest request) {
+        String orgIdStr = (String) request.getAttribute("X-Organization-Id");
+        return UUID.fromString(orgIdStr);
     }
 }

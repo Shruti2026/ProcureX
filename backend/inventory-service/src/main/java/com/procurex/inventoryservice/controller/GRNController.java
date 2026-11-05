@@ -5,6 +5,7 @@ import com.procurex.inventoryservice.dto.response.GrnResponse;
 import com.procurex.inventoryservice.enums.GrnStatus;
 import com.procurex.inventoryservice.service.GRNService;
 import com.procurex.inventoryservice.util.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -31,10 +32,11 @@ public class GRNController {
     @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
     public ResponseEntity<ApiResponse<GrnResponse>> create(
             @Valid @RequestBody CreateGrnRequest request,
-            Principal principal) {
+            Principal principal,
+            HttpServletRequest httpRequest) {
 
         GrnResponse response = grnService.create(request,
-                (UsernamePasswordAuthenticationToken) principal);
+                (UsernamePasswordAuthenticationToken) principal, httpRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("GRN created successfully", response));
     }
