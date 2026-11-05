@@ -22,7 +22,8 @@ export function decodeToken(token) {
       id: claims.userId,
       role: claims.role,
       organizationId: claims.organizationId,
-      email: claims.sub
+      email: claims.sub,
+      exp: claims.exp
     };
   } catch (e) {
     console.error("Failed to decode JWT token", e);
@@ -120,4 +121,4 @@ export async function deactivateVendor() {
   } finally {
     clearAccessToken();
   }
-}
+}
