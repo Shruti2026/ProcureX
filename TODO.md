@@ -9,8 +9,6 @@
 
 - [ ] For this project for initial setup which is better the current approach or if we use data seeder and put admin credential via .env file.
 
-- [ ] Add Dark Mode
-
 - [ ] Implement silent refresh via UI
   - i.e. refreshing token a min before it expires without user interaction.
 
@@ -53,3 +51,6 @@
 ### Already Completed Tasks
 
 - [x] **Check if `UserRegisterRequest.java` and `UserRegisterResponse.java` are still required.**
+- [x] Check for 'common' module and remove it if it is not really used.
+- [x] Add Dark Mode
+

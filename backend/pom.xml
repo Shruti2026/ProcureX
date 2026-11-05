@@ -38,7 +38,6 @@
         <module>finance-service</module>
         <module>notification-service</module>
         <module>analytics-service</module>
-        <module>common</module>
     </modules>
 
     <dependencyManagement>
