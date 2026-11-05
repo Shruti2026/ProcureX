@@ -8,6 +8,10 @@
   - [ ] Like SQL Injection, XSS, CSRF, etc.
   - [ ] Any other vulnerabilities that may be present in the codebase.
 
+---
+
+Following are fixed:
+
 # Bugs
 
 ## 1. API Gateway (`backend/api-gateway`)
