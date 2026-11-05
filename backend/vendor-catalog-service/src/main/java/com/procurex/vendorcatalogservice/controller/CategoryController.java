@@ -38,14 +38,6 @@ public class CategoryController {
         return ResponseEntity.ok(ApiResponse.success("Categories retrieved successfully", categories));
     }
 
-    @GetMapping("/{categoryId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
-            @PathVariable UUID categoryId) {
-        CategoryResponse response = categoryService.getCategoryById(categoryId);
-        return ResponseEntity.ok(ApiResponse.success("Category retrieved successfully", response));
-    }
-
     @PutMapping("/{categoryId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROCUREMENT_MANAGER')")
     public ResponseEntity<ApiResponse<CategoryResponse>> updateCategory(
