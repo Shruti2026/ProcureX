@@ -122,3 +122,38 @@ export async function deactivateVendor() {
     clearAccessToken();
   }
 }
+
+/**
+ * Schedules a proactive silent token refresh ~60s before the access token expires.
+ * @param {string} token - The current access token.
+ * @param {Function} onRefreshed - Called with the new token string after a successful refresh.
+ * @param {Function} onExpired - Called when the token is already expired or refresh fails.
+ * @returns {number} The setTimeout timer ID (pass to clearTimeout to cancel).
+ */
+export function scheduleTokenRefresh(token, onRefreshed, onExpired) {
+  const claims = decodeToken(token);
+  if (!claims || !claims.exp) {
+    onExpired();
+    return null;
+  }
+
+  const delay = claims.exp * 1000 - Date.now() - 60_000; // fire 60s before expiry
+
+  if (delay <= 0) {
+    onExpired();
+    return null;
+  }
+
+  const timerId = setTimeout(async () => {
+    try {
+      const response = await api.post('/api/v1/auth/refresh');
+      const newToken = response.data.data.accessToken;
+      setAccessToken(newToken);
+      onRefreshed(newToken);
+    } catch {
+      onExpired();
+    }
+  }, delay);
+
+  return timerId;
+}
